@@ -16,6 +16,17 @@ Research.ProximityPrize.Collapse ProximityGap.not_listDecodingPrize
 Research.ProximityPrize.Collapse ProximityGap.grandMCAChallenge_iff_epsMCA_one
 Research.ProximityPrize.Lattice2 ProximityGap.GrandChallengesLattice.mcaThreshold_spec
 
+# ── Remaining #164 production pin surface (conditional; residuals open) ─
+# Rate-1/2 exact pin consumers: require all-stack predecessor cap residual.
+Research.ProximityPrize.Frontier._PrizeShapeRateHalfBracket ArkLib.ProximityGap.Frontier.PrizeShapeRateHalfBracket.firstPrime_rateHalf_deltaStar_eq_thirtyOneSixtyFour_of_predecessor_count
+Research.ProximityPrize.Frontier._PrizeShapeRateHalfBracket ArkLib.ProximityGap.Frontier.PrizeShapeRateHalfBracket.secondPrime_rateHalf_deltaStar_eq_thirtyOneSixtyFour_of_predecessor_count
+Research.ProximityPrize.Frontier._PrizeShapeRateHalfBracket ArkLib.ProximityGap.Frontier.PrizeShapeRateHalfBracket.firstPrime_rateHalf_deltaStar_bracket
+Research.ProximityPrize.Frontier._PrizeShapeRateHalfBracket ArkLib.ProximityGap.Frontier.PrizeShapeRateHalfBracket.secondPrime_rateHalf_deltaStar_bracket
+# Prize floor from BGK + incidence: both inputs remain named residuals.
+Research.ProximityPrize.Frontier._PrizeFloorOfBGK ProximityGap.Frontier.PrizeFloorOfBGK.prizeFloor_of_BGK_and_incidence
+Research.ProximityPrize.Frontier._PrizeFloorOfBGK ProximityGap.Frontier.PrizeFloorOfBGK.prizeFloor_of_BGK_and_incidence_budget
+Research.ProximityPrize.Frontier._PrizeFloorOfBGK ProximityGap.Frontier.PrizeFloorOfBGK.prizeFloor_window_of_BGK_and_incidence
+
 # ── KZG commitment scheme ──────────────────────────────────────────────
 ArkLib.Commitments.Functional.KZG.Correctness KZG.CommitmentScheme.correctness
 ArkLib.Commitments.Functional.KZG.Binding KZG.CommitmentScheme.map_binding_to_t_sdh_of_two_valid_openings
