@@ -41,7 +41,8 @@ theorem first_sponsor_order_exceeds_bchks_log_scale :
   have hscale :
       10 * Nat.log 2 ArkLib.ProximityGap.PrizeShapePrimeP30.P ≤ 1580 := by
     omega
-  norm_num [sponsorN]
+  have hsponsor : 1580 < sponsorN := by
+    norm_num [sponsorN]
   omega
 
 theorem second_sponsor_order_exceeds_bchks_log_scale :
@@ -51,7 +52,8 @@ theorem second_sponsor_order_exceeds_bchks_log_scale :
   have hscale :
       10 * Nat.log 2 ArkLib.ProximityGap.PrizeShapePrimeP30Second.P ≤ 1590 := by
     omega
-  norm_num [sponsorN]
+  have hsponsor : 1590 < sponsorN := by
+    norm_num [sponsorN]
   omega
 
 theorem first_bchks_scale_is_strictly_below_sponsor_order
