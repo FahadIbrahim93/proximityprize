@@ -1774,6 +1774,7 @@ import Research.ProximityPrize.Frontier._IdealSVPGirthVerdict
 import Research.ProximityPrize.Frontier._ImprimitiveBadSetDecomp
 import Research.ProximityPrize.Frontier._ImprimitiveRatioLevelSet
 import Research.ProximityPrize.Frontier._IncidenceAnchorPair
+import Research.ProximityPrize.Frontier._IncidenceAverageAnchor
 import Research.ProximityPrize.Frontier._IncidenceOffsetMomentRatioSandwich
 import Research.ProximityPrize.Frontier._IncidenceSmoothingDeconvolutionBarrier
 import Research.ProximityPrize.Frontier._InvEnergyLargeSupportBSG
