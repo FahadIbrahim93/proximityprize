@@ -1,5 +1,26 @@
 # Disproof Log — ABF26 Proximity Prize Grand Challenge 1 (Issue #232)
 
+## [164-expanded-common-factor-incidence-cores] 2026-10-11
+
+Author: Mikhail Izhutkin (@mashingaan)
+
+Exact computation and algebraic derivation, not a new Lean theorem:
+`scripts/probes/probe_incidence_expanded_cores.py` expands the equal-size
+groups around 31 common coset labels. At the first sponsor field, three groups
+of 11 labels give 1107296256 distinct bad-scalar slots at radius
+369098751/1073741824, exceeding the budget by 33554432. At the second field,
+five groups of six labels give 2264924160 slots at radius
+452984831/1073741824, exceeding the budget by 117440512.
+
+The production modular-power certificates exclude coefficient collisions.
+Direct Lagrange interpolation independently verifies every witness on a
+128-point smooth domain over F_1409. The production support/nonjointness
+derivation is recorded in
+`docs/kb/deltastar-expanded-incidence-cores-2026-10-11.md`.
+The expanded-core canonical Lean and threshold transfers are not implemented.
+These are stronger exact no-go certificates for the associated all-stack caps,
+not a determination of the prize threshold or a closure claim.
+
 Goal: keep trying to **disprove** the ABF26 Grand-Challenge-1 conjecture, then
 **disprove the disproof**. Record every attempt so we don't repeat ourselves and
 so we zero in. Keep lemmas that *constrain* even if they don't fully disprove.
