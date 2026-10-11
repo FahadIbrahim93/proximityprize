@@ -6,6 +6,28 @@ so we zero in. Keep lemmas that *constrain* even if they don't fully disprove.
 Default assumption: my disproof is wrong — find the precise reason it fails and
 make that reason a sorry-free Lean lemma.
 
+## [SYZ3-five-core-predecessor] Five-core rate-half construction refutes both canonical predecessor caps (2026-10-11)
+
+The exact probe `scripts/probes/probe_syz3_five_core_predecessor.py` constructs
+five rate-half cores at `N=2^30`, `d=2^24`, and `K=2^29`. Each core has
+`33d` coordinates and the predecessor witness has `33d+1` coordinates. The
+155 eligible core-label slots have distinct `(label,multiplier)` pairs. The
+canonical first and second prime fields have pairwise distinct values of
+`a^N` for `a=1,...,9`, so all `155d = 2,600,468,480` pencil scalars are
+distinct.
+
+The lower bound exceeds the first predecessor budget `N` by `1,526,726,656`
+and the second budget `2N` by `452,984,832`. This refutes both all-stack
+predecessor count hypotheses used by the conditional rate-half reduction.
+The finite independent check at `N=128`, `K=64`, `P=1409` verifies all `310`
+constructed MCA witnesses and exceeds `2N` by `54`.
+
+The probe is exact integer and modular arithmetic only. It does not claim a
+kernel-checked bridge to `mcaEvent`, an exact Delta Star threshold, or prize
+closure. The five-core rate-half construction is separate from the existing
+rate-quarter five-core barrier, which has different dimension and agreement
+parameters.
+
 ## [466-G310-k2-interior-ceiling-prize-scale] A07 r=3 / k=2 interior-ceiling counts survive at a prize-scale Proth prime: the ceiling #bad is 40 and the below-ceiling monomial-pencil maximum is 9, q-independent at q ≈ 21·2^128 (2026-08-14)
 
 Extends sweep A07 (`docs/kb/deltastar-sweep-A07-k2-interior-2026-06-14.md`) from the small primes 257 / 12289 / 65537 to the prize-scale prime `p = 21·2^128 + 1` (Proth certificate with witness `a = 5`).  On the smooth 8-point domain `μ_8 = ⟨ω⟩` with `ω = 5^((p-1)/8)` (`ω^4 = -1`), the dimension-two (rate 1/4) Reed-Solomon code has the same exact integers as at the small primes:
