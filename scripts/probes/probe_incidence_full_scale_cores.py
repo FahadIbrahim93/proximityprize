@@ -8,8 +8,13 @@ import json
 N = 2**30
 Q = 2**128
 FIELDS = [N*(Q+192)+1, N*(2*Q+13)+1]
+GENERATORS = [303645430271030343624574566109998498685964493478,
+              192152681249815148642741928588691886362054863855]
 
 def certificate(p,s):
+    generator=GENERATORS[FIELDS.index(p)]
+    assert pow(generator,N,p)==1
+    assert pow(generator,N//2,p)!=1
     common=N//2-2
     group=(N-common)//s
     leftover=N-common-s*group
@@ -30,7 +35,7 @@ def certificate(p,s):
             if h!=j:
                 assert Fraction(h*h-j*j,h-j)==h+j
                 assert 1<=h+j<2*s
-    return dict(field=p,s=s,common=common,group=group,leftover=leftover,
+    return dict(field=p,generator=generator,s=s,common=common,group=group,leftover=leftover,
                 dimension=N//2,max_head_degree=common+1,
                 core_size=core,support_size=core+1,
                 radius=str(Fraction(N-core-1,N)),
@@ -97,6 +102,15 @@ def finite(s):
 
 if __name__=='__main__':
     results=[certificate(FIELDS[0],3),certificate(FIELDS[1],5)]
+    for result in results:
+        multiplier=result['budget']//N
+        minimum_heads=2*multiplier+1
+        assert result['s']==minimum_heads
+        assert (minimum_heads-1)*(N-N//2)<=result['budget']
+        # At maximal allowed common degree, more heads only shrink each core.
+        for heads in range(minimum_heads,65):
+            candidate_core=N//2-2+(N-(N//2-2))//heads
+            assert candidate_core<=result['core_size']
     assert results[0]['budget_excess']==5
     assert results[1]['budget_excess']==12
     print(json.dumps(dict(production=results,finite=[finite(3),finite(5)]),indent=2))

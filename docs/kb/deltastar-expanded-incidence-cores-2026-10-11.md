@@ -64,6 +64,12 @@ Second field, s = 5:
 
 The script checks all coefficients 1 through 5 in the first field and 1 through 9 in the second. Their n-th powers are pairwise distinct. These inventories conservatively include every eligible h+j, including leftover coordinates. Each fixed coordinate has distinct h+j as j varies, so the full count is s*(n-c-t). The small-field independent interpolation check uses c = 62, with group size 22 for s = 3 and 13 for s = 5. It validates 132 and 265 distinct witnesses respectively.
 
+The probe additionally checks the actual two canonical generators: g^n = 1 and g^(n/2) != 1. Since n is a power of two, these verify exact order n in the already certified prime fields.
+
+### Exact optimization within the quadratic-height family
+
+These radii minimize the threshold within equal-size, disjoint-group quadratic-height designs with c <= k-2 and core size c+t >= k. For a budget b*n, any s <= 2b gives count s*(n-c-t) <= s*(n-k) <= b*n, so at least 2b+1 heads are necessary. For fixed s, the largest possible core is c+floor((n-c)/s). This is nondecreasing in c because incrementing c by one decreases the floor by at most one. Therefore c=k-2 is optimal. At that c the core is nonincreasing in s, so the smallest possible number of heads gives the strongest radius. Our designs at s=3 and s=5 are strictly over budget, certifying attainment of this family optimum. This does not optimize arbitrary incidence constructions or prove a universal matching lower bound.
+
 Run `python scripts/probes/probe_incidence_full_scale_cores.py`. These stronger results remain exact arithmetic plus an algebraic derivation. In particular the new upper bounds near 1/3 and 2/5 have not been kernel checked, and no matching lower bound or prize solution is claimed. The small positive count margins 5 and 12 must be retained exactly.
 
 Run `python scripts/probes/probe_incidence_expanded_cores.py`. All load-bearing arithmetic uses integers or Fraction. The script also independently reconstructs every witness over F_1409 with n = 128 and d = 2, using direct Lagrange interpolation rather than the symbolic head formula. The small instance verifies the construction implementation, while the explicit production modular-power certificates supply the production coefficient separation. Neither check replaces a Lean proof of the expanded construction.
