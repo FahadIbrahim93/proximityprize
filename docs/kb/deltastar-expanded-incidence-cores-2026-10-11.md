@@ -42,4 +42,28 @@ The script independently cross-multiplies count*2^128 > P. Subject to the deriva
 
 The probe enumerates equal-size designs with common 31 labels, 3 <= s <= 33, t >= 1, s*t <= 33. It maximizes t subject to a strictly over-budget count. The maximal t is 11 in the first field and 6 in the second. This is optimal only within this family, not among arbitrary RS stacks.
 
+## Coordinate-scale strengthening
+
+`probe_incidence_full_scale_cores.py` removes the artificial 64-label granularity. Use n labels of one coordinate each and common size c = k-2 = 536870910. Set t = floor((n-c)/s), take s consecutive disjoint groups of size t outside the common coordinates, and assign leftover coordinates height s. Define Z(X) as the product of X-g^i over the common coordinates. The construction and uniqueness argument above apply verbatim with d = 1. The maximum head degree is c+1 = k-1, still strictly less than k. Neither the common product nor the production domain is enumerated by the compressed arithmetic certificate.
+
+First field, s = 3:
+
+- group size 178956971, one leftover coordinate
+- core size 715827881, witness support size 715827882
+- radius 178956971/536870912 = 1/3 + 2/(3n)
+- distinct bad scalars at least n+5 = 1073741829
+- exact normalized-error excess: (n+5)*2^128-P = 1701411834604692317316873036952682627071 > 0
+
+Second field, s = 5:
+
+- group size 107374182, four leftover coordinates
+- core size 644245092, witness support size 644245093
+- radius 429496731/1073741824 = 2/5 + 7/(5n)
+- distinct bad scalars at least 2n+12 = 2147483660
+- exact normalized-error excess: (2n+12)*2^128-P = 4083388403051261561560495289167259893759 > 0
+
+The script checks all coefficients 1 through 5 in the first field and 1 through 9 in the second. Their n-th powers are pairwise distinct. These inventories conservatively include every eligible h+j, including leftover coordinates. Each fixed coordinate has distinct h+j as j varies, so the full count is s*(n-c-t). The small-field independent interpolation check uses c = 62, with group size 22 for s = 3 and 13 for s = 5. It validates 132 and 265 distinct witnesses respectively.
+
+Run `python scripts/probes/probe_incidence_full_scale_cores.py`. These stronger results remain exact arithmetic plus an algebraic derivation. In particular the new upper bounds near 1/3 and 2/5 have not been kernel checked, and no matching lower bound or prize solution is claimed. The small positive count margins 5 and 12 must be retained exactly.
+
 Run `python scripts/probes/probe_incidence_expanded_cores.py`. All load-bearing arithmetic uses integers or Fraction. The script also independently reconstructs every witness over F_1409 with n = 128 and d = 2, using direct Lagrange interpolation rather than the symbolic head formula. The small instance verifies the construction implementation, while the explicit production modular-power certificates supply the production coefficient separation. Neither check replaces a Lean proof of the expanded construction.

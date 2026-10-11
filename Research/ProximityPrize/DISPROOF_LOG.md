@@ -21,6 +21,15 @@ The expanded-core canonical Lean and threshold transfers are not implemented.
 These are stronger exact no-go certificates for the associated all-stack caps,
 not a determination of the prize threshold or a closure claim.
 
+Coordinate-scale extension: `probe_incidence_full_scale_cores.py` uses k-2
+common coordinates and equal groups of size floor((n-k+2)/s). For s = 3 in
+the first field it gives n+5 slots at radius 178956971/536870912. For s = 5
+in the second field it gives 2n+12 slots at radius 429496731/1073741824.
+All production coefficient powers are separated exactly, with an independent
+repeated-squaring check. Direct finite-field interpolation verifies the
+construction separately. These expanded-coordinate results have the same
+non-Lean evidence class and do not establish an exact production threshold.
+
 Goal: keep trying to **disprove** the ABF26 Grand-Challenge-1 conjecture, then
 **disprove the disproof**. Record every attempt so we don't repeat ourselves and
 so we zero in. Keep lemmas that *constrain* even if they don't fully disprove.
