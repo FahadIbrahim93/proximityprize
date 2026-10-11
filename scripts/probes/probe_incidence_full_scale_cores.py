@@ -92,6 +92,10 @@ def finite(s):
                 continue
             gamma=-(hs[i]+j)*points[i]%p
             assert decoded[i]!=row1[i]
+            exact_support=[a for a in range(n)
+                           if (j*j*zs[a]*points[a]+gamma*j*zs[a])%p
+                           ==(row0[a]+gamma*row1[a])%p]
+            assert set(exact_support)==set(core+[i])
             for a in core+[i]:
                 assert (j*j*zs[a]*points[a]+gamma*j*zs[a])%p==(row0[a]+gamma*row1[a])%p
             assert gamma not in seen
