@@ -156,7 +156,7 @@ theorem badScalars_card_le_anchor (C : Submodule F (ι → A))
   have hwD : ∀ i, w i = U + γfun i • D := by
     intro i
     by_cases hi : i = i₀
-    · subst hi
+    · subst i
       funext x
       show w i₀ x = (w i₀ x - γfun i₀ • D x) + γfun i₀ • D x
       abel
@@ -297,6 +297,9 @@ open ProximityGap.Ownership
 private abbrev sponsorP := ArkLib.ProximityGap.PrizeShapePrimeP30.P
 private abbrev sponsorG := ArkLib.ProximityGap.PrizeShapePrimeP30.g
 
+private instance sponsorPrime : Fact sponsorP.Prime :=
+  ⟨ArkLib.ProximityGap.PrizeShapePrimeP30.prime_P⟩
+
 theorem firstPrime_incidence_at_ladder_boundary :
     ProximityGap.OpenCoreConditionalPin.WorstCaseIncidenceBounded
       (F := ZMod sponsorP) (A := ZMod sponsorP)
@@ -316,8 +319,47 @@ theorem firstPrime_incidence_at_ladder_boundary :
   exact rs_badScalars_card_le_anchor dom (k := 2 ^ 29) (t := 178956971)
     (by norm_num) (by norm_num) (by norm_num) (u 0) (u 1)
 
+open ProximityGap.MCAThresholdLedger
+open ArkLib.ProximityGap.Frontier.PrizeShapeRateHalfBracket
+
+/-- The anchor count at the old ladder boundary fills the next Hamming interval. -/
+theorem firstPrime_anchor_ladder_floor :
+    ((178956972 : ℝ≥0) / (2 ^ 30 : ℝ≥0)) ≤
+      mcaDeltaStar (F := ZMod sponsorP) (A := ZMod sponsorP)
+        (ArkLib.ProximityGap.KKH26.evalCode sponsorG (2 ^ 30) (2 ^ 29 - 1))
+        (ProximityGap.epsStar : ℝ≥0∞) := by
+  classical
+  letI : NeZero (2 ^ 30 : ℕ) := ⟨by norm_num⟩
+  have hbudget : (178956972 : ℝ≥0∞) / (sponsorP : ℝ≥0∞) ≤
+      (ProximityGap.epsStar : ℝ≥0∞) := by
+    have hb := natCast_div_le_inv_of_mul_le
+      (E := 178956972) (Q := 2 ^ 128) (p := sponsorP)
+      (by norm_num) ArkLib.ProximityGap.PrizeShapePrimeP30.prime_P.pos
+      (by norm_num [sponsorP, ArkLib.ProximityGap.PrizeShapePrimeP30.P])
+    rwa [epsStar_coe_eq_natCast_inv]
+  have hgood : epsMCA (F := ZMod sponsorP) (A := ZMod sponsorP)
+      (ArkLib.ProximityGap.KKH26.evalCode sponsorG (2 ^ 30) (2 ^ 29 - 1))
+      (predecessorRadius (2 ^ 30) 178956972) ≤
+      (ProximityGap.epsStar : ℝ≥0∞) := by
+    have hc := ProximityGap.OpenCoreConditionalPin.epsMCA_le_of_worstCaseIncidence
+      (ArkLib.ProximityGap.KKH26.evalCode sponsorG (2 ^ 30) (2 ^ 29 - 1))
+      ((178956971 : ℝ≥0) / (2 ^ 30 : ℝ≥0))
+      firstPrime_incidence_at_ladder_boundary
+    rw [ZMod.card] at hc
+    have hpred : predecessorRadius (2 ^ 30) 178956972 =
+        ((178956971 : ℝ≥0) / (2 ^ 30 : ℝ≥0)) := by
+      norm_num [predecessorRadius]
+    rw [hpred]
+    exact hc.trans hbudget
+  exact latticeBoundary_le_mcaDeltaStar_of_predecessor_good
+    (F := ZMod sponsorP) (n := 2 ^ 30) (a := 178956972)
+    (by norm_num) (by norm_num)
+    (ArkLib.ProximityGap.KKH26.evalCode sponsorG (2 ^ 30) (2 ^ 29 - 1))
+    (ProximityGap.epsStar : ℝ≥0∞) hgood
+
 end ProximityGap.IncidenceAnchorPair
 
 #print axioms ProximityGap.IncidenceAnchorPair.exists_small_pair_union
 #print axioms ProximityGap.IncidenceAnchorPair.badScalars_card_le_anchor
 #print axioms ProximityGap.IncidenceAnchorPair.firstPrime_incidence_at_ladder_boundary
+#print axioms ProximityGap.IncidenceAnchorPair.firstPrime_anchor_ladder_floor

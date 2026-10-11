@@ -73,3 +73,4 @@ ArkLib.ProofSystem.Binius.BinaryBasefold.QueryPhase.Folding Binius.BinaryBasefol
 # Arithmetic target bound is distinct from the unresolved scalar-security premise.
 ArkLib.ProofSystem.Binius.FRIBinius.General Binius.FRIBinius.FullFRIBinius.fullRbrKnowledgeError_sum_le_concrete
 Research.ProximityPrize.Frontier._IncidenceAnchorPair ProximityGap.IncidenceAnchorPair.firstPrime_incidence_at_ladder_boundary
+Research.ProximityPrize.Frontier._IncidenceAnchorPair ProximityGap.IncidenceAnchorPair.firstPrime_anchor_ladder_floor
