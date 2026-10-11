@@ -859,7 +859,7 @@ than the exact field-normalized budget because
 `P < (2^30 + 1) * 2^128`, so the strict `epsStar < epsMCA` premise of
 `MCAThresholdLedger.mcaDeltaStar_le_of_bad` is discharged by integer arithmetic. -/
 theorem firstPrime_predecessor_mcaDeltaStar_le :
-    mcaDeltaStar
+    ProximityGap.MCAThresholdLedger.mcaDeltaStar
       (F := ZMod P) (A := ZMod P)
       (evalCode g (2 ^ 30) (2 ^ 29 - 1))
       (ProximityGap.epsStar : ℝ≥0∞)
