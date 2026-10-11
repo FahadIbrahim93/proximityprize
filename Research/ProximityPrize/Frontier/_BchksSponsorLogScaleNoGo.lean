@@ -38,6 +38,9 @@ theorem first_sponsor_order_exceeds_bchks_log_scale :
     ¬ sponsorN ≤
       10 * Nat.log 2 ArkLib.ProximityGap.PrizeShapePrimeP30.P := by
   have hlog := first_field_log_lt_159
+  have hscale :
+      10 * Nat.log 2 ArkLib.ProximityGap.PrizeShapePrimeP30.P ≤ 1580 := by
+    omega
   norm_num [sponsorN]
   omega
 
@@ -45,6 +48,9 @@ theorem second_sponsor_order_exceeds_bchks_log_scale :
     ¬ sponsorN ≤
       10 * Nat.log 2 ArkLib.ProximityGap.PrizeShapePrimeP30Second.P := by
   have hlog := second_field_log_lt_160
+  have hscale :
+      10 * Nat.log 2 ArkLib.ProximityGap.PrizeShapePrimeP30Second.P ≤ 1590 := by
+    omega
   norm_num [sponsorN]
   omega
 
