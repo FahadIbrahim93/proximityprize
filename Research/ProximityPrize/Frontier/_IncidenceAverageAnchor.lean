@@ -78,7 +78,7 @@ theorem badScalars_card_le_of_anchor (C : Submodule F (ι → A))
   choose w hwC hwAg using hwEx
   have hcompl : ∀ i, (T i)ᶜ.card ≤ t := by
     intro i
-    simpa using (witness_compl_card_le (j := t + 1) hδ (hTsz i))
+    simpa using (witness_compl_card_le (j := t + 1) (by simpa using hδ) (hTsz i))
   -- step 1: difference codewords
   set dd : Fin (j + 1) → Fin (j + 1) → (ι → A) :=
     fun i k => (γfun i - γfun k)⁻¹ • (w i - w k) with hdd
