@@ -5,6 +5,7 @@ Authors: Mikhail Izhutkin (mashingaan, @mashingaan)
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.UniversalStaircaseCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.GranularityLadderRS
+import ArkLib.Data.CodingTheory.ProximityGap.OpenCoreConditionalPin
 import Research.ProximityPrize.Frontier._PrizeShapeRateHalfBracket
 
 /-!
@@ -19,6 +20,8 @@ set_option autoImplicit false
 
 open Finset
 open scoped NNReal ENNReal
+
+attribute [local instance] Classical.propDecidable
 
 namespace ProximityGap.IncidenceAnchorPair
 
@@ -290,21 +293,24 @@ theorem rs_badScalars_card_le_anchor
   · simpa using hδ
 
 open ProximityGap.Ownership
-open ArkLib.ProximityGap.PrizeShapePrimeP30
+
+private abbrev sponsorP := ArkLib.ProximityGap.PrizeShapePrimeP30.P
+private abbrev sponsorG := ArkLib.ProximityGap.PrizeShapePrimeP30.g
 
 theorem firstPrime_incidence_at_ladder_boundary :
     ProximityGap.OpenCoreConditionalPin.WorstCaseIncidenceBounded
-      (F := ZMod P) (A := ZMod P)
-      (ArkLib.ProximityGap.KKH26.evalCode g (2 ^ 30) (2 ^ 29 - 1))
+      (F := ZMod sponsorP) (A := ZMod sponsorP)
+      (ArkLib.ProximityGap.KKH26.evalCode sponsorG (2 ^ 30) (2 ^ 29 - 1))
       ((178956971 : ℝ≥0) / (2 ^ 30 : ℝ≥0)) 178956972 := by
   classical
   letI : NeZero (2 ^ 30 : ℕ) := ⟨by norm_num⟩
-  let dom : Fin (2 ^ 30) ↪ ZMod P := smoothDom g (2 ^ 30) orderOf_g
-  have hcode : ArkLib.ProximityGap.KKH26.evalCode g (2 ^ 30) (2 ^ 29 - 1) =
-      ((rsCode dom (2 ^ 29) : Submodule (ZMod P) (Fin (2 ^ 30) → ZMod P)) :
-        Set (Fin (2 ^ 30) → ZMod P)) := by
+  let dom : Fin (2 ^ 30) ↪ ZMod sponsorP :=
+    smoothDom sponsorG (2 ^ 30) ArkLib.ProximityGap.PrizeShapePrimeP30.orderOf_g
+  have hcode : ArkLib.ProximityGap.KKH26.evalCode sponsorG (2 ^ 30) (2 ^ 29 - 1) =
+      ((rsCode dom (2 ^ 29) : Submodule (ZMod sponsorP) (Fin (2 ^ 30) → ZMod sponsorP)) :
+        Set (Fin (2 ^ 30) → ZMod sponsorP)) := by
     simpa only [dom, Nat.sub_add_cancel (by norm_num : 1 ≤ 2 ^ 29)] using
-      (evalCode_eq_rsCode orderOf_g (2 ^ 29 - 1))
+      (evalCode_eq_rsCode ArkLib.ProximityGap.PrizeShapePrimeP30.orderOf_g (2 ^ 29 - 1))
   intro u
   rw [hcode]
   exact rs_badScalars_card_le_anchor dom (k := 2 ^ 29) (t := 178956971)
