@@ -351,11 +351,13 @@ theorem firstPrime_anchor_ladder_floor :
       norm_num [predecessorRadius]
     rw [hpred]
     exact hc.trans hbudget
-  exact latticeBoundary_le_mcaDeltaStar_of_predecessor_good
+  have hfloor := latticeBoundary_le_mcaDeltaStar_of_predecessor_good
     (F := ZMod sponsorP) (n := 2 ^ 30) (a := 178956972)
     (by norm_num) (by norm_num)
     (ArkLib.ProximityGap.KKH26.evalCode sponsorG (2 ^ 30) (2 ^ 29 - 1))
     (ProximityGap.epsStar : ℝ≥0∞) hgood
+  convert hfloor using 1
+  norm_num
 
 end ProximityGap.IncidenceAnchorPair
 
