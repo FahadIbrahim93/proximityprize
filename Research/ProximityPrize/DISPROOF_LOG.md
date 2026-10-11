@@ -8,6 +8,8 @@ make that reason a sorry-free Lean lemma.
 
 ## [SYZ3-five-core-predecessor] Five-core rate-half construction refutes both canonical predecessor caps (2026-10-11)
 
+Author: Mikhail Izhutkin (@mashingaan)
+
 The exact probe `scripts/probes/probe_syz3_five_core_predecessor.py` constructs
 five rate-half cores at `N=2^30`, `d=2^24`, and `K=2^29`. Each core has
 `33d` coordinates and the predecessor witness has `33d+1` coordinates. The

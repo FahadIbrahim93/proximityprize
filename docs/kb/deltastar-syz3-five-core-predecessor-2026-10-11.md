@@ -1,5 +1,7 @@
 # SYZ3 five-core obstruction at the rate-half predecessor
 
+Author: Mikhail Izhutkin (@mashingaan)
+
 Status: exact arithmetic research result. This is a refutation of the
 all-stack predecessor count hypotheses used by the conditional rate-half
 reduction. It is not a Delta Star threshold closure.

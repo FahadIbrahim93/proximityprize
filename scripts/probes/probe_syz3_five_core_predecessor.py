@@ -1,5 +1,7 @@
 """Exact five-core obstruction for the two canonical rate-half fields.
 
+Author: Mikhail Izhutkin (@mashingaan)
+
 The production part checks the algebraic slot census and the two exact prime
 fields.  The finite part independently checks every MCA witness on a small
 smooth domain by direct Lagrange interpolation.  No floating arithmetic or
