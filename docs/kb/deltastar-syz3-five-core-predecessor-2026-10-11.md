@@ -51,6 +51,13 @@ Lagrange interpolation verifies all `310` witnesses and their distinct
 scalars, exceeding `2N` by `54`. The finite check is evidence for the
 construction and is not a transfer theorem.
 
-The construction is not yet a kernel-checked Lean theorem. No production
-claim should rely on it without a Lean bridge that instantiates the canonical
-`mcaEvent` definitions.
+The five-core construction itself remains an exact-arithmetic probe and is not
+yet a kernel-checked Lean theorem. Separately, the existing three-core SYZ3
+certificate now has an axiom-clean canonical consumer in
+`Research/ProximityPrize/Frontier/_SYZ3OverBudgetStackWitness.lean`:
+`firstPrime_predecessor_worstCaseIncidence_refuted` directly refutes the
+first-field `WorstCaseIncidenceBounded` premise at this predecessor, and
+`firstPrime_predecessor_mcaDeltaStar_le` sends the same witness through the
+canonical `mcaDeltaStar` ledger. These declarations do not formalize the
+five-core probe or transfer it to the second field, and they do not close the
+prize.

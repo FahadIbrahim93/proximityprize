@@ -22,11 +22,17 @@ predecessor count hypotheses used by the conditional rate-half reduction.
 The finite independent check at `N=128`, `K=64`, `P=1409` verifies all `310`
 constructed MCA witnesses and exceeds `2N` by `54`.
 
-The probe is exact integer and modular arithmetic only. It does not claim a
-kernel-checked bridge to `mcaEvent`, an exact Delta Star threshold, or prize
-closure. The five-core rate-half construction is separate from the existing
-rate-quarter five-core barrier, which has different dimension and agreement
-parameters.
+The five-core probe is exact integer and modular arithmetic only. It does not
+formalize that five-core construction, transfer it to the second field, or
+close the prize. Separately, the existing three-core SYZ3 certificate now has
+the axiom-clean declarations
+`firstPrime_predecessor_worstCaseIncidence_refuted` and
+`firstPrime_predecessor_mcaDeltaStar_le` in
+`Frontier/_SYZ3OverBudgetStackWitness.lean`. They directly connect the
+first-field predecessor no-go to the canonical incidence predicate and
+threshold ledger. The five-core rate-half construction remains separate from
+the existing rate-quarter five-core barrier, which has different dimension
+and agreement parameters.
 
 ## [466-G310-k2-interior-ceiling-prize-scale] A07 r=3 / k=2 interior-ceiling counts survive at a prize-scale Proth prime: the ceiling #bad is 40 and the below-ceiling monomial-pencil maximum is 9, q-independent at q ≈ 21·2^128 (2026-08-14)
 
