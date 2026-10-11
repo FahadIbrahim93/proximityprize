@@ -856,6 +856,7 @@ import Research.ProximityPrize.Frontier._BchksF5CharPAnomalyRungThree
 import Research.ProximityPrize.Frontier._BchksF5_CharPAnomalyExpZero
 import Research.ProximityPrize.Frontier._BchksF6_CrossingFoldMonotonicity
 import Research.ProximityPrize.Frontier._BchksF6_ExplicitDeltaStarLower
+import Research.ProximityPrize.Frontier._BchksPackingSponsorNoGo
 import Research.ProximityPrize.Frontier._BetaGatedRatioGate
 import Research.ProximityPrize.Frontier._BgkChainExponentAlgebra
 import Research.ProximityPrize.Frontier._BgkDepthExponentLawBootstrapNoGo
