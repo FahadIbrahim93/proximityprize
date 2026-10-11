@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: ArkLib Contributors (#444)
+Authors: ArkLib Contributors (#444), Mikhail Izhutkin (mashingaan, @mashingaan)
 -/
 import Research.ProximityPrize.Frontier._wf8B2_char0_logconcave
 import Research.ProximityPrize.Frontier._wf8B5_MomentProblemLogConvex
