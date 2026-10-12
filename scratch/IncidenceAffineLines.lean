@@ -161,12 +161,12 @@ theorem block_step_arithmetic (r ell s : ℕ) (hs : s ≤ ell) :
   have hs2 := Nat.mul_le_mul_left (s ^ 2) hsquare
   nlinarith
 
-def collinearTriples [DecidableEq I] (gamma : I -> F) (w : I -> V) (S : Finset I) : Finset (I × (I × I)) :=
+noncomputable def collinearTriples [DecidableEq I] (gamma : I -> F) (w : I -> V) (S : Finset I) : Finset (I × (I × I)) :=
   (S.product (S.product S)).filter (fun z =>
-    z.1 ≠ z.2.1 ∧ z.1 ≠ z.2.2 ∧ z.2.1 ≠ z.2.2 AND
+    z.1 ≠ z.2.1 ∧ z.1 ≠ z.2.2 ∧ z.2.1 ≠ z.2.2 ∧
       CollinearTriple gamma w z.1 z.2.1 z.2.2)
 
-def mixedTriples [DecidableEq I] (gamma : I -> F) (w : I -> V) (B R : Finset I) : Finset (I × (I × I)) :=
+noncomputable def mixedTriples [DecidableEq I] (gamma : I -> F) (w : I -> V) (B R : Finset I) : Finset (I × (I × I)) :=
   (B.product (R.product R)).filter (fun z =>
     z.2.1 ≠ z.2.2 ∧ CollinearTriple gamma w z.1 z.2.1 z.2.2)
 
@@ -187,13 +187,13 @@ theorem collinearTriples_block_step [DecidableEq I]
     (S : Finset I) (U D : V) :
     let B := S.filter (OnLine gamma w U D)
     let R := S \ B
-    (collinearTriples gamma w S).card LE
+    (collinearTriples gamma w S).card ≤
       B.card ^ 3 + 3 * R.card ^ 2 + (collinearTriples gamma w R).card := by
   classical
   let B := S.filter (OnLine gamma w U D)
   let R := S \ B
   let M := mixedTriples gamma w B R
-  change (collinearTriples gamma w S).card LE
+  change (collinearTriples gamma w S).card ≤
       B.card ^ 3 + 3 * R.card ^ 2 + (collinearTriples gamma w R).card
   have hmemB : ∀ a ∈ S, OnLine gamma w U D a ↔ a ∈ B := by
     intro a ha
@@ -209,7 +209,7 @@ theorem collinearTriples_block_step [DecidableEq I]
     obtain ⟨haS,haB⟩ := Finset.mem_sdiff.mp ha
     exact haB (Finset.mem_filter.mpr ⟨haS,hline⟩)
   have hcover : collinearTriples gamma w S ⊆
-      collinearTriples gamma w B ∪ (collinearTriples gamma w R UNION
+      collinearTriples gamma w B ∪ (collinearTriples gamma w R ∪
         (M ∪ (M.image swapAB ∪ M.image swapAC))) := by
     rintro ⟨a,b,c⟩ hz
     obtain ⟨hp,hab,hac,hbc,hcol⟩ := Finset.mem_filter.mp hz
