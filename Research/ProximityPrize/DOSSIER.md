@@ -2854,3 +2854,26 @@ or explicitly probe-only-flagged above. **CORE OPEN, ON-BGK. No fabricated
 closure.**
 
 <!-- END retained v3 dossier -->
+
+
+## Production incidence update (2026-10-12, PR #224)
+
+Mikhail Izhutkin (@mashingaan) proved the unconditional first-sponsor lower bound
+`190185818 / 2^30 <= mcaDeltaStar C epsStar` in
+`Frontier/_IncidenceAverageAnchor.lean`, theorem `firstPrime_average_anchor_floor`.
+Here `C` is the canonical `evalCode g (2^30) (2^29-1)` over the certified first
+sponsor prime. The canonical `WorstCaseIncidenceBounded` theorem
+`firstPrime_average_incidence` gives budget `2^30` at radius `190185817 / 2^30`.
+Neither theorem assumes BCHKS or the structural identification `hident`.
+
+This supersedes the older lower bound `178956971 / 2^30` cited above for this
+instance. It does not compute the exact threshold or close the prize.
+The upper bounds and predecessor-cap refutations in PR #222 remain separate
+results with their own evidence.
+
+Both declarations passed the full validator and the flagship axiom audit at
+commit `dbeb686e931ca5b5f3cf3c25c68a39806ce0fbb5`, with only `propext`,
+`Classical.choice`, and `Quot.sound`.
+Reproduce the exact arithmetic with
+`python scripts/probes/probe_incidence_average_anchor.py`.
+Hosted validation: https://github.com/SlopDotCash/proximityprize/actions/runs/38143973251.

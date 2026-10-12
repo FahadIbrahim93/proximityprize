@@ -1,6 +1,7 @@
-"""Candidate production average-anchor ledger.
+"""Exact production average-anchor ledger.
 Author: Mikhail Izhutkin (@mashingaan)
-No claim of a kernel-checked floor.
+The corresponding Lean floor passed CI at dbeb686e931ca5b5f3cf3c25c68a39806ce0fbb5.
+This probe checks arithmetic only, not the Lean proof.
 """
 import json
 from fractions import Fraction
@@ -24,6 +25,7 @@ print(json.dumps(dict(n=n,k=k,budget=budget,witness_count=count,
     coverage_lemma_slack=overlap_slack,root_bound_slack=n-k-(3*t-h),
     covered_witness_slack=budget-t,
     candidate_floor=str(Fraction(t+1,n)),
-    improvement_steps=t+1-178956972,
+    improvement_steps_over_main=t+1-178956971,
+    improvement_steps_over_previous_anchor=t+1-178956972,
     existing_lemma='ArkLib.Coverage.exists_pair_inter_gt',
-    evidence='exact numerical feasibility, pending incidence Lean bridge'),indent=2))
+    evidence='exact arithmetic, with separately kernel-checked incidence bridge'),indent=2))
