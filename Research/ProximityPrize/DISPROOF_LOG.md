@@ -54044,3 +54044,33 @@ and `scripts/lake-locked.sh build Research.ProximityPrize.Frontier._MCAGoodRadiu
 The four printed declarations use only `propext`, `Classical.choice`, and
 `Quot.sound`. The initial tracked build passed 3502 jobs. Full repository and
 hosted gates must be reported separately.
+
+---
+
+### [164-isolated-noncoset-residual-refuted] Five isolated roots beat the `k + 1` cap at `k = 3`
+
+Date: 2026-10-12. Target: `ProximityGap.Frontier.IsoSparsityMasonStothers.IsolatedNonCosetCountResidual`,
+declared in `Frontier/_IsoSparsityMasonStothers.lean`. This is a statement-level refutation of a
+named residual, not a production Delta Star counterexample.
+
+The declaration quantifies over all `A O : F[X]` with `natDegree < k` and every finite set `s` of
+roots of `A² − X·O²` with `O ≠ 0`, and asserts `s.card ≤ k + 1`. It has no `μ_{n/2}` membership
+condition and no sub-coset exclusion. Over `ℚ` with `k = 3`, `A = 15u² + 225u + 120` and
+`O = u² + 85u + 274` satisfy `A(t²) = t·O(t²)` for `t = 1, …, 5`, so `A² − X·O²` vanishes at
+`1, 4, 9, 16, 25`, all with `O ≠ 0`: five roots against the cap `4`. The theorem
+`not_isolatedNonCosetCountResidual_rat_three : ¬ IsolatedNonCosetCountResidual ℚ 3` records this.
+The coefficients come from the linear system `A(t²) = t·O(t²)` (six unknowns, five equations).
+
+Scope: this refutes the recorded statement only. The intended count of isolated, non-sub-coset
+roots in `μ_{n/2}`, and the Kelley / BGK general-position input over `F_q`, are not touched and
+remain open. It does not close #164.
+
+Reproduction at the final PR commit:
+
+```
+scripts/pg-iterate.sh Research/ProximityPrize/Frontier/_IsolatedNonCosetCountResidualRefuted.lean
+scripts/lake-locked.sh build Research.ProximityPrize.Frontier._IsolatedNonCosetCountResidualRefuted
+```
+
+Evidence class: Lean proof certificate; the declaration uses only `propext`,
+`Classical.choice` and `Quot.sound`.
