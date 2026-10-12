@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mikhail Izhutkin (mashingaan, @mashingaan)
 -/
 import Mathlib
+import ArkLib.Data.CodingTheory.ProximityGap.CoveragePigeonhole
 
 set_option autoImplicit false
 namespace ProximityGap.IncidenceTripleMass
@@ -53,6 +54,7 @@ theorem nat_cube_sum_le_card_sq_mul_sum_cube
     (∑ i, d i) ^ 3 ≤ (Fintype.card I) ^ 2 * ∑ i, (d i) ^ 3 := by
   have h := cube_sum_le_card_sq_mul_sum_cube
     (fun i => (d i : ℝ)) (fun i => Nat.cast_nonneg (d i))
+  dsimp only at h
   exact_mod_cast h
 
 theorem sum_card_triple_inter_eq_sum_degree_cube
@@ -86,7 +88,6 @@ theorem sum_card_triple_inter_eq_sum_degree_cube
       ∑ i, v i x := by
     intro x
     rw [Finset.card_filter]
-    rfl
   have hswap : (∑ i, ∑ j, ∑ k, ∑ x, f i j k x) =
       ∑ x, ∑ i, ∑ j, ∑ k, f i j k x := by
     calc
@@ -110,8 +111,58 @@ theorem sum_card_triple_inter_eq_sum_degree_cube
   simp only [← Finset.mul_sum, ← Finset.sum_mul]
   ring
 
+theorem triple_union_mass_bound
+    {I X : Type} [Fintype I] [Fintype X] [Nonempty X] [DecidableEq X]
+    (E : I → Finset X) (t : ℕ) (hE : ∀ i, (E i).card = t) :
+    (Fintype.card X) ^ 2 * (∑ i, ∑ j, ∑ k, (E i ∪ E j ∪ E k).card) +
+      (Fintype.card I * (Fintype.card X - t)) ^ 3 ≤
+        (Fintype.card X) ^ 3 * (Fintype.card I) ^ 3 := by
+  classical
+  let T : I → Finset X := fun i => (E i)ᶜ
+  have hT : ∀ i, (T i).card = Fintype.card X - t := by
+    intro i
+    simp only [T, Finset.card_compl, hE i]
+  have hsum : (∑ x : X, (Finset.univ.filter (fun i => x ∈ T i)).card) =
+      Fintype.card I * (Fintype.card X - t) := by
+    rw [← ArkLib.Coverage.sum_card_eq_sum_degree T]
+    simp only [hT, Finset.sum_const, Finset.card_univ, smul_eq_mul]
+  have hc := nat_cube_sum_le_card_sq_mul_sum_cube
+    (fun x : X => (Finset.univ.filter (fun i => x ∈ T i)).card)
+  rw [hsum, ← sum_card_triple_inter_eq_sum_degree_cube T] at hc
+  have hpoint : ∀ i j k, (T i ∩ T j ∩ T k).card +
+      (E i ∪ E j ∪ E k).card = Fintype.card X := by
+    intro i j k
+    have hcomp : (E i ∪ E j ∪ E k)ᶜ = T i ∩ T j ∩ T k := by
+      ext x
+      simp [T, not_or]
+    have hh := Finset.card_compl_add_card (E i ∪ E j ∪ E k)
+    rw [hcomp] at hh
+    exact hh
+  have hmass : (∑ i, ∑ j, ∑ k, (T i ∩ T j ∩ T k).card) +
+      (∑ i, ∑ j, ∑ k, (E i ∪ E j ∪ E k).card) =
+      Fintype.card X * (Fintype.card I) ^ 3 := by
+    calc
+      _ = ∑ i : I, ∑ j : I, ∑ k : I, Fintype.card X := by
+        simp_rw [← Finset.sum_add_distrib, hpoint]
+      _ = _ := by
+        simp only [Finset.sum_const, Finset.card_univ, smul_eq_mul]
+        ring
+  calc
+    _ ≤ (Fintype.card X) ^ 2 *
+        (∑ i, ∑ j, ∑ k, (E i ∪ E j ∪ E k).card) +
+      (Fintype.card X) ^ 2 *
+        (∑ i, ∑ j, ∑ k, (T i ∩ T j ∩ T k).card) :=
+      Nat.add_le_add_left hc _
+    _ = _ := by
+      rw [← Nat.mul_add, Nat.add_comm
+        (∑ i, ∑ j, ∑ k, (E i ∪ E j ∪ E k).card)
+        (∑ i, ∑ j, ∑ k, (T i ∩ T j ∩ T k).card), hmass]
+      ring
+
 end ProximityGap.IncidenceTripleMass
 #print axioms ProximityGap.IncidenceTripleMass.cube_sum_le_card_sq_mul_sum_cube
 
 #print axioms ProximityGap.IncidenceTripleMass.nat_cube_sum_le_card_sq_mul_sum_cube
 #print axioms ProximityGap.IncidenceTripleMass.sum_card_triple_inter_eq_sum_degree_cube
+
+#print axioms ProximityGap.IncidenceTripleMass.triple_union_mass_bound

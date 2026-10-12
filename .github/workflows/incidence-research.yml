@@ -21,6 +21,8 @@ jobs:
           use-mathlib-cache: false
       - name: Fetch dependency cache
         run: ./scripts/lake-locked.sh exe cache get
+      - name: Build existing coverage dependency
+        run: ./scripts/lake-locked.sh build ArkLib.Data.CodingTheory.ProximityGap.CoveragePigeonhole
       - name: Check research proof
         run: |
           set -o pipefail
@@ -34,7 +36,7 @@ jobs:
           assert 'sorryAx' not in s
           import re
           matches=re.findall(r'depends on axioms:\s*\[([^\]]*)\]',s)
-          assert len(matches)==3
+          assert len(matches)==4
           for names in matches:
               assert set(x.strip() for x in names.split(','))<= {'propext','Classical.choice','Quot.sound'}
           print('Research cube lemma axiom audit clean')
