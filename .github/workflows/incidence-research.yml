@@ -32,9 +32,10 @@ jobs:
           s=Path('scratch/axioms.log').read_text()
           assert 'depends on axioms:' in s
           assert 'sorryAx' not in s
-          tail=s.split('depends on axioms:',1)[1]
-          assert '[' in tail and ']' in tail
-          names=tail.split('[',1)[1].split(']',1)[0].replace('\n','').split(',')
-          assert set(x.strip() for x in names)<= {'propext','Classical.choice','Quot.sound'}
+          import re
+          matches=re.findall(r'depends on axioms:\s*\[([^\]]*)\]',s)
+          assert len(matches)==3
+          for names in matches:
+              assert set(x.strip() for x in names.split(','))<= {'propext','Classical.choice','Quot.sound'}
           print('Research cube lemma axiom audit clean')
           PY

@@ -27,8 +27,9 @@ theorem cube_sum_le_card_sq_mul_sum_cube
     rw [div_mul_cancel₀ _ (ne_of_gt hN)]
   have hterm : ∀ i, 3 * mean ^ 2 * d i - 2 * mean ^ 3 ≤ (d i) ^ 3 := by
     intro i
-    have hp := mul_nonneg (sq_nonneg (d i - mean))
-      (add_nonneg (hd i) (mul_nonneg (by norm_num) hm))
+    have hpos : 0 ≤ d i + 2 * mean :=
+      add_nonneg (hd i) (mul_nonneg (by norm_num : (0 : ℝ) ≤ 2) hm)
+    have hp := mul_nonneg (sq_nonneg (d i - mean)) hpos
     nlinarith
   have hmean : N * mean ^ 3 ≤ ∑ i, (d i) ^ 3 := by
     calc
@@ -47,5 +48,70 @@ theorem cube_sum_le_card_sq_mul_sum_cube
       ring
     _ ≤ _ := hmul
 
+theorem nat_cube_sum_le_card_sq_mul_sum_cube
+    {I : Type} [Fintype I] [Nonempty I] (d : I → ℕ) :
+    (∑ i, d i) ^ 3 ≤ (Fintype.card I) ^ 2 * ∑ i, (d i) ^ 3 := by
+  have h := cube_sum_le_card_sq_mul_sum_cube
+    (fun i => (d i : ℝ)) (fun i => Nat.cast_nonneg (d i))
+  exact_mod_cast h
+
+theorem sum_card_triple_inter_eq_sum_degree_cube
+    {I X : Type} [Fintype I] [Fintype X] [DecidableEq X]
+    (S : I → Finset X) :
+    (∑ i, ∑ j, ∑ k, (S i ∩ S j ∩ S k).card) =
+      ∑ x : X, (Finset.univ.filter (fun i => x ∈ S i)).card ^ 3 := by
+  classical
+  let v : I → X → ℕ := fun i x => if x ∈ S i then 1 else 0
+  let f : I → I → I → X → ℕ := fun i j k x => v i x * v j x * v k x
+  have hcard : ∀ i j k, (S i ∩ S j ∩ S k).card = ∑ x, f i j k x := by
+    intro i j k
+    calc
+      (S i ∩ S j ∩ S k).card =
+          (Finset.univ.filter (fun x => x ∈ S i ∩ S j ∩ S k)).card := by
+        congr 1
+        ext x
+        simp
+      _ = ∑ x, (if x ∈ S i ∩ S j ∩ S k then 1 else 0) := by
+        rw [Finset.card_filter]
+      _ = ∑ x, f i j k x := by
+        apply Finset.sum_congr rfl
+        intro x hx
+        dsimp [f, v]
+        by_cases hi : x ∈ S i
+        · by_cases hj : x ∈ S j
+          · simp [hi, hj]
+          · simp [hi, hj]
+        · simp [hi]
+  have hdeg : ∀ x : X, (Finset.univ.filter (fun i => x ∈ S i)).card =
+      ∑ i, v i x := by
+    intro x
+    rw [Finset.card_filter]
+    rfl
+  have hswap : (∑ i, ∑ j, ∑ k, ∑ x, f i j k x) =
+      ∑ x, ∑ i, ∑ j, ∑ k, f i j k x := by
+    calc
+      _ = ∑ i, ∑ j, ∑ x, ∑ k, f i j k x := by
+        apply Finset.sum_congr rfl
+        intro i hi
+        apply Finset.sum_congr rfl
+        intro j hj
+        exact Finset.sum_comm
+      _ = ∑ i, ∑ x, ∑ j, ∑ k, f i j k x := by
+        apply Finset.sum_congr rfl
+        intro i hi
+        exact Finset.sum_comm
+      _ = _ := Finset.sum_comm
+  simp_rw [hcard]
+  rw [hswap]
+  apply Finset.sum_congr rfl
+  intro x hx
+  rw [hdeg]
+  dsimp [f]
+  simp only [← Finset.mul_sum, ← Finset.sum_mul]
+  ring
+
 end ProximityGap.IncidenceTripleMass
 #print axioms ProximityGap.IncidenceTripleMass.cube_sum_le_card_sq_mul_sum_cube
+
+#print axioms ProximityGap.IncidenceTripleMass.nat_cube_sum_le_card_sq_mul_sum_cube
+#print axioms ProximityGap.IncidenceTripleMass.sum_card_triple_inter_eq_sum_degree_cube
