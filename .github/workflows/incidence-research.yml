@@ -1,0 +1,38 @@
+name: Incidence research kernel check
+on:
+  push:
+    branches: [research/incidence-triples]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  kernel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+      - uses: leanprover/lean-action@v1.6.0
+        with:
+          auto-config: false
+          build: false
+          test: false
+          lint: false
+          use-github-cache: false
+          use-mathlib-cache: false
+      - name: Fetch dependency cache
+        run: ./scripts/lake-locked.sh exe cache get
+      - name: Check research proof
+        run: lake env lean scratch/IncidenceTripleMass.lean | tee scratch/axioms.log
+      - name: Audit research axioms
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          s=Path('scratch/axioms.log').read_text()
+          assert 'depends on axioms:' in s
+          assert 'sorryAx' not in s
+          tail=s.split('depends on axioms:',1)[1]
+          assert '[' in tail and ']' in tail
+          names=tail.split('[',1)[1].split(']',1)[0].replace('\n','').split(',')
+          assert set(x.strip() for x in names)<= {'propext','Classical.choice','Quot.sound'}
+          print('Research cube lemma axiom audit clean')
+          PY
