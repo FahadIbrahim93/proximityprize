@@ -267,6 +267,113 @@ theorem collinearTriples_block_step [DecidableEq I]
   have hb := collinearTriples_card_le_cube gamma w B
   omega
 
+theorem exists_line_through_two
+    (gamma : I → F) (w : I → V) (hinj : Function.Injective gamma)
+    {a b : I} (hab : a ≠ b) :
+    ∃ U D : V, OnLine gamma w U D a ∧ OnLine gamma w U D b := by
+  have hgamma : gamma a - gamma b ≠ 0 :=
+    sub_ne_zero.mpr (fun h => hab (hinj h))
+  let D := (gamma a - gamma b)⁻¹ • (w a - w b)
+  let U := w a - gamma a • D
+  have hmul : (gamma a - gamma b) • D = w a - w b := by
+    dsimp [D]
+    rw [smul_smul,mul_inv_cancel₀ hgamma,one_smul]
+  refine ⟨U,D,?_,?_⟩
+  · change w a = (w a - gamma a • D) + gamma a • D
+    abel
+  · change w b = (w a - gamma a • D) + gamma b • D
+    calc
+      w b = w a - (w a - w b) := by abel
+      _ = w a - (gamma a - gamma b) • D := by rw [hmul]
+      _ = _ := by
+        rw [sub_smul]
+        abel
+
+theorem collinearTriples_card_le_of_line_cap [DecidableEq I]
+    (gamma : I -> F) (w : I -> V) (hinj : Function.Injective gamma)
+    (S : Finset I) (q : ℕ)
+    (hcap : ∀ U D, (S.filter (OnLine gamma w U D)).card ≤ q) :
+    (collinearTriples gamma w S).card ≤ S.card ^ 2 * q := by
+  classical
+  have hsum : (collinearTriples gamma w S).card =
+      ∑ a ∈ S, ∑ b ∈ S,
+        (S.filter (fun c => a ≠ b ∧ a ≠ c ∧ b ≠ c ∧ CollinearTriple gamma w a b c)).card := by
+    simp only [collinearTriples, Finset.product_eq_sprod, Finset.card_filter, Finset.sum_product]
+  have hrow : ∀ a b : I,
+      (S.filter (fun c => a ≠ b ∧ a ≠ c ∧ b ≠ c ∧ CollinearTriple gamma w a b c)).card ≤ q := by
+    intro a b
+    by_cases hab : a = b
+    · subst b
+      simp
+    · obtain ⟨U,D,ha,hb⟩ := exists_line_through_two gamma w hinj hab
+      apply le_trans (Finset.card_le_card ?_) (hcap U D)
+      intro c hc
+      obtain ⟨hcS,_,_,_,hcol⟩ := Finset.mem_filter.mp hc
+      exact Finset.mem_filter.mpr ⟨hcS,
+        collinear_triple_forces_onLine gamma w hinj hab ha hb hcol⟩
+  rw [hsum]
+  calc
+    _ ≤ ∑ a ∈ S, ∑ b ∈ S, q :=
+      Finset.sum_le_sum (fun a _ => Finset.sum_le_sum (fun b _ => hrow a b))
+    _ = _ := by
+      simp only [Finset.sum_const, smul_eq_mul]
+      ring
+
+theorem collinearTriples_card_budget [DecidableEq I]
+    (gamma : I -> F) (w : I -> V) (hinj : Function.Injective gamma)
+    (S : Finset I) (s b : ℕ) (hs : 2 ≤ s)
+    (hcap : ∀ U D, (S.filter (OnLine gamma w U D)).card ≤ b) :
+    s * (collinearTriples gamma w S).card ≤
+      s * S.card * b ^ 2 + 3 * S.card ^ 3 + s ^ 2 * S.card ^ 2 := by
+  classical
+  have hall : ∀ m : ℕ, ∀ T : Finset I, T.card = m ->
+      (∀ U D, (T.filter (OnLine gamma w U D)).card ≤ b) ->
+      s * (collinearTriples gamma w T).card ≤
+        s * T.card * b ^ 2 + 3 * T.card ^ 3 + s ^ 2 * T.card ^ 2 := by
+    intro m
+    induction m using Nat.strong_induction_on with
+    | h m ih =>
+      intro T hTm hcapT
+      by_cases hlarge : ∃ U D, s ≤ (T.filter (OnLine gamma w U D)).card
+      · obtain ⟨U,D,hline⟩ := hlarge
+        let B := T.filter (OnLine gamma w U D)
+        let R := T \ B
+        have hBsub : B ⊆ T := Finset.filter_subset _ _
+        have hpart : R.card + B.card = T.card := Finset.card_sdiff_add_card_eq_card hBsub
+        have hBsize : s ≤ B.card := hline
+        have hRlt : R.card < m := by omega
+        have hcapR : ∀ U' D', (R.filter (OnLine gamma w U' D')).card ≤ b := by
+          intro U' D'
+          apply le_trans (Finset.card_le_card ?_) (hcapT U' D')
+          intro a ha
+          obtain ⟨haR,haL⟩ := Finset.mem_filter.mp ha
+          exact Finset.mem_filter.mpr ⟨(Finset.mem_sdiff.mp haR).1,haL⟩
+        have hIR := ih R.card hRlt R rfl hcapR
+        have hstep := collinearTriples_block_step gamma w hinj T U D
+        change (collinearTriples gamma w T).card ≤
+          B.card ^ 3 + 3 * R.card ^ 2 + (collinearTriples gamma w R).card at hstep
+        have hBcap : B.card ≤ b := hcapT U D
+        have hcube : B.card ^ 3 ≤ B.card * b ^ 2 := by
+          have hh := Nat.mul_le_mul hBcap hBcap
+          have hh' := Nat.mul_le_mul_left B.card hh
+          nlinarith
+        have hstepS := Nat.mul_le_mul_left s hstep
+        have hcubeS := Nat.mul_le_mul_left s hcube
+        have hpoly := block_step_arithmetic R.card B.card s hBsize
+        rw [← hpart]
+        nlinarith [hstepS,hcubeS,hIR,hpoly]
+      · have hsmall : ∀ U D, (T.filter (OnLine gamma w U D)).card ≤ s := by
+          intro U D
+          have hnot : ¬ s ≤ (T.filter (OnLine gamma w U D)).card :=
+            fun h => hlarge ⟨U,D,h⟩
+          omega
+        have hc := collinearTriples_card_le_of_line_cap gamma w hinj T s hsmall
+        calc
+          _ ≤ s * (T.card ^ 2 * s) := Nat.mul_le_mul_left s hc
+          _ = s ^ 2 * T.card ^ 2 := by ring
+          _ ≤ _ := by omega
+  exact hall S.card S rfl hcap
+
 end ProximityGap.IncidenceAffineLines
 #print axioms ProximityGap.IncidenceAffineLines.params_eq_of_two
 #print axioms ProximityGap.IncidenceAffineLines.distinct_lines_intersect_at_most_one
@@ -284,3 +391,9 @@ end ProximityGap.IncidenceAffineLines
 #print axioms ProximityGap.IncidenceAffineLines.collinearTriples_card_le_cube
 
 #print axioms ProximityGap.IncidenceAffineLines.collinearTriples_block_step
+
+#print axioms ProximityGap.IncidenceAffineLines.exists_line_through_two
+
+#print axioms ProximityGap.IncidenceAffineLines.collinearTriples_card_le_of_line_cap
+
+#print axioms ProximityGap.IncidenceAffineLines.collinearTriples_card_budget
