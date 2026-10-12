@@ -22,7 +22,9 @@ jobs:
       - name: Fetch dependency cache
         run: ./scripts/lake-locked.sh exe cache get
       - name: Check research proof
-        run: lake env lean scratch/IncidenceTripleMass.lean | tee scratch/axioms.log
+        run: |
+          set -o pipefail
+          lake env lean scratch/IncidenceTripleMass.lean | tee scratch/axioms.log
       - name: Audit research axioms
         run: |
           python3 - <<'PY'
