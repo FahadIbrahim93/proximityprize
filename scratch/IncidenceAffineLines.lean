@@ -161,6 +161,112 @@ theorem block_step_arithmetic (r ell s : ℕ) (hs : s ≤ ell) :
   have hs2 := Nat.mul_le_mul_left (s ^ 2) hsquare
   nlinarith
 
+def collinearTriples [DecidableEq I] (gamma : I -> F) (w : I -> V) (S : Finset I) : Finset (I × (I × I)) :=
+  (S.product (S.product S)).filter (fun z =>
+    z.1 ≠ z.2.1 ∧ z.1 ≠ z.2.2 ∧ z.2.1 ≠ z.2.2 AND
+      CollinearTriple gamma w z.1 z.2.1 z.2.2)
+
+def mixedTriples [DecidableEq I] (gamma : I -> F) (w : I -> V) (B R : Finset I) : Finset (I × (I × I)) :=
+  (B.product (R.product R)).filter (fun z =>
+    z.2.1 ≠ z.2.2 ∧ CollinearTriple gamma w z.1 z.2.1 z.2.2)
+
+def swapAB (z : I × (I × I)) : I × (I × I) := (z.2.1,z.1,z.2.2)
+def swapAC (z : I × (I × I)) : I × (I × I) := (z.2.2,z.2.1,z.1)
+
+theorem collinearTriples_card_le_cube [DecidableEq I]
+    (gamma : I -> F) (w : I -> V) (S : Finset I) :
+    (collinearTriples gamma w S).card ≤ S.card ^ 3 := by
+  calc
+    _ ≤ (S.product (S.product S)).card := Finset.card_filter_le _ _
+    _ = _ := by
+      simp only [Finset.product_eq_sprod, Finset.card_product]
+      ring
+
+theorem collinearTriples_block_step [DecidableEq I]
+    (gamma : I -> F) (w : I -> V) (hinj : Function.Injective gamma)
+    (S : Finset I) (U D : V) :
+    let B := S.filter (OnLine gamma w U D)
+    let R := S \ B
+    (collinearTriples gamma w S).card LE
+      B.card ^ 3 + 3 * R.card ^ 2 + (collinearTriples gamma w R).card := by
+  classical
+  let B := S.filter (OnLine gamma w U D)
+  let R := S \ B
+  let M := mixedTriples gamma w B R
+  change (collinearTriples gamma w S).card LE
+      B.card ^ 3 + 3 * R.card ^ 2 + (collinearTriples gamma w R).card
+  have hmemB : ∀ a ∈ S, OnLine gamma w U D a ↔ a ∈ B := by
+    intro a ha
+    simp [B,ha]
+  have hmemR : ∀ a ∈ S, ¬ OnLine gamma w U D a ↔ a ∈ R := by
+    intro a ha
+    simp [R,B,ha]
+  have hB : ∀ a ∈ B, OnLine gamma w U D a := by
+    intro a ha
+    exact (Finset.mem_filter.mp ha).2
+  have hR : ∀ a ∈ R, ¬ OnLine gamma w U D a := by
+    intro a ha hline
+    obtain ⟨haS,haB⟩ := Finset.mem_sdiff.mp ha
+    exact haB (Finset.mem_filter.mpr ⟨haS,hline⟩)
+  have hcover : collinearTriples gamma w S ⊆
+      collinearTriples gamma w B ∪ (collinearTriples gamma w R UNION
+        (M ∪ (M.image swapAB ∪ M.image swapAC))) := by
+    rintro ⟨a,b,c⟩ hz
+    obtain ⟨hp,hab,hac,hbc,hcol⟩ := Finset.mem_filter.mp hz
+    have haS := (Finset.mem_product.mp hp).1
+    have hbS := (Finset.mem_product.mp (Finset.mem_product.mp hp).2).1
+    have hcS := (Finset.mem_product.mp (Finset.mem_product.mp hp).2).2
+    simp only [Finset.mem_union]
+    rcases triple_line_partition gamma w hinj U D hab hac hbc hcol with
+      ⟨ha,hb,hc⟩ | ⟨ha,hb,hc⟩ | ⟨ha,hb,hc⟩ | ⟨ha,hb,hc⟩ | ⟨ha,hb,hc⟩
+    · left
+      exact Finset.mem_filter.mpr ⟨Finset.mem_product.mpr
+        ⟨(hmemB a haS).mp ha,Finset.mem_product.mpr
+          ⟨(hmemB b hbS).mp hb,(hmemB c hcS).mp hc⟩⟩,hab,hac,hbc,hcol⟩
+    · right
+      left
+      exact Finset.mem_filter.mpr ⟨Finset.mem_product.mpr
+        ⟨(hmemR a haS).mp ha,Finset.mem_product.mpr
+          ⟨(hmemR b hbS).mp hb,(hmemR c hcS).mp hc⟩⟩,hab,hac,hbc,hcol⟩
+    · right
+      right
+      left
+      exact Finset.mem_filter.mpr ⟨Finset.mem_product.mpr
+        ⟨(hmemB a haS).mp ha,Finset.mem_product.mpr
+          ⟨(hmemR b hbS).mp hb,(hmemR c hcS).mp hc⟩⟩,hbc,hcol⟩
+    · right
+      right
+      right
+      left
+      apply Finset.mem_image.mpr
+      refine ⟨(b,a,c),?_,rfl⟩
+      obtain ⟨U',D',h1,h2,h3⟩ := hcol
+      exact Finset.mem_filter.mpr ⟨Finset.mem_product.mpr
+        ⟨(hmemB b hbS).mp hb,Finset.mem_product.mpr
+          ⟨(hmemR a haS).mp ha,(hmemR c hcS).mp hc⟩⟩,hac,⟨U',D',h2,h1,h3⟩⟩
+    · right
+      right
+      right
+      right
+      apply Finset.mem_image.mpr
+      refine ⟨(c,b,a),?_,rfl⟩
+      obtain ⟨U',D',h1,h2,h3⟩ := hcol
+      exact Finset.mem_filter.mpr ⟨Finset.mem_product.mpr
+        ⟨(hmemB c hcS).mp hc,Finset.mem_product.mpr
+          ⟨(hmemR b hbS).mp hb,(hmemR a haS).mp ha⟩⟩,hab.symm,⟨U',D',h3,h2,h1⟩⟩
+  have h0 := Finset.card_le_card hcover
+  have h1 := Finset.card_union_le (collinearTriples gamma w B)
+    (collinearTriples gamma w R ∪ (M ∪ (M.image swapAB ∪ M.image swapAC)))
+  have h2 := Finset.card_union_le (collinearTriples gamma w R)
+    (M ∪ (M.image swapAB ∪ M.image swapAC))
+  have h3 := Finset.card_union_le M (M.image swapAB ∪ M.image swapAC)
+  have h4 := Finset.card_union_le (M.image swapAB) (M.image swapAC)
+  have hi1 : (M.image swapAB).card ≤ M.card := Finset.card_image_le
+  have hi2 : (M.image swapAC).card ≤ M.card := Finset.card_image_le
+  have hm : M.card ≤ R.card ^ 2 := mixed_triples_card_le_sq gamma w hinj B R U D hB hR
+  have hb := collinearTriples_card_le_cube gamma w B
+  omega
+
 end ProximityGap.IncidenceAffineLines
 #print axioms ProximityGap.IncidenceAffineLines.params_eq_of_two
 #print axioms ProximityGap.IncidenceAffineLines.distinct_lines_intersect_at_most_one
@@ -174,3 +280,7 @@ end ProximityGap.IncidenceAffineLines
 #print axioms ProximityGap.IncidenceAffineLines.triple_line_partition
 
 #print axioms ProximityGap.IncidenceAffineLines.block_step_arithmetic
+
+#print axioms ProximityGap.IncidenceAffineLines.collinearTriples_card_le_cube
+
+#print axioms ProximityGap.IncidenceAffineLines.collinearTriples_block_step
