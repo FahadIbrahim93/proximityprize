@@ -374,6 +374,125 @@ theorem collinearTriples_card_budget [DecidableEq I]
           _ ≤ _ := by omega
   exact hall S.card S rfl hcap
 
+/- The private-coordinate argument adapts the covered-witness proof from
+IncidenceAverageAnchor and UniversalStaircaseCollapse by ArkLib Contributors. -/
+theorem exists_covered_witness
+    {X : Type} [Fintype X] [DecidableEq X]
+    (t : ℕ) (T : Fin (t + 2) -> Finset X)
+    (hcompl : ∀ i, (T i)ᶜ.card ≤ t) :
+    ∃ i, ∀ x ∈ T i, ∃ k, k ≠ i ∧ x ∈ T k := by
+  classical
+  by_contra hall
+  push Not at hall
+  choose xs hxsT hxsNot using hall
+  have hxinj : Function.Injective xs := by
+    intro a b hab
+    by_contra hne
+    have h1 := hxsT a
+    have h2 := hxsNot b a hne
+    rw [hab] at h1
+    exact h2 h1
+  let i0 : Fin (t + 2) := ⟨0,by omega⟩
+  have hsub : ((Finset.univ.erase i0).image xs) ⊆ (T i0)ᶜ := by
+    intro x hx
+    obtain ⟨k,hk,rfl⟩ := Finset.mem_image.mp hx
+    rw [Finset.mem_compl]
+    exact hxsNot k i0 (Finset.mem_erase.mp hk).1.symm
+  have hcard := Finset.card_le_card hsub
+  rw [Finset.card_image_of_injective _ hxinj,
+    Finset.card_erase_of_mem (Finset.mem_univ i0),Finset.card_univ,Fintype.card_fin] at hcard
+  have ht := hcompl i0
+  omega
+
+theorem affine_family_has_joint_witness
+    {X A : Type} [Fintype X] [DecidableEq X] [AddCommGroup A] [Module F A]
+    (t : ℕ) (gamma : Fin (t + 2) -> F) (hinj : Function.Injective gamma)
+    (T : Fin (t + 2) -> Finset X) (u0 u1 U D : X -> A)
+    (hcompl : ∀ i, (T i)ᶜ.card ≤ t)
+    (hag : ∀ i, ∀ x ∈ T i, u0 x + gamma i • u1 x = U x + gamma i • D x) :
+    ∃ i, ∀ x ∈ T i, u0 x = U x ∧ u1 x = D x := by
+  classical
+  have hpin : ∀ i k, i ≠ k -> ∀ x ∈ T i ∩ T k,
+      u0 x = U x ∧ u1 x = D x := by
+    intro i k hik x hx
+    obtain ⟨hxi,hxk⟩ := Finset.mem_inter.mp hx
+    have ei := hag i x hxi
+    have ek := hag k x hxk
+    have hn : gamma i - gamma k ≠ 0 := sub_ne_zero.mpr (fun h => hik (hinj h))
+    have hz : (gamma i - gamma k) • (u1 x - D x) = 0 := by
+      calc
+        _ = (u0 x + gamma i • u1 x - (U x + gamma i • D x)) -
+            (u0 x + gamma k • u1 x - (U x + gamma k • D x)) := by module
+        _ = 0 := by
+          rw [ei,ek]
+          abel
+    have hu1 : u1 x = D x := by
+      rcases smul_eq_zero.mp hz with h | h
+      · exact False.elim (hn h)
+      · exact sub_eq_zero.mp h
+    rw [hu1] at ei
+    exact ⟨add_right_cancel ei,hu1⟩
+  obtain ⟨i,hcov⟩ := exists_covered_witness t T hcompl
+  refine ⟨i,?_⟩
+  intro x hx
+  obtain ⟨k,hki,hxk⟩ := hcov x hx
+  exact hpin i k hki.symm x (Finset.mem_inter.mpr ⟨hx,hxk⟩)
+
+theorem bad_witness_line_cap
+    {X A : Type} [Fintype X] [DecidableEq X] [AddCommGroup A] [Module F A]
+    [DecidableEq I]
+    (t : ℕ) (gamma : I -> F) (w : I -> (X -> A))
+    (hinj : Function.Injective gamma) (S : Finset I) (C : Submodule F (X -> A))
+    (T : I -> Finset X) (u0 u1 : X -> A)
+    (hwC : ∀ i ∈ S, w i ∈ C)
+    (hcompl : ∀ i ∈ S, (T i)ᶜ.card ≤ t)
+    (hwag : ∀ i ∈ S, ∀ x ∈ T i, w i x = u0 x + gamma i • u1 x)
+    (hno : ∀ i ∈ S, ¬ ∃ f0 ∈ C, ∃ f1 ∈ C,
+      ∀ x ∈ T i, f0 x = u0 x ∧ f1 x = u1 x)
+    (U D : X -> A) : (S.filter (OnLine gamma w U D)).card ≤ t + 1 := by
+  classical
+  by_contra hgt
+  push Not at hgt
+  obtain ⟨B,hBsub,hBcard⟩ := Finset.exists_subset_card_eq
+    (s := S.filter (OnLine gamma w U D)) (n := t + 2) (by omega)
+  let ind : Fin (t + 2) -> I :=
+    fun j => (B.equivFin.symm (Fin.cast hBcard.symm j) : I)
+  have hind : Function.Injective ind := by
+    intro a b hab
+    have h1 := Subtype.val_injective hab
+    have h2 := B.equivFin.symm.injective h1
+    exact Fin.cast_injective _ h2
+  have hindB : ∀ j, ind j ∈ B := fun j =>
+    (B.equivFin.symm (Fin.cast hBcard.symm j)).2
+  have hindS : ∀ j, ind j ∈ S := fun j =>
+    (Finset.mem_filter.mp (hBsub (hindB j))).1
+  have hindLine : ∀ j, OnLine gamma w U D (ind j) := fun j =>
+    (Finset.mem_filter.mp (hBsub (hindB j))).2
+  let i0 : Fin (t + 2) := ⟨0,by omega⟩
+  let i1 : Fin (t + 2) := ⟨1,by omega⟩
+  have hi01 : i0 ≠ i1 := by
+    intro h
+    have hh := congrArg Fin.val h
+    change 0 = 1 at hh
+    omega
+  have hi : ind i0 ≠ ind i1 := fun h => hi01 (hind h)
+  obtain ⟨hUC,hDC⟩ := params_mem_code_of_two gamma w hinj C hi
+    (hindLine i0) (hindLine i1) (hwC _ (hindS i0)) (hwC _ (hindS i1))
+  have hag : ∀ j, ∀ x ∈ T (ind j),
+      u0 x + gamma (ind j) • u1 x = U x + gamma (ind j) • D x := by
+    intro j x hx
+    have he := congrFun (hindLine j) x
+    calc
+      _ = w (ind j) x := (hwag _ (hindS j) x hx).symm
+      _ = _ := by simpa only [Pi.add_apply,Pi.smul_apply] using he
+  obtain ⟨j,hjoint⟩ := affine_family_has_joint_witness t
+    (fun j => gamma (ind j)) (hinj.comp hind) (fun j => T (ind j)) u0 u1 U D
+    (fun j => hcompl _ (hindS j)) hag
+  apply hno (ind j) (hindS j)
+  refine ⟨U,hUC,D,hDC,?_⟩
+  intro x hx
+  exact ⟨(hjoint x hx).1.symm,(hjoint x hx).2.symm⟩
+
 end ProximityGap.IncidenceAffineLines
 #print axioms ProximityGap.IncidenceAffineLines.params_eq_of_two
 #print axioms ProximityGap.IncidenceAffineLines.distinct_lines_intersect_at_most_one
@@ -397,3 +516,9 @@ end ProximityGap.IncidenceAffineLines
 #print axioms ProximityGap.IncidenceAffineLines.collinearTriples_card_le_of_line_cap
 
 #print axioms ProximityGap.IncidenceAffineLines.collinearTriples_card_budget
+
+#print axioms ProximityGap.IncidenceAffineLines.exists_covered_witness
+
+#print axioms ProximityGap.IncidenceAffineLines.affine_family_has_joint_witness
+
+#print axioms ProximityGap.IncidenceAffineLines.bad_witness_line_cap
