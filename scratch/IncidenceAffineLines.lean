@@ -105,6 +105,62 @@ theorem mixed_triples_card_le_sq
     _ = R.card ^ 2 := by
       rw [Finset.product_eq_sprod, Finset.card_product, pow_two]
 
+theorem params_mem_code_of_two
+    (gamma : I → F) (w : I → V) (hinj : Function.Injective gamma)
+    (C : Submodule F V) {U D : V} {a b : I} (hab : a ≠ b)
+    (ha : OnLine gamma w U D a) (hb : OnLine gamma w U D b)
+    (hwa : w a ∈ C) (hwb : w b ∈ C) : U ∈ C ∧ D ∈ C := by
+  have hgamma : gamma a - gamma b ≠ 0 :=
+    sub_ne_zero.mpr (fun h => hab (hinj h))
+  have hdiff : w a - w b = (gamma a - gamma b) • D := by
+    rw [ha,hb,sub_smul]
+    abel
+  have hD : D = (gamma a - gamma b)⁻¹ • (w a - w b) := by
+    rw [hdiff,smul_smul,inv_mul_cancel₀ hgamma,one_smul]
+  have hDC : D ∈ C := by
+    rw [hD]
+    exact C.smul_mem _ (C.sub_mem hwa hwb)
+  have hU : U = w a - gamma a • D := by
+    rw [ha]
+    abel
+  refine ⟨?_,hDC⟩
+  rw [hU]
+  exact C.sub_mem hwa (C.smul_mem _ hDC)
+
+theorem triple_line_partition
+    (gamma : I → F) (w : I → V) (hinj : Function.Injective gamma)
+    (U D : V) {a b c : I} (hab : a ≠ b) (hac : a ≠ c) (hbc : b ≠ c)
+    (hcol : CollinearTriple gamma w a b c) :
+    (OnLine gamma w U D a ∧ OnLine gamma w U D b ∧ OnLine gamma w U D c) ∨
+    (¬ OnLine gamma w U D a ∧ ¬ OnLine gamma w U D b ∧ ¬ OnLine gamma w U D c) ∨
+    (OnLine gamma w U D a ∧ ¬ OnLine gamma w U D b ∧ ¬ OnLine gamma w U D c) ∨
+    (¬ OnLine gamma w U D a ∧ OnLine gamma w U D b ∧ ¬ OnLine gamma w U D c) ∨
+    (¬ OnLine gamma w U D a ∧ ¬ OnLine gamma w U D b ∧ OnLine gamma w U D c) := by
+  have hAB : OnLine gamma w U D a → OnLine gamma w U D b → OnLine gamma w U D c :=
+    fun ha hb => collinear_triple_forces_onLine gamma w hinj hab ha hb hcol
+  obtain ⟨U',D',ha',hb',hc'⟩ := hcol
+  have hAC : OnLine gamma w U D a → OnLine gamma w U D c → OnLine gamma w U D b :=
+    fun ha hc => collinear_triple_forces_onLine gamma w hinj hac ha hc ⟨U',D',ha',hc',hb'⟩
+  have hBC : OnLine gamma w U D b → OnLine gamma w U D c → OnLine gamma w U D a :=
+    fun hb hc => collinear_triple_forces_onLine gamma w hinj hbc hb hc ⟨U',D',hb',hc',ha'⟩
+  by_cases ha : OnLine gamma w U D a
+  all_goals by_cases hb : OnLine gamma w U D b
+  all_goals by_cases hc : OnLine gamma w U D c
+  all_goals aesop
+
+theorem block_step_arithmetic (r ell s : ℕ) (hs : s ≤ ell) :
+    3 * s * r ^ 2 + 3 * r ^ 3 + s ^ 2 * r ^ 2 ≤
+      3 * (r + ell) ^ 3 + s ^ 2 * (r + ell) ^ 2 := by
+  have hcube : r ^ 3 + s * r ^ 2 ≤ (r + ell) ^ 3 := by
+    have hmul := Nat.mul_le_mul_right (r ^ 2) hs
+    nlinarith [Nat.zero_le (ell ^ 3), Nat.zero_le (ell * r ^ 2),
+      Nat.zero_le (ell ^ 2 * r)]
+  have hsquare : r ^ 2 ≤ (r + ell) ^ 2 := by
+    nlinarith [Nat.zero_le (ell ^ 2), Nat.zero_le (r * ell)]
+  have hc3 := Nat.mul_le_mul_left 3 hcube
+  have hs2 := Nat.mul_le_mul_left (s ^ 2) hsquare
+  nlinarith
+
 end ProximityGap.IncidenceAffineLines
 #print axioms ProximityGap.IncidenceAffineLines.params_eq_of_two
 #print axioms ProximityGap.IncidenceAffineLines.distinct_lines_intersect_at_most_one
@@ -112,3 +168,9 @@ end ProximityGap.IncidenceAffineLines
 
 #print axioms ProximityGap.IncidenceAffineLines.mixed_completion_unique
 #print axioms ProximityGap.IncidenceAffineLines.mixed_triples_card_le_sq
+
+#print axioms ProximityGap.IncidenceAffineLines.params_mem_code_of_two
+
+#print axioms ProximityGap.IncidenceAffineLines.triple_line_partition
+
+#print axioms ProximityGap.IncidenceAffineLines.block_step_arithmetic
