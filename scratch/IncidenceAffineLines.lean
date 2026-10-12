@@ -96,12 +96,14 @@ theorem mixed_triples_card_le_sq
         have hyB := (Finset.mem_product.mp hyprod).1
         have hxR := (Finset.mem_product.mp
           (Finset.mem_product.mp hxprod).2).1
+        change x.2 = y.2 at hxy
         have hycol := hyc.2
         rw [← hxy] at hycol
         have haeq := mixed_completion_unique gamma w hinj hxc.1
           (hR _ hxR) (hB _ hxB) (hB _ hyB) hxc.2 hycol
         exact Prod.ext haeq hxy
-    _ = R.card ^ 2 := by rw [Finset.card_product, pow_two]
+    _ = R.card ^ 2 := by
+      rw [Finset.product_eq_sprod, Finset.card_product, pow_two]
 
 end ProximityGap.IncidenceAffineLines
 #print axioms ProximityGap.IncidenceAffineLines.params_eq_of_two
