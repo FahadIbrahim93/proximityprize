@@ -228,6 +228,29 @@ def constant_line_frontier():
                 evidence='arithmetic certificate only, constant-line Lean transfer checked separately')
 
 
+def refined_degeneracy_candidate():
+    """Arithmetic only, pair-union and refined mass transfer are not Lean checked."""
+    m, distance = N+1, K+1
+    def slack(t):
+        correction = 4*t*m*m+(distance-2*t)*m
+        return (N*N*distance*m**3+(m*(N-t))**3
+                -N**3*m**3-N*N*correction)
+    lo, hi = 0, K//2
+    while lo < hi:
+        mid = (lo+hi+1)//2
+        if slack(mid) > 0:
+            lo = mid
+        else:
+            hi = mid-1
+    assert slack(lo) > 0 and slack(lo+1) <= 0
+    assert 2*lo < distance and 7*lo < 3*distance
+    return dict(max_error=lo, candidate_floor=str(Fraction(lo+1,N)),
+                strict_slack=slack(lo), next_slack=slack(lo+1),
+                required_lemmas=['pair error union at least distance minus t',
+                                 'cube deficit at most 4*t*m^2+(distance-2*t)*m'],
+                evidence='conditional arithmetic candidate, no new canonical floor claimed')
+
+
 if __name__ == '__main__':
     moments = [moment_frontier(r) for r in range(3,7)]
     assert moments[0]['max_error'] == 210683555
@@ -237,4 +260,5 @@ if __name__ == '__main__':
                           finite=finite_interpolation(),moment_budgets=moments,
                           weighted_triples=weighted_frontier(),
                           exterior_line_triples=weighted_frontier(True),
-                          constant_line_triples=constant_line_frontier()),indent=2))
+                          constant_line_triples=constant_line_frontier(),
+                          refined_degeneracy_candidate=refined_degeneracy_candidate()),indent=2))
