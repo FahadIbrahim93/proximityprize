@@ -2957,3 +2957,12 @@ the axiom audit at `c05e7331ed525cc05ceec4b9402cabd36d4ee3d8`, using only
 Hosted check: https://github.com/mashingaan/proximityprize/actions/runs/38388307522.
 The exact probe and assumption map are recorded in `exact-current-bracket.md`.
 The two threshold bounds still do not match.
+
+### Canonical pair-union refinement
+
+IncidenceCanonicalConstant.firstPrime_constant_floor now proves
+221512374/1073741824 <= mcaDeltaStar for the exact first sponsor.
+The pair-union distance lemma and refined cube mass sum derive the improvement
+from existing canonical assumptions. Hosted focused run 38392632799 checks
+all 39 declarations with only the permitted logical axioms. The full-scale
+upper remains 178956971/536870912. This is not prize closure.

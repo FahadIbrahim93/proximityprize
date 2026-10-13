@@ -28,14 +28,14 @@ The frontier was read at these exact heads:
 
 The strongest axiom-clean finite bracket is
 
-`221512373/1073741824 ≤ mcaDeltaStar C epsStar ≤ 178956971/536870912`.
+`221512374/1073741824 ≤ mcaDeltaStar C epsStar ≤ 178956971/536870912`.
 
 The seven new modules passed the focused hosted kernel check and the audit of
-all 37 declarations at `c05e7331ed525cc05ceec4b9402cabd36d4ee3d8` in
-[run 38388307522](https://github.com/mashingaan/proximityprize/actions/runs/38388307522).
+all 39 declarations at `88a9ebb0e7a6f2f4e7aac4d0e1ba6c4705c4afb5` in
+[run 38392632799](https://github.com/mashingaan/proximityprize/actions/runs/38392632799).
 Only `propext`, `Classical.choice` and `Quot.sound` occur. The interval width is
-exactly `136401569/1073741824`. This improves the original triple floor by
-`10828817` Hamming steps and the intermediate exterior floor by `2752917` steps.
+exactly `136401568/1073741824`. This improves the original triple floor by
+`10828818` Hamming steps and the intermediate exterior floor by `2752918` steps.
 
 The previous axiom-clean lower bound from PR 224 was
 
@@ -311,3 +311,15 @@ optimization certificate satisfying all extracted assumptions.
 No refuted predecessor-cap, generic BGK estimate, or asymptotic Jeronimo
 conclusion is used. Literature work will be restricted to a specific missing
 finite structural lemma if this investigation identifies one.
+
+## Refined pair-union cube budget
+
+The strongest floor is now 221512374/1073741824. For each distinct pair,
+`bad_witness_pair_union_distance` derives D <= |Ea union Eb|+t from an outside
+canonical witness and code distance. `triple_mass_lower_of_pair_union` charges
+t to each nondiagonal degenerate triple and D to each diagonal triple.
+With line cap three this gives D*m^3 <= U3+4*t*m^2+D*m.
+The production theorem uses t=221512373 and the exact integer cube inequality.
+Both new geometry declarations and the canonical transfer passed the focused
+hosted Lean and axiom check in run 38392632799 at 88a9ebb0e.
+Earlier constant-budget values above document the predecessor proof.
