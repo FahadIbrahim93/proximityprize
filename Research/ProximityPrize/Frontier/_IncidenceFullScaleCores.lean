@@ -25,8 +25,9 @@ abbrev Coord := Fin n
 
 /-- Coordinate embedding of the common root set. -/
 def commonEmb : Fin commonSize ↪ Coord where
-  toFun a := ⟨a.val, by have ha := a.isLt
-                       omega⟩
+  toFun a := ⟨a.val, by
+    have ha := a.isLt
+    omega⟩
   inj' := by
     intro a b h
     apply Fin.ext
@@ -283,8 +284,9 @@ theorem uniq_v1 (j : Fin 3) : ∀ w ∈ (prodCode : Set (Coord → ZMod P)),
     (∀ i ∈ core j, w i = u1 i) → w = v1 j := by
   intro w hw ha
   exact rsCode_eq_of_agree_on_card_le (smoothDom g n orderOf_g)
-    (by rw [core_card]
-        norm_num : k ≤ (core j).card) hw (v1_mem j)
+    (by
+      rw [core_card]
+      norm_num : k ≤ (core j).card) hw (v1_mem j)
     (fun i hi => (ha i hi).trans (agree_v1 j i hi).symm)
 
 theorem support_card (j : Fin 3) (i : Coord) (hi : i ∉ core j) :
@@ -361,10 +363,12 @@ theorem coefficient_powers_injective {a b : ℕ}
     (h : (a : ZMod P) ^ n = (b : ZMod P) ^ n) : a = b := by
   let aa : Fin 5 := ⟨a-1,by omega⟩
   let bb : Fin 5 := ⟨b-1,by omega⟩
-  have haa : aa.val + 1 = a := by dsimp [aa]
-                               omega
-  have hbb : bb.val + 1 = b := by dsimp [bb]
-                               omega
+  have haa : aa.val + 1 = a := by
+    dsimp [aa]
+    omega
+  have hbb : bb.val + 1 = b := by
+    dsimp [bb]
+    omega
   have he : fastPow ((aa.val+1 : ℕ) : ZMod P) = fastPow ((bb.val+1 : ℕ) : ZMod P) := by
     rw [fastPow_eq,fastPow_eq,haa,hbb]
     exact h
