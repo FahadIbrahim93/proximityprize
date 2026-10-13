@@ -52,6 +52,8 @@ jobs:
         run: ./scripts/lake-locked.sh exe cache get
       - name: Build existing incidence dependency
         run: ./scripts/lake-locked.sh build Research.ProximityPrize.Frontier._IncidenceAverageAnchor
+      - name: Build cube moment dependency
+        run: ./scripts/lake-locked.sh build Research.ProximityPrize.Frontier._IncidenceTripleMass
       - name: Check research proof
         run: |
           set -o pipefail
