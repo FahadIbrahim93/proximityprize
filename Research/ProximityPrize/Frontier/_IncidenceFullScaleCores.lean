@@ -309,7 +309,9 @@ theorem support_threshold (j : Fin 3) (i : Coord) (hi : i ∉ core j) :
     (1 - (178956971 : ℝ≥0) / 536870912) * Fintype.card Coord ≤
       ((insert i (core j)).card : ℝ≥0) := by
   rw [support_card j i hi]
-  have hle : (178956971 : ℝ≥0) / 536870912 ≤ 1 := by norm_num
+  have hle : (178956971 : ℝ≥0) / 536870912 ≤ 1 := by
+    apply NNReal.coe_le_coe.mp
+    norm_num
   apply NNReal.coe_le_coe.mp
   rw [NNReal.coe_mul, NNReal.coe_sub hle]
   norm_num [Coord, n]
