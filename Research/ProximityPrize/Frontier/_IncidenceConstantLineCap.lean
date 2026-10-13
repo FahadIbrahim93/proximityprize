@@ -250,9 +250,10 @@ theorem triple_mass_lower_of_pair_union
   have hBsub : B ⊆ P := Finset.union_subset (Finset.filter_subset _ _)
     (Finset.filter_subset _ _)
   have hB : B.card ≤ (collinearTriples gamma w S).card+3*S.card^2 := by
-    have hr := repeated_triples_card_le S
+    have hr : R.card ≤ 3*S.card^2 := by
+      simpa only [R,P] using repeated_triples_card_le S
     have hu := Finset.card_union_le R (collinearTriples gamma w S)
-    dsimp [B,R] at *
+    dsimp only [B]
     omega
   have hJ : J.card ≤ S.card := by
     apply Finset.card_le_card_of_injOn (fun p : I × (I × I) => p.1)

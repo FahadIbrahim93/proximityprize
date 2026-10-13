@@ -32,7 +32,7 @@ theorem no_bad_witness_family_of_constant_budget
     (hbig : Fintype.card Coord ^ 2 * (d+1) * Fintype.card I ^ 3 +
         (Fintype.card I * (Fintype.card Coord-t)) ^ 3 >
       Fintype.card Coord ^ 3 * Fintype.card I ^ 3 +
-        4*(d+1)*Fintype.card Coord^2*Fintype.card I^2) : False := by
+        (4*t*Fintype.card I^2+(d+1)*Fintype.card I)*Fintype.card Coord^2) : False := by
   classical
   have hpad : ∀ i, ∃ E : Finset Coord, (T i)ᶜ ⊆ E ∧ E.card = t := by
     intro i
@@ -48,10 +48,18 @@ theorem no_bad_witness_family_of_constant_budget
       (fun i _ => hwag i) (fun i _ => hno i) U D
   have hcol := collinearTriples_card_le_square_of_line_cap_three
     gamma w hinj Finset.univ hcap
-  have hlow := triple_union_mass_lower gamma w Finset.univ (fun i => (T i)ᶜ) d
+  have hpair : ∀ a ∈ (Finset.univ : Finset I), ∀ b ∈ Finset.univ,
+      a ≠ b → d+1 ≤ ((T a)ᶜ ∪ (T b)ᶜ).card+t := by
+    intro a ha b hb hab
+    apply bad_witness_pair_union_distance gamma w hinj Finset.univ C d t
+      (by simpa using htI) hC T u0 u1
+      (fun i _ => hwC i) (fun i _ => hcompl i)
+      (fun i _ => hwag i) (fun i _ => hno i) ha hb hab
+  have hlow := triple_mass_lower_of_pair_union gamma w Finset.univ
+    (fun i => (T i)ᶜ) (d+1) t hpair
     (fun a _ b _ c _ hab _ _ hnc =>
-      error_union_gt_of_noncollinear gamma w hinj C d hC T u0 u1 hab
-        (hwC a) (hwC b) (hwC c) (hwag a) (hwag b) (hwag c) hnc)
+      Nat.succ_le_of_lt (error_union_gt_of_noncollinear gamma w hinj C d hC T u0 u1 hab
+        (hwC a) (hwC b) (hwC c) (hwag a) (hwag b) (hwag c) hnc))
   simp only [Finset.card_univ] at hcol hlow
   have hmono : (∑ a, ∑ b, ∑ c, (((T a)ᶜ ∪ (T b)ᶜ) ∪ (T c)ᶜ).card) ≤
       ∑ a, ∑ b, ∑ c, (E a ∪ E b ∪ E c).card := by
@@ -64,7 +72,7 @@ theorem no_bad_witness_family_of_constant_budget
     exact Finset.card_le_card
       (Finset.union_subset_union (Finset.union_subset_union (hTE a) (hTE b)) (hTE c))
   have hlowN := Nat.mul_le_mul_left (Fintype.card Coord^2) hlow
-  have hcolN := Nat.mul_le_mul_left (Fintype.card Coord^2*(d+1)) hcol
+  have hcolN := Nat.mul_le_mul_left (Fintype.card Coord^2*t) hcol
   have hmonoN := Nat.mul_le_mul_left (Fintype.card Coord^2) hmono
   have hupp := triple_union_mass_bound E t hEcard
   nlinarith [hlowN,hcolN,hmonoN,hupp,hbig]
@@ -81,7 +89,7 @@ theorem badScalars_card_le_of_constant_budget
     (htn : t ≤ Fintype.card Coord) (htj : t < j) (hC : NoWeightLE C d)
     (hbig : Fintype.card Coord^2*(d+1)*(j+1)^3+
         ((j+1)*(Fintype.card Coord-t))^3 >
-      Fintype.card Coord^3*(j+1)^3+4*(d+1)*Fintype.card Coord^2*(j+1)^2)
+      Fintype.card Coord^3*(j+1)^3+(4*t*(j+1)^2+(d+1)*(j+1))*Fintype.card Coord^2)
     {δ : ℝ≥0} (hδ : δ * (Fintype.card Coord : ℝ≥0) < t+1)
     (u0 u1 : Coord → A) :
     (Finset.univ.filter fun γ : F => mcaEvent (C : Set (Coord → A)) δ u0 u1 γ).card ≤ j := by
@@ -122,7 +130,7 @@ theorem firstPrime_constant_incidence :
     ProximityGap.OpenCoreConditionalPin.WorstCaseIncidenceBounded
       (F := ZMod sponsorP) (A := ZMod sponsorP)
       (ArkLib.ProximityGap.KKH26.evalCode sponsorG (2^30) (2^29-1))
-      ((221512372 : ℝ≥0)/(2^30 : ℝ≥0)) (2^30) := by
+      ((221512373 : ℝ≥0)/(2^30 : ℝ≥0)) (2^30) := by
   classical
   letI : NeZero (2^30 : ℕ) := ⟨by norm_num⟩
   let dom : Fin (2^30) ↪ ZMod sponsorP :=
@@ -134,7 +142,7 @@ theorem firstPrime_constant_incidence :
       (evalCode_eq_rsCode ArkLib.ProximityGap.PrizeShapePrimeP30.orderOf_g (2^29-1))
   intro u
   rw [hcode]
-  apply badScalars_card_le_of_constant_budget (j := 2^30) (d := 2^29) (t := 221512372)
+  apply badScalars_card_le_of_constant_budget (j := 2^30) (d := 2^29) (t := 221512373)
   · norm_num
   · norm_num
   · norm_num
@@ -147,7 +155,7 @@ open ArkLib.ProximityGap.Frontier.PrizeShapeRateHalfBracket
 
 /-- The constant-line budget gives an unconditional canonical first-sponsor floor. -/
 theorem firstPrime_constant_floor :
-    ((221512373 : ℝ≥0)/(2^30 : ℝ≥0)) ≤
+    ((221512374 : ℝ≥0)/(2^30 : ℝ≥0)) ≤
       mcaDeltaStar (F := ZMod sponsorP) (A := ZMod sponsorP)
         (ArkLib.ProximityGap.KKH26.evalCode sponsorG (2^30) (2^29-1))
         (ProximityGap.epsStar : ℝ≥0∞) := by
@@ -161,17 +169,17 @@ theorem firstPrime_constant_floor :
     rwa [epsStar_coe_eq_natCast_inv]
   have hgood : epsMCA (F := ZMod sponsorP) (A := ZMod sponsorP)
       (ArkLib.ProximityGap.KKH26.evalCode sponsorG (2^30) (2^29-1))
-      (predecessorRadius (2^30) 221512373) ≤ (ProximityGap.epsStar : ℝ≥0∞) := by
+      (predecessorRadius (2^30) 221512374) ≤ (ProximityGap.epsStar : ℝ≥0∞) := by
     have hc := ProximityGap.OpenCoreConditionalPin.epsMCA_le_of_worstCaseIncidence
       (ArkLib.ProximityGap.KKH26.evalCode sponsorG (2^30) (2^29-1))
-      ((221512372 : ℝ≥0)/(2^30 : ℝ≥0)) firstPrime_constant_incidence
+      ((221512373 : ℝ≥0)/(2^30 : ℝ≥0)) firstPrime_constant_incidence
     rw [ZMod.card] at hc
-    have hpred : predecessorRadius (2^30) 221512373 =
-        ((221512372 : ℝ≥0)/(2^30 : ℝ≥0)) := by norm_num [predecessorRadius]
+    have hpred : predecessorRadius (2^30) 221512374 =
+        ((221512373 : ℝ≥0)/(2^30 : ℝ≥0)) := by norm_num [predecessorRadius]
     rw [hpred]
     exact hc.trans hbudget
   have hfloor := latticeBoundary_le_mcaDeltaStar_of_predecessor_good
-    (F := ZMod sponsorP) (n := 2^30) (a := 221512373) (by norm_num) (by norm_num)
+    (F := ZMod sponsorP) (n := 2^30) (a := 221512374) (by norm_num) (by norm_num)
     (ArkLib.ProximityGap.KKH26.evalCode sponsorG (2^30) (2^29-1))
     (ProximityGap.epsStar : ℝ≥0∞) hgood
   convert hfloor using 1
