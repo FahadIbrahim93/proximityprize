@@ -8,6 +8,7 @@ import scratch.IncidenceAffineLines
 import Research.ProximityPrize.Frontier._IncidenceAverageAnchor
 
 set_option autoImplicit false
+attribute [local instance] Classical.propDecidable
 
 namespace ProximityGap.IncidenceCanonicalTriples
 
@@ -112,6 +113,7 @@ private instance sponsorPrime : Fact sponsorP.Prime :=
   ⟨ArkLib.ProximityGap.PrizeShapePrimeP30.prime_P⟩
 
 /-- Canonical first-sponsor incidence at the integer triple-mass boundary. -/
+set_option maxRecDepth 4096 in
 theorem firstPrime_triple_incidence :
     ProximityGap.OpenCoreConditionalPin.WorstCaseIncidenceBounded
       (F := ZMod sponsorP) (A := ZMod sponsorP)
