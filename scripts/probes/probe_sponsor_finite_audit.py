@@ -207,6 +207,27 @@ def weighted_frontier(exterior=False):
                 evidence='arithmetic certificate only, canonical Lean floor is audited separately')
 
 
+def constant_line_frontier():
+    m, distance = N+1, K+1
+    def slack(t):
+        return (N*N*distance*m**3+(m*(N-t))**3
+                -N**3*m**3-6*distance*N*N*m*m)
+    lo, hi = 0, K//2
+    while lo < hi:
+        mid = (lo+hi+1)//2
+        if slack(mid) > 0:
+            lo = mid
+        else:
+            hi = mid-1
+    assert slack(lo) > 0 and slack(lo+1) <= 0
+    assert 7*lo < 3*distance
+    return dict(max_error=lo,line_cap=3,
+                lattice_floor=str(Fraction(lo+1,N)),
+                improvement_steps_over_exterior=lo+1-218759456,
+                strict_slack=slack(lo),next_slack=slack(lo+1),
+                evidence='arithmetic certificate only, constant-line Lean transfer checked separately')
+
+
 if __name__ == '__main__':
     moments = [moment_frontier(r) for r in range(3,7)]
     assert moments[0]['max_error'] == 210683555
@@ -215,4 +236,5 @@ if __name__ == '__main__':
     print(json.dumps(dict(construction=construction_arithmetic(),
                           finite=finite_interpolation(),moment_budgets=moments,
                           weighted_triples=weighted_frontier(),
-                          exterior_line_triples=weighted_frontier(True)),indent=2))
+                          exterior_line_triples=weighted_frontier(True),
+                          constant_line_triples=constant_line_frontier()),indent=2))

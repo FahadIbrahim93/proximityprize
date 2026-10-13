@@ -1,0 +1,150 @@
+/-
+Copyright (c) 2026 Mikhail Izhutkin. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mikhail Izhutkin (mashingaan, @mashingaan)
+-/
+import Research.ProximityPrize.Frontier._IncidenceWeightedTriples
+
+set_option autoImplicit false
+attribute [local instance] Classical.propDecidable
+
+namespace ProximityGap.IncidenceConstantLineCap
+
+open ProximityGap.IncidenceAffineLines
+
+/-- Outside joint agreement, at most one head on a scalar-injective line agrees.
+The resulting incidence count charges the complement to the heads' errors. -/
+theorem line_agreement_mass
+    {F I Coord A : Type} [Field F] [DecidableEq I]
+    [Fintype Coord] [DecidableEq Coord] [AddCommGroup A] [Module F A]
+    (gamma : I → F) (w : I → (Coord → A)) (hinj : Function.Injective gamma)
+    (B : Finset I) (T : I → Finset Coord) (u0 u1 U D : Coord → A)
+    (hline : ∀ i ∈ B, OnLine gamma w U D i)
+    (hag : ∀ i ∈ B, ∀ x ∈ T i, w i x = u0 x + gamma i • u1 x) :
+    let Q := Finset.univ.filter (fun x => ¬ (u0 x = U x ∧ u1 x = D x))
+    B.card * Q.card ≤ Q.card + ∑ i ∈ B, (T i)ᶜ.card := by
+  classical
+  let Q := Finset.univ.filter (fun x => ¬ (u0 x = U x ∧ u1 x = D x))
+  change B.card * Q.card ≤ Q.card + ∑ i ∈ B, (T i)ᶜ.card
+  have hpin : ∀ i ∈ B, ∀ j ∈ B, i ≠ j → ∀ x ∈ T i ∩ T j,
+      u0 x = U x ∧ u1 x = D x := by
+    intro i hi j hj hij x hx
+    obtain ⟨hxi,hxj⟩ := Finset.mem_inter.mp hx
+    have ei := (hag i hi x hxi).symm.trans (congrFun (hline i hi) x)
+    have ej := (hag j hj x hxj).symm.trans (congrFun (hline j hj) x)
+    simp only [Pi.add_apply,Pi.smul_apply] at ei ej
+    have hn : gamma i - gamma j ≠ 0 := sub_ne_zero.mpr (fun h => hij (hinj h))
+    have hz : (gamma i - gamma j) • (u1 x - D x) = 0 := by
+      calc
+        _ = (u0 x + gamma i • u1 x - (U x + gamma i • D x)) -
+            (u0 x + gamma j • u1 x - (U x + gamma j • D x)) := by module
+        _ = 0 := by
+          rw [ei,ej]
+          abel
+    have hu1 : u1 x = D x := by
+      rcases smul_eq_zero.mp hz with h | h
+      · exact False.elim (hn h)
+      · exact sub_eq_zero.mp h
+    rw [hu1] at ei
+    exact ⟨add_right_cancel ei,hu1⟩
+  let privateSet := fun i => Q ∩ T i
+  have hdisj : (↑B : Set I).PairwiseDisjoint privateSet := by
+    intro i hi j hj hij
+    apply Finset.disjoint_left.mpr
+    intro x hxi hxj
+    have hxQ := (Finset.mem_inter.mp hxi).1
+    have hnot := (Finset.mem_filter.mp hxQ).2
+    exact hnot (hpin i hi j hj hij x
+      (Finset.mem_inter.mpr ⟨(Finset.mem_inter.mp hxi).2,(Finset.mem_inter.mp hxj).2⟩))
+  have hsum : (∑ i ∈ B, (privateSet i).card) ≤ Q.card := by
+    rw [← Finset.card_biUnion hdisj]
+    apply Finset.card_le_card
+    intro x hx
+    obtain ⟨i,_,hxi⟩ := Finset.mem_biUnion.mp hx
+    exact (Finset.mem_inter.mp hxi).1
+  have hpoint : ∀ i ∈ B, Q.card ≤ (privateSet i).card + (T i)ᶜ.card := by
+    intro i _
+    have hp := Finset.card_inter_add_card_sdiff Q (T i)
+    have he : (Q \ T i).card ≤ (T i)ᶜ.card := by
+      apply Finset.card_le_card
+      intro x hx
+      exact Finset.mem_compl.mpr (Finset.mem_sdiff.mp hx).2
+    dsimp [privateSet]
+    omega
+  have htot := Finset.sum_le_sum hpoint
+  simp only [Finset.sum_const,smul_eq_mul,Finset.sum_add_distrib] at htot
+  omega
+
+/-- At `7t < 3(d+1)`, an outside bad witness excludes four heads on any line. -/
+theorem bad_witness_line_cap_three
+    {F I Coord A : Type} [Field F] [DecidableEq I]
+    [Fintype Coord] [DecidableEq Coord] [AddCommGroup A] [Module F A]
+    (gamma : I → F) (w : I → (Coord → A)) (hinj : Function.Injective gamma)
+    (S : Finset I) (C : Submodule F (Coord → A)) (d t : ℕ)
+    (hsize : t+1 < S.card) (ht : 7*t < 3*(d+1))
+    (hC : ∀ z ∈ C, (∃ B : Finset Coord, B.card ≤ d ∧ ∀ x ∉ B, z x = 0) → z = 0)
+    (T : I → Finset Coord) (u0 u1 : Coord → A)
+    (hwC : ∀ i ∈ S, w i ∈ C)
+    (hcompl : ∀ i ∈ S, (T i)ᶜ.card ≤ t)
+    (hwag : ∀ i ∈ S, ∀ x ∈ T i, w i x = u0 x + gamma i • u1 x)
+    (hno : ∀ i ∈ S, ¬ ∃ f0 ∈ C, ∃ f1 ∈ C,
+      ∀ x ∈ T i, f0 x = u0 x ∧ f1 x = u1 x)
+    (U D : Coord → A) : (S.filter (OnLine gamma w U D)).card ≤ 3 := by
+  classical
+  let B := S.filter (OnLine gamma w U D)
+  change B.card ≤ 3
+  by_contra hn
+  have hlarge : 4 ≤ B.card := by omega
+  have hBsub : B ⊆ S := Finset.filter_subset _ _
+  obtain ⟨a,ha,b,hb,hab⟩ := Finset.one_lt_card.mp (by omega : 1 < B.card)
+  have haL := (Finset.mem_filter.mp ha).2
+  have hbL := (Finset.mem_filter.mp hb).2
+  obtain ⟨hUC,hDC⟩ := params_mem_code_of_two gamma w hinj C hab haL hbL
+    (hwC a (hBsub ha)) (hwC b (hBsub hb))
+  have hcap : B.card ≤ t+1 :=
+    bad_witness_line_cap t gamma w hinj S C T u0 u1 hwC hcompl hwag hno U D
+  have hout : ∃ c ∈ S, c ∉ B := by
+    by_contra h
+    push Not at h
+    have hc := Finset.card_le_card (show S ⊆ B from fun c hc => h c hc)
+    omega
+  obtain ⟨c,hc,hcB⟩ := hout
+  let Q := Finset.univ.filter (fun x => ¬ (u0 x = U x ∧ u1 x = D x))
+  have hdist : d+1 ≤ Q.card + t := by
+    let z := w c - (U + gamma c • D)
+    have hzC : z ∈ C := C.sub_mem (hwC c hc) (C.add_mem hUC (C.smul_mem _ hDC))
+    have hvan : ∀ x ∉ Q ∪ (T c)ᶜ, z x = 0 := by
+      intro x hx
+      have hxQ : x ∉ Q := fun h => hx (Finset.mem_union.mpr (Or.inl h))
+      have hxT : x ∈ T c := by
+        by_contra hnT
+        exact hx (Finset.mem_union.mpr (Or.inr (Finset.mem_compl.mpr hnT)))
+      have hj : u0 x = U x ∧ u1 x = D x := by simpa [Q] using hxQ
+      change w c x - (U x + gamma c • D x) = 0
+      rw [hwag c hc x hxT,hj.1,hj.2,sub_self]
+    have hbig : d < (Q ∪ (T c)ᶜ).card := by
+      by_contra h
+      have hz := hC z hzC ⟨Q ∪ (T c)ᶜ,by omega,hvan⟩
+      have he : OnLine gamma w U D c := sub_eq_zero.mp hz
+      exact hcB (Finset.mem_filter.mpr ⟨hc,he⟩)
+    have hu := Finset.card_union_le Q (T c)ᶜ
+    have hcT := hcompl c hc
+    omega
+  have hmass := line_agreement_mass gamma w hinj B T u0 u1 U D
+    (fun i hi => (Finset.mem_filter.mp hi).2) (fun i hi => hwag i (hBsub hi))
+  change B.card * Q.card ≤ Q.card + ∑ i ∈ B, (T i)ᶜ.card at hmass
+  have herr : (∑ i ∈ B, (T i)ᶜ.card) ≤ B.card * t := by
+    simpa only [Finset.sum_const,smul_eq_mul] using
+      Finset.sum_le_sum (fun i hi => hcompl i (hBsub hi))
+  have hqt : t ≤ Q.card := by omega
+  have hsplit := Nat.sub_add_cancel hqt
+  have hgap : B.card * (Q.card-t) ≤ (Q.card-t)+t := by
+    rw [← hsplit,Nat.mul_add] at hmass
+    omega
+  have hmul := Nat.mul_le_mul_right (Q.card-t) hlarge
+  omega
+
+end ProximityGap.IncidenceConstantLineCap
+
+#print axioms ProximityGap.IncidenceConstantLineCap.line_agreement_mass
+#print axioms ProximityGap.IncidenceConstantLineCap.bad_witness_line_cap_three
