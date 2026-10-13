@@ -44,7 +44,7 @@ def construction_arithmetic():
                 radius=str(radius), distinct_scalars=count,
                 strict_error_slack=count * Q - P,
                 coefficient_power_residues=residues,
-                evidence='exact arithmetic plus algebra, not a Lean upper bound')
+                evidence='arithmetic certificate only, Lean upper theorem is audited separately')
 
 
 def finite_interpolation():
@@ -204,7 +204,7 @@ def weighted_frontier(exterior=False):
                 improvement_steps=lo-210683555,
                 strict_slack=slack(lo),next_slack=slack(lo+1),
                 line_cap=min(lo+1,max(3*lo-K,0)+1) if exterior else lo+1,
-                evidence='canonical weighted-line derivation awaiting kernel validation')
+                evidence='arithmetic certificate only, canonical Lean floor is audited separately')
 
 
 if __name__ == '__main__':
