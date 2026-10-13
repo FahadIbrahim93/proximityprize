@@ -248,11 +248,14 @@ optimization certificate satisfying all extracted assumptions.
 | Bound or step | Assumptions | Evidence |
 | --- | --- | --- |
 | PR 224 floor `210683556/1073741824` | Exact sponsor code, canonical events, RS support distance | Axiom-clean Lean and full CI |
+| Weighted triple geometry | Canonical bad witnesses, linear code, pair-pinned agreement intersections | Seven axiom-clean Lean declarations in hosted run 38375209285 |
+| Exterior occupancy cap | The same assumptions, triple support distance, one witness outside each line | Two axiom-clean Lean declarations in hosted run 38375209285 |
+| Candidate floor 218759456/1073741824 | Exterior occupancy cap, weighted triple budget, exact cube moment and lattice transfer | Arithmetic passed, canonical Lean transfer pending |
 | Core sizes and locator degrees | Three finite coordinate embeddings and product degree bound | New Lean check pending |
 | Nonjointness | Core size at least dimension, RS interpolation uniqueness, off-core nonzero factors | New Lean check pending |
 | Scalar census | Exact generator order and five coefficient-power separations | Independent arithmetic, new Lean check pending |
 | Candidate ceiling `178956971/536870912` | All construction steps and strict normalized mass | Canonical Lean transfer pending |
-| Higher moment budgets | Line geometry, occupancy cap, support distance, exact repetitions, convexity | Reproducible research calculation pending hosted execution |
+| Higher moment budgets | Line geometry, occupancy cap, support distance, exact repetitions, convexity | Independent hosted integer audit passed, research derivation above order three |
 
 No refuted predecessor-cap, generic BGK estimate, or asymptotic Jeronimo
 conclusion is used. Literature work will be restricted to a specific missing

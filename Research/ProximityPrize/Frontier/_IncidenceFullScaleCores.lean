@@ -146,7 +146,7 @@ theorem z_eq_zero_iff (i : Coord) : z i = 0 ↔ i ∈ common := by
     exact ⟨⟨i.val,hc⟩,Finset.mem_univ _,rfl⟩
 
 noncomputable def prodCode : Submodule (ZMod sponsorP) (Coord → ZMod sponsorP) :=
-  rsCode (smoothDom g n orderOf_g) k
+  ProximityGap.SpikeFloor.rsCode (smoothDom g n orderOf_g) k
 
 noncomputable def xz (i : Coord) : ZMod sponsorP := z i * g ^ i.val
 noncomputable def u1 (i : Coord) : ZMod sponsorP := (height i : ZMod sponsorP) * z i
@@ -256,7 +256,7 @@ theorem mcaEvent_pencil (C : Submodule F (ι → F)) {δ : ℝ≥0}
 /-- SYZ2 Reed–Solomon interpolation uniqueness on any subset of at least `k` points. -/
 theorem rsCode_eq_of_agree_on_card_le {n : ℕ} [NeZero n]
     (dom : Fin n ↪ F) {k : ℕ} {S : Finset (Fin n)} (hk : k ≤ S.card)
-    {w w' : Fin n → F} (hw : w ∈ rsCode dom k) (hw' : w' ∈ rsCode dom k)
+    {w w' : Fin n → F} (hw : w ∈ ProximityGap.SpikeFloor.rsCode dom k) (hw' : w' ∈ ProximityGap.SpikeFloor.rsCode dom k)
     (hagree : ∀ i ∈ S, w i = w' i) : w = w' := by
   obtain ⟨p, hP, rfl⟩ := hw
   obtain ⟨Q, hQ, rfl⟩ := hw'
@@ -309,7 +309,9 @@ theorem support_threshold (j : Fin 3) (i : Coord) (hi : i ∉ core j) :
     (1 - (178956971 : ℝ≥0) / 536870912) * Fintype.card Coord ≤
       ((insert i (core j)).card : ℝ≥0) := by
   rw [support_card j i hi]
+  have hle : (178956971 : ℝ≥0) / 536870912 ≤ 1 := by norm_num
   apply NNReal.coe_le_coe.mp
+  rw [NNReal.coe_mul, NNReal.coe_sub hle]
   norm_num [Coord, n]
 
 noncomputable def scalar (j : Fin 3) (i : Coord) : ZMod sponsorP :=
@@ -461,7 +463,6 @@ theorem image_card (j : Fin 3) : (image j).card = 357913943 := by
     intro a ha b hb he
     exact (scalar_injective (Finset.mem_compl.mp ha) (Finset.mem_compl.mp hb) he).2
   rw [image,Finset.card_image_iff.mpr hinj,Finset.card_compl,core_card]
-  apply NNReal.coe_le_coe.mp
   norm_num [Coord, n]
 
 theorem images_disjoint {j j' : Fin 3} (hj : j ≠ j') : Disjoint (image j) (image j') := by
