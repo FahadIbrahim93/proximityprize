@@ -2934,3 +2934,26 @@ The instance pins, construction audit, orders 4 through 6, and theorem assumptio
 map are recorded in `exact-current-bracket.md`. The higher-order obstruction applies
 to the displayed conservative budget, not to all canonical witness assumptions.
 The bounds do not match and do not establish prize completion or sponsor equivalence.
+
+## Constant-line first-sponsor floor (2026-10-13, PR #224)
+
+The canonical lower bound is further strengthened to `221512373/1073741824`
+by `IncidenceCanonicalConstant.firstPrime_constant_floor` in
+`Frontier/_IncidenceCanonicalConstant.lean`. The full-scale ceiling is unchanged,
+giving exact interval width `136401569/1073741824`. The improvement over the
+original triple floor is 10828817 Hamming steps.
+
+`Frontier/_IncidenceConstantLineCap.lean` counts agreement outside a line's
+joint-agreement set. An outside witness and code distance force a line with
+four heads to satisfy `3(d+1)≤7t`. The literal production parameters violate
+that inequality, so every line has at most three heads. Each distinct ordered
+pair then has at most one distinct collinear completion. The resulting direct
+triple count eliminates the block-decomposition loss and yields the literal
+cube budget at `t=221512372`. No new production hypothesis is introduced.
+
+All 37 declarations in the seven new proof modules passed hosted Lean and
+the axiom audit at `c05e7331ed525cc05ceec4b9402cabd36d4ee3d8`, using only
+`propext`, `Classical.choice` and `Quot.sound`.
+Hosted check: https://github.com/mashingaan/proximityprize/actions/runs/38388307522.
+The exact probe and assumption map are recorded in `exact-current-bracket.md`.
+The two threshold bounds still do not match.

@@ -26,15 +26,16 @@ The frontier was read at these exact heads:
 
 ## Current bounds
 
-The new axiom-clean finite bracket is
+The strongest axiom-clean finite bracket is
 
-`218759456/1073741824 ≤ mcaDeltaStar C epsStar ≤ 178956971/536870912`.
+`221512373/1073741824 ≤ mcaDeltaStar C epsStar ≤ 178956971/536870912`.
 
-The five new modules passed the focused hosted kernel check and the audit of
-all 30 declarations at `43a90f43e90b7f4b4a1c0cb1ce28a1857b93f6f3` in
-[run 38377879493](https://github.com/mashingaan/proximityprize/actions/runs/38377879493).
+The seven new modules passed the focused hosted kernel check and the audit of
+all 37 declarations at `c05e7331ed525cc05ceec4b9402cabd36d4ee3d8` in
+[run 38388307522](https://github.com/mashingaan/proximityprize/actions/runs/38388307522).
 Only `propext`, `Classical.choice` and `Quot.sound` occur. The interval width is
-exactly `139154486/1073741824 = 69577243/536870912`.
+exactly `136401569/1073741824`. This improves the original triple floor by
+`10828817` Hamming steps and the intermediate exterior floor by `2752917` steps.
 
 The previous axiom-clean lower bound from PR 224 was
 
@@ -119,6 +120,42 @@ At the next error count the slack is
 The canonical transfer is `IncidenceCanonicalExterior.firstPrime_exterior_floor`,
 verified in hosted run 38377879493. This refinement adds no polynomial, cross-ratio,
 or rational-function assumption beyond the distance condition already extracted.
+
+## Constant-line continuation
+
+For a decoded affine line, let `Q` be the coordinates where its two code
+parameters do not jointly agree with the received rows. Two distinct heads
+agreeing at a coordinate force joint agreement there. Consequently, on `Q`
+at most one line head agrees. For a line of size `ell`, summing the error
+incidences gives `ell*|Q| ≤ |Q|+ell*t`.
+
+An outside witness exists because the canonical line cap is `t+1<m`.
+Its decoded codeword differs from the corresponding codeword on this line.
+Distance forces `d+1 ≤ |Q|+t`. If `ell≥4`, the two inequalities imply
+`3(d+1)≤7t`. Thus `7t<3(d+1)` forces every line to contain at most three heads.
+The entire argument uses the same canonical witnesses and code distance,
+without an extra RS hypothesis.
+
+With at most three heads per line, a distinct ordered pair admits at most one
+distinct collinear completion. Therefore there are at most `m^2` ordered
+distinct collinear triples. Repeated indices contribute at most `3m^2`.
+Writing `D=d+1` and `U3` for total triple error-union mass, distance gives
+
+`D*m^3 ≤ U3+4D*m^2`.
+
+The existing exact cube-moment upper bound then excludes a bad family when
+
+`n^2*D*m^3+(m*(n-t))^3 > n^3*m^3+4D*n^2*m^2`.
+
+For `n=1073741824`, `D=536870913`, `m=n+1`, the literal certified value is
+`t=221512372`. Its integer slack is
+`2672890434693656925165436850380352537464120000`.
+At the next error count the slack is
+`-24438696480905180379533610272069166174458125`.
+The independent hosted probe checks these values and `7t<3D`.
+The lattice transfer proves `IncidenceCanonicalConstant.firstPrime_constant_floor`
+at `221512373/1073741824`. The next integer fails this particular cube budget,
+not the full canonical assumptions.
 
 ## Construction audit
 
@@ -263,6 +300,8 @@ optimization certificate satisfying all extracted assumptions.
 | Weighted triple geometry | Canonical bad witnesses, linear code, pair-pinned agreement intersections | Seven axiom-clean Lean declarations in hosted run 38375209285 |
 | Exterior occupancy cap | The same assumptions, triple support distance, one witness outside each line | Two axiom-clean Lean declarations in hosted run 38375209285 |
 | Floor `218759456/1073741824` | Exterior occupancy cap, weighted triple budget, exact cube moment and lattice transfer | Independent arithmetic and canonical axiom-clean Lean in run 38377879493 |
+| Constant line occupancy | Pairwise scalar pin, joint-agreement complement count, outside witness and code distance, literal `7t<3(d+1)` | Axiom-clean Lean in run 38388307522 |
+| Floor `221512373/1073741824` | Constant line cap three, unique distinct collinear completion, cube moment and lattice transfer | Independent arithmetic and canonical axiom-clean Lean in run 38388307522 |
 | Core sizes and locator degrees | Three finite coordinate embeddings and product degree bound | Axiom-clean Lean in run 38377420247 |
 | Nonjointness | Core size at least dimension, RS interpolation uniqueness, off-core nonzero factors | Axiom-clean Lean in run 38377420247 |
 | Scalar census | Exact generator order and five coefficient-power separations | Independent arithmetic and axiom-clean Lean in run 38377420247 |
