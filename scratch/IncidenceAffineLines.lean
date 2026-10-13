@@ -493,6 +493,59 @@ theorem bad_witness_line_cap
   intro x hx
   exact ⟨(hjoint x hx).1.symm,(hjoint x hx).2.symm⟩
 
+/-- Three decoded heads are collinear when their error union is below the code distance.
+The support hypothesis is the unfolded `SpikeFloor.NoWeightLE` predicate. -/
+theorem collinear_of_error_union_le
+    {X A : Type} [Fintype X] [DecidableEq X] [AddCommGroup A] [Module F A]
+    (gamma : I → F) (w : I → (X → A)) (hinj : Function.Injective gamma)
+    (C : Submodule F (X → A)) (d : ℕ)
+    (hC : ∀ z ∈ C, (∃ B : Finset X, B.card ≤ d ∧ ∀ x ∉ B, z x = 0) → z = 0)
+    (T : I → Finset X) (u0 u1 : X → A)
+    {a b c : I} (hab : a ≠ b)
+    (haC : w a ∈ C) (hbC : w b ∈ C) (hcC : w c ∈ C)
+    (ha : ∀ x ∈ T a, w a x = u0 x + gamma a • u1 x)
+    (hb : ∀ x ∈ T b, w b x = u0 x + gamma b • u1 x)
+    (hc : ∀ x ∈ T c, w c x = u0 x + gamma c • u1 x)
+    (hunion : (((T a)ᶜ ∪ (T b)ᶜ) ∪ (T c)ᶜ).card ≤ d) :
+    CollinearTriple gamma w a b c := by
+  classical
+  obtain ⟨U,D,haL,hbL⟩ := exists_line_through_two gamma w hinj hab
+  obtain ⟨hUC,hDC⟩ := params_mem_code_of_two gamma w hinj C hab haL hbL haC hbC
+  have hz : w c - (U + gamma c • D) = 0 := by
+    apply hC _ (C.sub_mem hcC (C.add_mem hUC (C.smul_mem _ hDC)))
+    refine ⟨((T a)ᶜ ∪ (T b)ᶜ) ∪ (T c)ᶜ, hunion, ?_⟩
+    intro x hx
+    simp only [Finset.mem_union, Finset.mem_compl, not_or, not_not] at hx
+    obtain ⟨⟨hxa,hxb⟩,hxc⟩ := hx
+    have hea : u0 x + gamma a • u1 x = U x + gamma a • D x := by
+      rw [← ha x hxa]
+      exact congrFun haL x
+    have heb : u0 x + gamma b • u1 x = U x + gamma b • D x := by
+      rw [← hb x hxb]
+      exact congrFun hbL x
+    obtain ⟨hu0,hu1⟩ := params_eq_of_two (fun h => hab (hinj h)) hea heb
+    simp only [Pi.sub_apply, Pi.add_apply, Pi.smul_apply]
+    rw [hc x hxc,hu0,hu1,sub_self]
+  exact ⟨U,D,haL,hbL,sub_eq_zero.mp hz⟩
+
+/-- A noncollinear decoded triple has more errors in its union than the distance budget. -/
+theorem error_union_gt_of_noncollinear
+    {X A : Type} [Fintype X] [DecidableEq X] [AddCommGroup A] [Module F A]
+    (gamma : I → F) (w : I → (X → A)) (hinj : Function.Injective gamma)
+    (C : Submodule F (X → A)) (d : ℕ)
+    (hC : ∀ z ∈ C, (∃ B : Finset X, B.card ≤ d ∧ ∀ x ∉ B, z x = 0) → z = 0)
+    (T : I → Finset X) (u0 u1 : X → A)
+    {a b c : I} (hab : a ≠ b)
+    (haC : w a ∈ C) (hbC : w b ∈ C) (hcC : w c ∈ C)
+    (ha : ∀ x ∈ T a, w a x = u0 x + gamma a • u1 x)
+    (hb : ∀ x ∈ T b, w b x = u0 x + gamma b • u1 x)
+    (hc : ∀ x ∈ T c, w c x = u0 x + gamma c • u1 x)
+    (hnoncol : ¬ CollinearTriple gamma w a b c) :
+    d < (((T a)ᶜ ∪ (T b)ᶜ) ∪ (T c)ᶜ).card := by
+  by_contra h
+  exact hnoncol (collinear_of_error_union_le gamma w hinj C d hC T u0 u1 hab
+    haC hbC hcC ha hb hc (Nat.le_of_not_gt h))
+
 end ProximityGap.IncidenceAffineLines
 #print axioms ProximityGap.IncidenceAffineLines.params_eq_of_two
 #print axioms ProximityGap.IncidenceAffineLines.distinct_lines_intersect_at_most_one
@@ -522,3 +575,6 @@ end ProximityGap.IncidenceAffineLines
 #print axioms ProximityGap.IncidenceAffineLines.affine_family_has_joint_witness
 
 #print axioms ProximityGap.IncidenceAffineLines.bad_witness_line_cap
+
+#print axioms ProximityGap.IncidenceAffineLines.collinear_of_error_union_le
+#print axioms ProximityGap.IncidenceAffineLines.error_union_gt_of_noncollinear
