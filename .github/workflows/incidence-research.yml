@@ -11,6 +11,8 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v7
+      - name: Check exact triple budget arithmetic
+        run: python3 scripts/probes/probe_incidence_triple_budget.py
       - uses: leanprover/lean-action@v1.6.0
         with:
           auto-config: false

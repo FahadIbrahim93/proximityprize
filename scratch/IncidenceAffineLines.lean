@@ -566,17 +566,17 @@ theorem repeated_triples_card_le [DecidableEq I] (S : Finset I) :
       apply Finset.mem_union.mpr
       left
       exact Finset.mem_image.mpr ⟨(p.1,p.2.2),Finset.mem_product.mpr ⟨ha,hc⟩,
-        by simp only [hab]⟩
+        Prod.ext rfl (Prod.ext hab rfl)⟩
     · apply Finset.mem_union.mpr
       left
       apply Finset.mem_union.mpr
       right
       exact Finset.mem_image.mpr ⟨(p.1,p.2.1),Finset.mem_product.mpr ⟨ha,hb⟩,
-        by simp only [hac]⟩
+        Prod.ext rfl (Prod.ext rfl hac)⟩
     · apply Finset.mem_union.mpr
       right
       exact Finset.mem_image.mpr ⟨(p.1,p.2.1),Finset.mem_product.mpr ⟨ha,hb⟩,
-        by simp only [hbc]⟩
+        Prod.ext rfl (Prod.ext rfl hbc)⟩
   have hAB : AB.card ≤ S.card ^ 2 := by
     exact (Finset.card_image_le).trans (by simp [Finset.card_product,pow_two])
   have hAC : AC.card ≤ S.card ^ 2 := by
