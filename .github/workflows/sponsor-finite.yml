@@ -11,7 +11,16 @@ on:
 permissions:
   contents: read
 jobs:
+  arithmetic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Independent finite sponsor arithmetic
+        run: |
+          python3 scripts/probes/probe_incidence_full_scale_cores.py
+          python3 scripts/probes/probe_sponsor_finite_audit.py
   kernel:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: ${{ inputs.full_validation && 300 || 45 }}
     env:
@@ -19,7 +28,9 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Check exact triple budget arithmetic
-        run: python3 scripts/probes/probe_incidence_full_scale_cores.py
+        run: |
+          python3 scripts/probes/probe_incidence_full_scale_cores.py
+          python3 scripts/probes/probe_sponsor_finite_audit.py
       - uses: leanprover/lean-action@v1.6.0
         with:
           auto-config: false
@@ -54,7 +65,7 @@ jobs:
           assert 'sorryAx' not in s
           import re
           matches=re.findall(r'depends on axioms:\s*\[([^\]]*)\]',s)
-          assert len(matches)==6
+          assert len(matches)==12
           for names in matches:
               assert set(x.strip() for x in names.split(','))<= {'propext','Classical.choice','Quot.sound'}
           print('Full-scale common-factor axiom audit clean')
