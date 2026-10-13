@@ -26,8 +26,9 @@ jobs:
       - name: Check research proof
         run: |
           set -o pipefail
-          lake env lean scratch/IncidenceTripleMass.lean | tee scratch/axioms.log
-          lake env lean scratch/IncidenceAffineLines.lean | tee -a scratch/axioms.log
+          lake env lean -o scratch/IncidenceTripleMass.olean scratch/IncidenceTripleMass.lean | tee scratch/axioms.log
+          lake env lean -o scratch/IncidenceAffineLines.olean scratch/IncidenceAffineLines.lean | tee -a scratch/axioms.log
+          LEAN_PATH="$PWD:${LEAN_PATH:-}" lake env lean scratch/IncidenceCanonicalTriples.lean | tee -a scratch/axioms.log
       - name: Audit research axioms
         run: |
           python3 - <<'PY'
@@ -37,7 +38,7 @@ jobs:
           assert 'sorryAx' not in s
           import re
           matches=re.findall(r'depends on axioms:\s*\[([^\]]*)\]',s)
-          assert len(matches)==25
+          assert len(matches)==26
           for names in matches:
               assert set(x.strip() for x in names.split(','))<= {'propext','Classical.choice','Quot.sound'}
           print('Research cube lemma axiom audit clean')
