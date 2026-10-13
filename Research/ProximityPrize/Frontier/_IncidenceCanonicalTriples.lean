@@ -3,8 +3,8 @@ Copyright (c) 2026 Mikhail Izhutkin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mikhail Izhutkin (mashingaan, @mashingaan)
 -/
-import scratch.IncidenceTripleMass
-import scratch.IncidenceAffineLines
+import Research.ProximityPrize.Frontier._IncidenceTripleMass
+import Research.ProximityPrize.Frontier._IncidenceAffineLines
 import Research.ProximityPrize.Frontier._IncidenceAverageAnchor
 
 set_option autoImplicit false
@@ -112,8 +112,8 @@ private abbrev sponsorG := ArkLib.ProximityGap.PrizeShapePrimeP30.g
 private instance sponsorPrime : Fact sponsorP.Prime :=
   ⟨ArkLib.ProximityGap.PrizeShapePrimeP30.prime_P⟩
 
-/-- Canonical first-sponsor incidence at the integer triple-mass boundary. -/
 set_option maxRecDepth 4096 in
+/-- Canonical first-sponsor incidence at the integer triple-mass boundary. -/
 theorem firstPrime_triple_incidence :
     ProximityGap.OpenCoreConditionalPin.WorstCaseIncidenceBounded
       (F := ZMod sponsorP) (A := ZMod sponsorP)

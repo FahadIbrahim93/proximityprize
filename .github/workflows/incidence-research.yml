@@ -3,6 +3,11 @@ on:
   push:
     branches: [research/incidence-triples]
   workflow_dispatch:
+    inputs:
+      full_validation:
+        description: Run the full repository validator after the focused proof check
+        type: boolean
+        default: false
 permissions:
   contents: read
 jobs:
@@ -26,10 +31,10 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: .lake
-          key: incidence-dependencies-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json', 'lakefile.lean', 'lakefile.toml', 'ArkLib/**/*.lean', 'Research/ProximityPrize/**/*.lean', 'scripts/lake-locked.sh') }}
+          key: incidence-dependencies-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json', 'lakefile.lean', 'lakefile.toml', 'ArkLib/**/*.lean', 'Research/ProximityPrize/**/*.lean', 'scripts/lake-locked.sh', '!Research/ProximityPrize/Frontier/_IncidenceTripleMass.lean', '!Research/ProximityPrize/Frontier/_IncidenceAffineLines.lean', '!Research/ProximityPrize/Frontier/_IncidenceCanonicalTriples.lean') }}
       - name: Fetch dependency cache
         run: ./scripts/lake-locked.sh exe cache get
-      - name: Build existing coverage dependency
+      - name: Build existing incidence dependency
         run: ./scripts/lake-locked.sh build Research.ProximityPrize.Frontier._IncidenceAverageAnchor
       - name: Save checked dependency build
         if: steps.dependencies.outputs.cache-hit != 'true'
@@ -40,14 +45,15 @@ jobs:
       - name: Check research proof
         run: |
           set -o pipefail
-          lake env lean -o scratch/IncidenceTripleMass.olean scratch/IncidenceTripleMass.lean | tee scratch/axioms.log
-          lake env lean -o scratch/IncidenceAffineLines.olean scratch/IncidenceAffineLines.lean | tee -a scratch/axioms.log
-          LEAN_PATH="$PWD:${LEAN_PATH:-}" lake env lean scratch/IncidenceCanonicalTriples.lean | tee -a scratch/axioms.log
+          ./scripts/lake-locked.sh build Research.ProximityPrize.Frontier._IncidenceTripleMass Research.ProximityPrize.Frontier._IncidenceAffineLines
+          lake env lean Research/ProximityPrize/Frontier/_IncidenceTripleMass.lean | tee incidence-axioms.log
+          lake env lean Research/ProximityPrize/Frontier/_IncidenceAffineLines.lean | tee -a incidence-axioms.log
+          lake env lean Research/ProximityPrize/Frontier/_IncidenceCanonicalTriples.lean | tee -a incidence-axioms.log
       - name: Audit research axioms
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          s=Path('scratch/axioms.log').read_text()
+          s=Path('incidence-axioms.log').read_text()
           assert 'depends on axioms:' in s
           assert 'sorryAx' not in s
           import re
@@ -57,3 +63,6 @@ jobs:
               assert set(x.strip() for x in names.split(','))<= {'propext','Classical.choice','Quot.sound'}
           print('Research cube lemma axiom audit clean')
           PY
+      - name: Full repository validation
+        if: github.event_name == 'workflow_dispatch' && inputs.full_validation
+        run: ./scripts/validate.sh
