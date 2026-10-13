@@ -13,7 +13,7 @@ permissions:
 jobs:
   kernel:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: ${{ inputs.full_validation && 300 || 45 }}
     steps:
       - uses: actions/checkout@v7
       - name: Check exact triple budget arithmetic
@@ -64,6 +64,13 @@ jobs:
               assert set(x.strip() for x in names.split(','))<= {'propext','Classical.choice','Quot.sound'}
           print('Research cube lemma axiom audit clean')
           PY
+      - uses: actions/setup-python@v7
+        if: github.event_name == 'workflow_dispatch' && inputs.full_validation
+        with:
+          python-version: "3.12"
+      - name: Install Python validation dependencies
+        if: github.event_name == 'workflow_dispatch' && inputs.full_validation
+        run: python3 -m pip install -r scripts/requirements-validation.txt
       - name: Full repository validation
         if: github.event_name == 'workflow_dispatch' && inputs.full_validation
         run: ./scripts/validate.sh
