@@ -144,6 +144,45 @@ theorem bad_witness_line_cap_three
   have hmul := Nat.mul_le_mul_right (Q.card-t) hlarge
   omega
 
+/-- Every distinct pair of canonical bad witnesses has a large error union.
+An outside witness turns the pair into a noncollinear distance certificate. -/
+theorem bad_witness_pair_union_distance
+    {F I Coord A : Type} [Field F] [DecidableEq I]
+    [Fintype Coord] [DecidableEq Coord] [AddCommGroup A] [Module F A]
+    (gamma : I → F) (w : I → (Coord → A)) (hinj : Function.Injective gamma)
+    (S : Finset I) (C : Submodule F (Coord → A)) (d t : ℕ)
+    (hsize : t+1 < S.card)
+    (hC : ∀ z ∈ C, (∃ B : Finset Coord, B.card ≤ d ∧ ∀ x ∉ B, z x = 0) → z = 0)
+    (T : I → Finset Coord) (u0 u1 : Coord → A)
+    (hwC : ∀ i ∈ S, w i ∈ C)
+    (hcompl : ∀ i ∈ S, (T i)ᶜ.card ≤ t)
+    (hwag : ∀ i ∈ S, ∀ x ∈ T i, w i x = u0 x + gamma i • u1 x)
+    (hno : ∀ i ∈ S, ¬ ∃ f0 ∈ C, ∃ f1 ∈ C,
+      ∀ x ∈ T i, f0 x = u0 x ∧ f1 x = u1 x)
+    {a b : I} (ha : a ∈ S) (hb : b ∈ S) (hab : a ≠ b) :
+    d+1 ≤ ((T a)ᶜ ∪ (T b)ᶜ).card + t := by
+  classical
+  obtain ⟨U,D,haL,hbL⟩ := exists_line_through_two gamma w hinj hab
+  let B := S.filter (OnLine gamma w U D)
+  have hcap : B.card ≤ t+1 :=
+    bad_witness_line_cap t gamma w hinj S C T u0 u1 hwC hcompl hwag hno U D
+  have hout : ∃ c ∈ S, c ∉ B := by
+    by_contra h
+    push Not at h
+    have hc := Finset.card_le_card (show S ⊆ B from fun c hc => h c hc)
+    omega
+  obtain ⟨c,hc,hcB⟩ := hout
+  have hnc : ¬ CollinearTriple gamma w a b c := by
+    intro h
+    exact hcB (Finset.mem_filter.mpr
+      ⟨hc,collinear_triple_forces_onLine gamma w hinj hab haL hbL h⟩)
+  have hdist := error_union_gt_of_noncollinear gamma w hinj C d hC T u0 u1 hab
+    (hwC a ha) (hwC b hb) (hwC c hc)
+    (hwag a ha) (hwag b hb) (hwag c hc) hnc
+  have hu := Finset.card_union_le ((T a)ᶜ ∪ (T b)ᶜ) (T c)ᶜ
+  have he := hcompl c hc
+  omega
+
 /-- With at most three heads on a line, an ordered distinct pair has at most
 one collinear completion in the family. -/
 theorem collinearTriples_card_le_square_of_line_cap_three
@@ -194,5 +233,6 @@ theorem collinearTriples_card_le_square_of_line_cap_three
 end ProximityGap.IncidenceConstantLineCap
 
 #print axioms ProximityGap.IncidenceConstantLineCap.line_agreement_mass
+#print axioms ProximityGap.IncidenceConstantLineCap.bad_witness_pair_union_distance
 #print axioms ProximityGap.IncidenceConstantLineCap.bad_witness_line_cap_three
 #print axioms ProximityGap.IncidenceConstantLineCap.collinearTriples_card_le_square_of_line_cap_three
