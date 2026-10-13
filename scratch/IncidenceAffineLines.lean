@@ -637,7 +637,9 @@ theorem triple_union_mass_lower [DecidableEq I]
     rw [hf,Finset.sum_const,smul_eq_mul]
   simp only [Finset.sum_add_distrib] at hsum
   rw [hind] at hsum
-  have hPcard : P.card = S.card ^ 3 := by simp [P,Finset.card_product,pow_succ,pow_two]
+  have hPcard : P.card = S.card ^ 3 := by
+    simp only [P,Finset.card_product]
+    ring
   simp only [Finset.sum_const,smul_eq_mul,hPcard] at hsum
   have hmass : (∑ p ∈ P, (E p.1 ∪ E p.2.1 ∪ E p.2.2).card) =
       ∑ a ∈ S, ∑ b ∈ S, ∑ c ∈ S, (E a ∪ E b ∪ E c).card := by

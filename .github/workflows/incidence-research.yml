@@ -21,10 +21,22 @@ jobs:
           lint: false
           use-github-cache: false
           use-mathlib-cache: false
+      - name: Restore checked dependency build
+        id: dependencies
+        uses: actions/cache/restore@v4
+        with:
+          path: .lake
+          key: incidence-dependencies-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json', 'lakefile.lean', 'lakefile.toml', 'ArkLib/**/*.lean', 'Research/ProximityPrize/**/*.lean', 'scripts/lake-locked.sh') }}
       - name: Fetch dependency cache
         run: ./scripts/lake-locked.sh exe cache get
       - name: Build existing coverage dependency
         run: ./scripts/lake-locked.sh build Research.ProximityPrize.Frontier._IncidenceAverageAnchor
+      - name: Save checked dependency build
+        if: steps.dependencies.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: .lake
+          key: ${{ steps.dependencies.outputs.cache-primary-key }}
       - name: Check research proof
         run: |
           set -o pipefail
