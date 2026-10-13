@@ -2903,3 +2903,34 @@ All 29 declarations in the three incidence modules passed the focused
 kernel check and axiom audit at commit `210cb1781b952fd652b708cc091ec92d5dea5ed5`,
 using only `propext`, `Classical.choice`, and `Quot.sound`.
 Hosted proof check: https://github.com/mashingaan/proximityprize/actions/runs/38358631172.
+
+## Explicit finite first-sponsor bracket (2026-10-13, PR #224)
+
+Mikhail Izhutkin (@mashingaan) sharpened the same canonical first-sponsor bracket to
+`218759456/1073741824 <= mcaDeltaStar C epsStar <= 178956971/536870912`.
+The lower bound adds 8075900 Hamming steps to the preceding triple-incidence floor.
+The remaining interval has exact width `139154486/1073741824`.
+
+`Frontier/_IncidenceFullScaleCores.lean` formalizes the full-scale common-factor
+construction from PR #222. Its three cores have size 715827881, each witness has
+715827882 agreement coordinates, and the construction supplies exactly `n+5`
+distinct canonical bad scalars. The strict probability comparison is transferred
+to the supremum threshold by `firstPrime_fullScale_upper`.
+
+`Frontier/_IncidenceWeightedTriples.lean` weights the collinear-triple deficit
+using private agreement coordinates. `Frontier/_IncidenceExteriorLineCap.lean`
+derives the sharper line occupancy bound `3t-d+1` from those coordinates and a
+witness outside the line. `Frontier/_IncidenceCanonicalExterior.lean` transfers
+the resulting integer budget to `firstPrime_exterior_floor`, at `t=218759455`
+and block size 56756. These steps add no production hypothesis to the canonical
+bad-witness and RS distance data.
+
+All 30 declarations in the five new modules passed hosted Lean and the axiom
+audit at `43a90f43e90b7f4b4a1c0cb1ce28a1857b93f6f3`, using only `propext`,
+`Classical.choice` and `Quot.sound`.
+Hosted proof check: https://github.com/mashingaan/proximityprize/actions/runs/38377879493.
+The independent exact-arithmetic audit is `scripts/probes/probe_sponsor_finite_audit.py`.
+The instance pins, construction audit, orders 4 through 6, and theorem assumption
+map are recorded in `exact-current-bracket.md`. The higher-order obstruction applies
+to the displayed conservative budget, not to all canonical witness assumptions.
+The bounds do not match and do not establish prize completion or sponsor equivalence.

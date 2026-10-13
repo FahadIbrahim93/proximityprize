@@ -26,29 +26,41 @@ The frontier was read at these exact heads:
 
 ## Current bounds
 
-The axiom-clean lower bound from PR 224 is
+The new axiom-clean finite bracket is
+
+`218759456/1073741824 ≤ mcaDeltaStar C epsStar ≤ 178956971/536870912`.
+
+The five new modules passed the focused hosted kernel check and the audit of
+all 30 declarations at `43a90f43e90b7f4b4a1c0cb1ce28a1857b93f6f3` in
+[run 38377879493](https://github.com/mashingaan/proximityprize/actions/runs/38377879493).
+Only `propext`, `Classical.choice` and `Quot.sound` occur. The interval width is
+exactly `139154486/1073741824 = 69577243/536870912`.
+
+The previous axiom-clean lower bound from PR 224 was
 
 `210683556/1073741824 ≤ mcaDeltaStar C epsStar`.
 
 Its full hosted validation passed at the pinned head in
 [run 38366369251](https://github.com/SlopDotCash/proximityprize/actions/runs/38366369251).
 
-The full-scale construction in PR 222 gives the candidate ceiling
+The full-scale construction from PR 222 now gives the axiom-clean ceiling
 
 `mcaDeltaStar C epsStar ≤ 178956971/536870912`.
 
-Its compressed exact arithmetic and algebraic derivation are public. The new Lean
-module `_IncidenceFullScaleCores.lean` attempts the complete canonical transfer.
-Until its kernel check passes, the latter rational is computational/algebraic
-evidence rather than a new kernel-checked threshold bound.
+The complete canonical transfer in `_IncidenceFullScaleCores.lean` passed
+hosted Lean at `0aea589b83e85cd791a592fe1852d6105c5e6f68` in
+[run 38377420247](https://github.com/mashingaan/proximityprize/actions/runs/38377420247).
+All 13 upper-construction declarations use only `propext`, `Classical.choice`
+and `Quot.sound`. That run later stopped on a missing cube-moment object file
+before the separate new lower transfers, so it is not a full-validation pass.
 
-The prospective interval width is exactly
+The previous interval after formalizing the upper bound had width
 
 `147230386/1073741824 = 73615193/536870912`.
 
 No matching threshold or prize closure is claimed.
 
-The weighted-line continuation gives the candidate lower bound
+The weighted-line continuation gives the intermediate lower bound
 
 `214719988/1073741824 ≤ mcaDeltaStar C epsStar`.
 
@@ -56,8 +68,8 @@ Its integer budget passed independently in
 [hosted run 38371632111](https://github.com/mashingaan/proximityprize/actions/runs/38371632111)
 at `8122f9b281ca0aa77d3229f6c2275af5abb94022`.
 This is `4036432` Hamming steps above PR 224. The production Lean transfer is
-`IncidenceCanonicalWeighted.firstPrime_weighted_floor` and is not yet kernel verified.
-Together with the full-scale ceiling, its prospective bracket width is
+`IncidenceCanonicalWeighted.firstPrime_weighted_floor`, verified in run 38377879493.
+Together with the full-scale ceiling, its bracket width is
 `143193954/1073741824 = 71596977/536870912`.
 
 The continuation retains the cube moment and improves the lower union mass.
@@ -77,16 +89,16 @@ production values are `t=214719987`, `s=56756`, with strict integer slack
 `84086556016907437521639365648630530087415504642500`.
 At `t=214719988` the slack is
 `-77933888686913623791819247124213472026898589548800`.
-These computations certify the displayed inequality, pending its Lean derivation.
+These computations agree with the kernel-checked literal budget inequality.
 
-The exterior-witness continuation gives the stronger candidate lower bound
+The exterior-witness continuation gives the stronger lower bound
 
 `218759456/1073741824 ≤ mcaDeltaStar C epsStar`.
 
 Its exact budget passed in
 [hosted run 38374574903](https://github.com/mashingaan/proximityprize/actions/runs/38374574903)
 at `100980cf821015c01e253004d52463176114822d`.
-The improvement over PR 224 is `8075900` Hamming steps. The prospective interval
+The improvement over the previous PR 224 head is `8075900` Hamming steps. The interval
 width against the full-scale ceiling is `139154486/1073741824`.
 
 The additional line cap is a consequence of the same canonical witness data.
@@ -105,7 +117,7 @@ The strict integer slack is
 At the next error count the slack is
 `-32863596224077189172708874475821146373704584396800`.
 The canonical transfer is `IncidenceCanonicalExterior.firstPrime_exterior_floor`,
-pending its hosted kernel check. This refinement adds no polynomial, cross-ratio,
+verified in hosted run 38377879493. This refinement adds no polynomial, cross-ratio,
 or rational-function assumption beyond the distance condition already extracted.
 
 ## Construction audit
@@ -250,11 +262,11 @@ optimization certificate satisfying all extracted assumptions.
 | PR 224 floor `210683556/1073741824` | Exact sponsor code, canonical events, RS support distance | Axiom-clean Lean and full CI |
 | Weighted triple geometry | Canonical bad witnesses, linear code, pair-pinned agreement intersections | Seven axiom-clean Lean declarations in hosted run 38375209285 |
 | Exterior occupancy cap | The same assumptions, triple support distance, one witness outside each line | Two axiom-clean Lean declarations in hosted run 38375209285 |
-| Candidate floor 218759456/1073741824 | Exterior occupancy cap, weighted triple budget, exact cube moment and lattice transfer | Arithmetic passed, canonical Lean transfer pending |
-| Core sizes and locator degrees | Three finite coordinate embeddings and product degree bound | New Lean check pending |
-| Nonjointness | Core size at least dimension, RS interpolation uniqueness, off-core nonzero factors | New Lean check pending |
-| Scalar census | Exact generator order and five coefficient-power separations | Independent arithmetic, new Lean check pending |
-| Candidate ceiling `178956971/536870912` | All construction steps and strict normalized mass | Canonical Lean transfer pending |
+| Floor `218759456/1073741824` | Exterior occupancy cap, weighted triple budget, exact cube moment and lattice transfer | Independent arithmetic and canonical axiom-clean Lean in run 38377879493 |
+| Core sizes and locator degrees | Three finite coordinate embeddings and product degree bound | Axiom-clean Lean in run 38377420247 |
+| Nonjointness | Core size at least dimension, RS interpolation uniqueness, off-core nonzero factors | Axiom-clean Lean in run 38377420247 |
+| Scalar census | Exact generator order and five coefficient-power separations | Independent arithmetic and axiom-clean Lean in run 38377420247 |
+| Ceiling `178956971/536870912` | All construction steps and strict normalized mass | Canonical axiom-clean Lean in run 38377420247 |
 | Higher moment budgets | Line geometry, occupancy cap, support distance, exact repetitions, convexity | Independent hosted integer audit passed, research derivation above order three |
 
 No refuted predecessor-cap, generic BGK estimate, or asymptotic Jeronimo
