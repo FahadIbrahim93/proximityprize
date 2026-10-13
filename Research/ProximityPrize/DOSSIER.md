@@ -2877,3 +2877,29 @@ commit `dbeb686e931ca5b5f3cf3c25c68a39806ce0fbb5`, with only `propext`,
 Reproduce the exact arithmetic with
 `python scripts/probes/probe_incidence_average_anchor.py`.
 Hosted validation: https://github.com/SlopDotCash/proximityprize/actions/runs/38143973251.
+
+## Canonical triple-incidence floor (2026-10-13, PR #224)
+
+Mikhail Izhutkin (@mashingaan) proved the stronger first-sponsor lower bound
+`210683556 / 2^30 <= mcaDeltaStar C epsStar` in
+`Frontier/_IncidenceCanonicalTriples.lean`, theorem `firstPrime_triple_floor`.
+The code and certified sponsor field are the same as in the averaged-anchor
+result above. `firstPrime_triple_incidence` proves canonical
+`WorstCaseIncidenceBounded` with budget `2^30` at radius `210683555 / 2^30`.
+
+The proof uses the RS distance budget `d=2^29`, the canonical bad-witness
+line cap `t+1`, and a finite-set block decomposition of collinear triples.
+Repeated-index triples contribute at most three square-size diagonals.
+Their combined lower bound on total error-union mass contradicts the cube
+moment upper bound at `t=210683555`, with block size `s=56755`.
+The exact arithmetic probe is `scripts/probes/probe_incidence_triple_budget.py`.
+
+This adds 20497738 Hamming steps to the averaged-anchor floor, and 31726585
+steps to the main ladder floor for the same length. It does not establish
+the exact threshold, a uniform result for all fields, or prize completion.
+No new production hypothesis is required.
+
+All 29 declarations in the three incidence modules passed the focused
+kernel check and axiom audit at commit `210cb1781b952fd652b708cc091ec92d5dea5ed5`,
+using only `propext`, `Classical.choice`, and `Quot.sound`.
+Hosted proof check: https://github.com/mashingaan/proximityprize/actions/runs/38358631172.

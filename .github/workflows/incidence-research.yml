@@ -32,6 +32,7 @@ jobs:
         with:
           path: .lake
           key: incidence-dependencies-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json', 'lakefile.lean', 'lakefile.toml', 'ArkLib/**/*.lean', 'Research/ProximityPrize/**/*.lean', 'scripts/lake-locked.sh', '!Research/ProximityPrize/Frontier/_IncidenceTripleMass.lean', '!Research/ProximityPrize/Frontier/_IncidenceAffineLines.lean', '!Research/ProximityPrize/Frontier/_IncidenceCanonicalTriples.lean') }}
+          restore-keys: incidence-dependencies-${{ runner.os }}-
       - name: Fetch dependency cache
         run: ./scripts/lake-locked.sh exe cache get
       - name: Build existing incidence dependency
