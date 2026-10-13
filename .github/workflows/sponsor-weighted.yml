@@ -52,11 +52,11 @@ jobs:
           import re
           log=Path('weighted-axioms.log').read_text()
           reports=re.findall(r'depends on axioms:\s*\[([^\]]*)\]',log)
-          assert len(reports)==11
+          assert len(reports)==12
           assert 'sorryAx' not in log
           for names in reports:
               assert set(x.strip() for x in names.split(',')) <= {'propext','Classical.choice','Quot.sound'}
-          print('Eleven weighted geometry declarations axiom-clean')
+          print('Twelve weighted geometry declarations axiom-clean')
           PY
       - name: Stop Lean workers
         if: always() && !cancelled()

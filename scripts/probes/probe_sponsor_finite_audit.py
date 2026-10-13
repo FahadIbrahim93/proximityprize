@@ -211,7 +211,7 @@ def constant_line_frontier():
     m, distance = N+1, K+1
     def slack(t):
         return (N*N*distance*m**3+(m*(N-t))**3
-                -N**3*m**3-6*distance*N*N*m*m)
+                -N**3*m**3-4*distance*N*N*m*m)
     lo, hi = 0, K//2
     while lo < hi:
         mid = (lo+hi+1)//2

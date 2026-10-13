@@ -144,7 +144,55 @@ theorem bad_witness_line_cap_three
   have hmul := Nat.mul_le_mul_right (Q.card-t) hlarge
   omega
 
+/-- With at most three heads on a line, an ordered distinct pair has at most
+one collinear completion in the family. -/
+theorem collinearTriples_card_le_square_of_line_cap_three
+    {F I V : Type} [Field F] [DecidableEq I] [AddCommGroup V] [Module F V]
+    (gamma : I → F) (w : I → V) (hinj : Function.Injective gamma)
+    (S : Finset I)
+    (hcap : ∀ U D, (S.filter (OnLine gamma w U D)).card ≤ 3) :
+    (collinearTriples gamma w S).card ≤ S.card ^ 2 := by
+  classical
+  have hsum : (collinearTriples gamma w S).card =
+      ∑ a ∈ S, ∑ b ∈ S,
+        (S.filter (fun c => a ≠ b ∧ a ≠ c ∧ b ≠ c ∧ CollinearTriple gamma w a b c)).card := by
+    simp only [collinearTriples,Finset.product_eq_sprod,Finset.card_filter,Finset.sum_product]
+  have hrow : ∀ a ∈ S, ∀ b ∈ S,
+      (S.filter (fun c => a ≠ b ∧ a ≠ c ∧ b ≠ c ∧ CollinearTriple gamma w a b c)).card ≤ 1 := by
+    intro a ha b hb
+    by_cases hab : a = b
+    · subst b
+      simp
+    · obtain ⟨U,D,haL,hbL⟩ := exists_line_through_two gamma w hinj hab
+      let B := S.filter (OnLine gamma w U D)
+      have hp : ({a,b} : Finset I) ⊆ B := by
+        intro x hx
+        rcases Finset.mem_insert.mp hx with h | h
+        · subst x
+          exact Finset.mem_filter.mpr ⟨ha,haL⟩
+        · have he := Finset.mem_singleton.mp h
+          subst x
+          exact Finset.mem_filter.mpr ⟨hb,hbL⟩
+      have hpart := Finset.card_sdiff_add_card_eq_card hp
+      have hpair : ({a,b} : Finset I).card = 2 := by simp [hab]
+      have hbcap : B.card ≤ 3 := hcap U D
+      have hrest : (B \ {a,b}).card ≤ 1 := by omega
+      apply le_trans (Finset.card_le_card ?_) hrest
+      intro c hc
+      obtain ⟨hcS,_,hac,hbc,hcol⟩ := Finset.mem_filter.mp hc
+      apply Finset.mem_sdiff.mpr
+      refine ⟨Finset.mem_filter.mpr ⟨hcS,
+        collinear_triple_forces_onLine gamma w hinj hab haL hbL hcol⟩,?_⟩
+      simpa only [Finset.mem_insert,Finset.mem_singleton,not_or] using
+        (show c ≠ a ∧ c ≠ b from ⟨Ne.symm hac,Ne.symm hbc⟩)
+  rw [hsum]
+  calc
+    _ ≤ ∑ a ∈ S, ∑ b ∈ S, (1 : ℕ) :=
+      Finset.sum_le_sum (fun a ha => Finset.sum_le_sum (fun b hb => hrow a ha b hb))
+    _ = _ := by simp [pow_two]
+
 end ProximityGap.IncidenceConstantLineCap
 
 #print axioms ProximityGap.IncidenceConstantLineCap.line_agreement_mass
 #print axioms ProximityGap.IncidenceConstantLineCap.bad_witness_line_cap_three
+#print axioms ProximityGap.IncidenceConstantLineCap.collinearTriples_card_le_square_of_line_cap_three
