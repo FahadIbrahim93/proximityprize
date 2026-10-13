@@ -207,8 +207,9 @@ theorem weighted_line_arithmetic (ell b D0 : ℕ) (hell : ell ≤ b) (hb : 3*b �
   have he : ell + (b-ell) = b := by omega
   have hd : D0-ell = (D0-b)+(b-ell) := by omega
   have hpoly : ell^2*(D0-ell) ≤ b^2*(D0-b) := by
-    rw [hd,← he]
-    nlinarith [hmp,Nat.zero_le ((b-ell)^2*(D0-b))]
+    have hh : ell^2*((D0-b)+(b-ell)) ≤ (ell+(b-ell))^2*(D0-b) := by
+      nlinarith [hmp,Nat.zero_le ((b-ell)^2*(D0-b))]
+    simpa only [he,← hd] using hh
   have hh := Nat.mul_le_mul_left ell hpoly
   nlinarith [hh]
 
@@ -245,7 +246,7 @@ theorem weighted_triple_budget [DecidableEq I]
         have hpart : R.card+B.card = Q.card := Finset.card_sdiff_add_card_eq_card hBsub
         have hBsize : s ≤ B.card := hline
         have hRlt : R.card < m := by omega
-        have hRS : R ⊆ S := Finset.Subset.trans Finset.sdiff_subset hQS
+        have hRS : R ⊆ S := fun a ha => hQS (Finset.mem_sdiff.mp ha).1
         have hIR := ih R.card hRlt R rfl hRS
         have hstep := weighted_block_step gamma w hinj Q U D weight D0 hbound
           (hlocal Q hQS U D)
@@ -273,7 +274,7 @@ theorem weighted_triple_budget [DecidableEq I]
         have h1 := Nat.mul_le_mul_right D0 hc
         have h2 := Nat.mul_le_mul_left s (hsum.trans h1)
         nlinarith [h2]
-  exact hall S.card S rfl Finset.Subset.rfl
+  exact hall S.card S rfl (fun _ h => h)
 
 /-- Distance forces all deficit outside distinct collinear triples onto the
 three repeated-index diagonals. -/

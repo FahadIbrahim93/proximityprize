@@ -56,6 +56,9 @@ jobs:
         run: |
           set -o pipefail
           lake env lean Research/ProximityPrize/Frontier/_IncidenceFullScaleCores.lean | tee incidence-axioms.log
+          ./scripts/lake-locked.sh build Research.ProximityPrize.Frontier._IncidenceWeightedTriples
+          lake env lean Research/ProximityPrize/Frontier/_IncidenceWeightedTriples.lean | tee -a incidence-axioms.log
+          lake env lean Research/ProximityPrize/Frontier/_IncidenceCanonicalWeighted.lean | tee -a incidence-axioms.log
       - name: Audit research axioms
         run: |
           python3 - <<'PY'
@@ -65,7 +68,7 @@ jobs:
           assert 'sorryAx' not in s
           import re
           matches=re.findall(r'depends on axioms:\s*\[([^\]]*)\]',s)
-          assert len(matches)==13
+          assert len(matches)==23
           for names in matches:
               assert set(x.strip() for x in names.split(','))<= {'propext','Classical.choice','Quot.sound'}
           print('Full-scale common-factor axiom audit clean')

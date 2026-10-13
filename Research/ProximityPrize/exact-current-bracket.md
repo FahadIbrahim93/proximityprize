@@ -48,6 +48,37 @@ The prospective interval width is exactly
 
 No matching threshold or prize closure is claimed.
 
+The weighted-line continuation gives the candidate lower bound
+
+`214719988/1073741824 ≤ mcaDeltaStar C epsStar`.
+
+Its integer budget passed independently in
+[hosted run 38371632111](https://github.com/mashingaan/proximityprize/actions/runs/38371632111)
+at `8122f9b281ca0aa77d3229f6c2275af5abb94022`.
+This is `4036432` Hamming steps above PR 224. The production Lean transfer is
+`IncidenceCanonicalWeighted.firstPrime_weighted_floor` and is not yet kernel verified.
+Together with the full-scale ceiling, its prospective bracket width is
+`143193954/1073741824 = 71596977/536870912`.
+
+The continuation retains the cube moment and improves the lower union mass.
+On every canonical witness line, choose one private agreement coordinate per
+head. They are distinct, and the error union of any two distinct heads contains
+all of them. Thus a line of size `ell` contributes deficit at most `d+1-ell`
+per distinct triple, rather than `d+1`. No extra RS hypothesis is introduced.
+The weighted line function `ell^2*(d+1-ell)` is nondecreasing up to the cap
+`b=t+1` under `3b≤2(d+1)`, which holds at the literal production parameters.
+
+The improved weighted budget is
+
+`s*Deficit ≤ s*m*b^2*(d+1-b) + (d+1)*(3m^3+s^2*m^2)`.
+
+Repeated-index tuples retain the safe `3m^2` penalty. The exact optimized
+production values are `t=214719987`, `s=56756`, with strict integer slack
+`84086556016907437521639365648630530087415504642500`.
+At `t=214719988` the slack is
+`-77933888686913623791819247124213472026898589548800`.
+These computations certify the displayed inequality, pending its Lean derivation.
+
 ## Construction audit
 
 Let `c = 536870910`, `a = 178956971`. Partition coordinates into the common
