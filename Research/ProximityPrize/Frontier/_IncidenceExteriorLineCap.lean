@@ -95,7 +95,9 @@ theorem line_card_le_pair_error_intersection_add_two
   rw [Finset.card_image_of_injective _ hxinj] at hc
   have hj := Finset.card_add_card_compl J
   rw [Fintype.card_coe] at hj
-  have hcompl : Jᶜ.card ≤ 2 := (Finset.card_le_card hsmall).trans (by simp)
+  have htwo : ({ia,ib} : Finset ↥B).card ≤ 2 := by
+    simpa only [Finset.card_singleton] using Finset.card_insert_le ia ({ib} : Finset ↥B)
+  have hcompl : Jᶜ.card ≤ 2 := (Finset.card_le_card hsmall).trans htwo
   omega
 
 /-- A witness outside a line sharpens the line occupancy cap through distance. -/

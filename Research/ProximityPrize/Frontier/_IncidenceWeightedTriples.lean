@@ -349,28 +349,26 @@ theorem weighted_mass_lower [DecidableEq I]
   nlinarith [Nat.mul_le_mul_left (d+1) hRcard]
 
 /-- Canonical nonjointness retains line-union mass in the lower moment bound. -/
-theorem bad_witness_weighted_mass_lower [DecidableEq I]
+theorem bad_witness_weighted_mass_lower_of_cap [DecidableEq I]
     {Coord A : Type} [Fintype Coord] [DecidableEq Coord] [AddCommGroup A] [Module F A]
     (gamma : I → F) (w : I → (Coord → A)) (hinj : Function.Injective gamma)
-    (S : Finset I) (C : Submodule F (Coord → A)) (d t s : ℕ) (hs : 2 ≤ s)
-    (ht : 3*(t+1) ≤ 2*(d+1))
+    (S : Finset I) (C : Submodule F (Coord → A)) (d s b : ℕ) (hs : 2 ≤ s)
+    (ht : 3*b ≤ 2*(d+1))
     (hC : ∀ z ∈ C, (∃ B : Finset Coord, B.card ≤ d ∧ ∀ x ∉ B, z x = 0) → z = 0)
     (T : I → Finset Coord) (u0 u1 : Coord → A)
     (hwC : ∀ i ∈ S, w i ∈ C)
-    (hcompl : ∀ i ∈ S, (T i)ᶜ.card ≤ t)
     (hwag : ∀ i ∈ S, ∀ x ∈ T i, w i x = u0 x + gamma i • u1 x)
     (hno : ∀ i ∈ S, ¬ ∃ f0 ∈ C, ∃ f1 ∈ C,
-      ∀ x ∈ T i, f0 x = u0 x ∧ f1 x = u1 x) :
+      ∀ x ∈ T i, f0 x = u0 x ∧ f1 x = u1 x)
+    (hcap : ∀ U D, (S.filter (OnLine gamma w U D)).card ≤ b) :
     s*(d+1)*S.card^3 ≤
       s*(∑ a ∈ S, ∑ b ∈ S, ∑ c ∈ S, ((T a)ᶜ ∪ (T b)ᶜ ∪ (T c)ᶜ).card) +
-      s*S.card*(t+1)^2*(d+1-(t+1)) +
+      s*S.card*b^2*(d+1-b) +
       (d+1)*(3*S.card^3+s^2*S.card^2+3*s*S.card^2) := by
   classical
   let weight : I × (I × I) → ℕ := fun p =>
     d+1-((T p.1)ᶜ ∪ (T p.2.1)ᶜ ∪ (T p.2.2)ᶜ).card
   have hbound : ∀ p, weight p ≤ d+1 := fun p => Nat.sub_le _ _
-  have hcap : ∀ U D, (S.filter (OnLine gamma w U D)).card ≤ t+1 :=
-    bad_witness_line_cap t gamma w hinj S C T u0 u1 hwC hcompl hwag hno
   have hlocal : ∀ Q ⊆ S, ∀ U D,
       ∀ p ∈ collinearTriples gamma w (Q.filter (OnLine gamma w U D)),
         weight p ≤ d+1-(Q.filter (OnLine gamma w U D)).card := by
@@ -391,7 +389,7 @@ theorem bad_witness_weighted_mass_lower [DecidableEq I]
     dsimp [weight]
     change d+1-((T p.1)ᶜ ∪ (T p.2.1)ᶜ ∪ (T p.2.2)ᶜ).card ≤ d+1-B.card
     omega
-  have hbudget := weighted_triple_budget gamma w hinj S s (t+1) (d+1) hs ht
+  have hbudget := weighted_triple_budget gamma w hinj S s b (d+1) hs ht
     weight hbound hcap hlocal
   have hmass := weighted_mass_lower gamma w S (fun i => (T i)ᶜ) d
     (fun a ha b hb c hc hab _ _ hnc =>
@@ -402,6 +400,28 @@ theorem bad_witness_weighted_mass_lower [DecidableEq I]
   dsimp [weight] at hbudget
   nlinarith [hmassS,hbudget]
 
+/-- Canonical nonjointness retains line-union mass in the lower moment bound. -/
+theorem bad_witness_weighted_mass_lower [DecidableEq I]
+    {Coord A : Type} [Fintype Coord] [DecidableEq Coord] [AddCommGroup A] [Module F A]
+    (gamma : I → F) (w : I → (Coord → A)) (hinj : Function.Injective gamma)
+    (S : Finset I) (C : Submodule F (Coord → A)) (d t s : ℕ) (hs : 2 ≤ s)
+    (ht : 3*(t+1) ≤ 2*(d+1))
+    (hC : ∀ z ∈ C, (∃ B : Finset Coord, B.card ≤ d ∧ ∀ x ∉ B, z x = 0) → z = 0)
+    (T : I → Finset Coord) (u0 u1 : Coord → A)
+    (hwC : ∀ i ∈ S, w i ∈ C)
+    (hcompl : ∀ i ∈ S, (T i)ᶜ.card ≤ t)
+    (hwag : ∀ i ∈ S, ∀ x ∈ T i, w i x = u0 x + gamma i • u1 x)
+    (hno : ∀ i ∈ S, ¬ ∃ f0 ∈ C, ∃ f1 ∈ C,
+      ∀ x ∈ T i, f0 x = u0 x ∧ f1 x = u1 x) :
+    s*(d+1)*S.card^3 ≤
+      s*(∑ a ∈ S, ∑ b ∈ S, ∑ c ∈ S, ((T a)ᶜ ∪ (T b)ᶜ ∪ (T c)ᶜ).card) +
+      s*S.card*(t+1)^2*(d+1-(t+1)) +
+      (d+1)*(3*S.card^3+s^2*S.card^2+3*s*S.card^2) := by
+  classical
+  exact bad_witness_weighted_mass_lower_of_cap gamma w hinj S C d s (t+1) hs ht
+    hC T u0 u1 hwC hwag hno
+    (bad_witness_line_cap t gamma w hinj S C T u0 u1 hwC hcompl hwag hno)
+
 end ProximityGap.IncidenceWeightedTriples
 
 #print axioms ProximityGap.IncidenceWeightedTriples.line_card_le_pair_error_union
@@ -411,3 +431,5 @@ end ProximityGap.IncidenceWeightedTriples
 #print axioms ProximityGap.IncidenceWeightedTriples.weighted_triple_budget
 #print axioms ProximityGap.IncidenceWeightedTriples.weighted_mass_lower
 #print axioms ProximityGap.IncidenceWeightedTriples.bad_witness_weighted_mass_lower
+
+#print axioms ProximityGap.IncidenceWeightedTriples.bad_witness_weighted_mass_lower_of_cap
