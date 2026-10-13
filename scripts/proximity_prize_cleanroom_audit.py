@@ -10,6 +10,7 @@ listed in scripts/proximity_prize_cleanroom_targets.txt, runs `#check` and
     {propext, Classical.choice, Quot.sound},
   * the signature contains residual-style hypotheses before the final
     conclusion, or
+  * the expected conclusion token occurs only in a binder or arrow premise, or
   * the final conclusion token appears earlier in the signature, which catches
     goal-equivalent assumptions such as `(h : mcaPrize domain) -> mcaPrize domain`.
 
@@ -117,6 +118,65 @@ def parse_axioms(output: str) -> dict[str, set[str]]:
     return reported
 
 
+def top_level_positions(text: str, token: str) -> list[int]:
+    """Locate delimiters outside printed Lean binder/type brackets."""
+    closers: list[str] = []
+    brackets = {"(": ")", "{": "}", "[": "]", "⦃": "⦄", "⟨": "⟩"}
+    positions: list[int] = []
+    for index, char in enumerate(text):
+        if char in brackets:
+            closers.append(brackets[char])
+        elif closers and char == closers[-1]:
+            closers.pop()
+        elif not closers and text.startswith(token, index):
+            positions.append(index)
+    return positions
+
+
+def conclusion_boundary(signature: str) -> int | None:
+    """Find the result after declaration binders and top-level arrow premises.
+
+    Parenthesized result types are unwrapped before following arrows. Arrows
+    inside argument types remain part of those arguments, not premise separators.
+    This is a syntactic check of Lean's printed signature, not a semantic proof.
+    """
+    colons = top_level_positions(signature, ":")
+    if not colons:
+        return None
+    start = colons[0] + 1
+    end = len(signature)
+    while True:
+        while start < end and signature[start].isspace():
+            start += 1
+        while end > start and signature[end - 1].isspace():
+            end -= 1
+        result = signature[start:end]
+        if result.startswith("(") and result.endswith(")"):
+            # An outer pair encloses the whole type only if its first closing
+            # parenthesis is at the end; `(P) → (Q)` must not be unwrapped.
+            depth = 0
+            for index, char in enumerate(result):
+                if char == "(":
+                    depth += 1
+                elif char == ")":
+                    depth -= 1
+                    if depth == 0:
+                        break
+            if index == len(result) - 1:
+                start += 1
+                end -= 1
+                continue
+        arrows = top_level_positions(result, "→")
+        if not arrows:
+            return start
+        start += arrows[-1] + 1
+
+
+def token_pattern(token: str) -> re.Pattern[str]:
+    """Match a conclusion identifier without accepting a longer lookalike."""
+    return re.compile(rf"(?<![\w']){re.escape(token)}(?![\w'])")
+
+
 def check_signature(entry: Entry, output: str) -> list[str]:
     pattern = re.compile(
         rf"(?m)^{re.escape(entry.decl)}\s*(.*?)(?=\n'[^']+' (?:depends|does not)|\Z)",
@@ -127,19 +187,23 @@ def check_signature(entry: Entry, output: str) -> list[str]:
         return [f"{entry.decl}: no #check signature found"]
 
     signature = " ".join(match.group(1).split())
-    conclusion_at = signature.rfind(entry.conclusion)
-    if conclusion_at < 0:
-        return [f"{entry.decl}: conclusion token {entry.conclusion!r} not found in signature"]
+    boundary = conclusion_boundary(signature)
+    if boundary is None:
+        return [f"{entry.decl}: no declaration result type found in #check signature"]
+    conclusion_match = token_pattern(entry.conclusion).search(signature, boundary)
+    if conclusion_match is None:
+        return [f"{entry.decl}: conclusion token {entry.conclusion!r} not found in result type"]
 
-    prefix = signature[:conclusion_at]
+    prefix = signature[:boundary]
+    before_predicate = signature[:conclusion_match.start()]
     failures: list[str] = []
-    if entry.conclusion in prefix:
+    if token_pattern(entry.conclusion).search(prefix):
         failures.append(
             f"{entry.decl}: conclusion token {entry.conclusion!r} appears in hypotheses"
         )
 
     for regex in RESIDUAL_PATTERNS:
-        residual_match = regex.search(prefix)
+        residual_match = regex.search(before_predicate)
         if residual_match:
             failures.append(
                 f"{entry.decl}: forbidden residual/Prop hypothesis token "
@@ -147,7 +211,7 @@ def check_signature(entry: Entry, output: str) -> list[str]:
             )
 
     for token in entry.extra_forbidden:
-        if token in prefix:
+        if token in before_predicate:
             failures.append(f"{entry.decl}: forbidden manifest token {token!r} in hypotheses")
     return failures
 
