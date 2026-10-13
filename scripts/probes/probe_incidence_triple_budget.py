@@ -1,9 +1,10 @@
-"""Exact arithmetic candidate for the decoded-triple incidence route.
+"""Exact arithmetic ledger for the decoded-triple incidence floor.
 
 Author: Mikhail Izhutkin (@mashingaan).
 The strict inequality combines the triple union upper mass, the collinear
 triple budget, and three repeated-index diagonals. This script checks only
-arithmetic. The canonical all-bad-witness consumer remains a Lean obligation.
+arithmetic. The canonical all-bad-witness consumer passed the separate Lean
+kernel check and axiom audit at commit 210cb1781.
 """
 
 import json
@@ -50,5 +51,5 @@ print(json.dumps({
     "strict_integer_slack": slack(lo),
     "next_integer_slack": slack(lo + 1),
     "improvement_steps_over_average_anchor": lo + 1 - 190185818,
-    "evidence": "exact arithmetic candidate, canonical Lean consumer pending",
+    "evidence": "exact arithmetic, with separately kernel-checked canonical incidence consumer",
 }, indent=2))
