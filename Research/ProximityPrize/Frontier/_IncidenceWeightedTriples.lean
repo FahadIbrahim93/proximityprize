@@ -37,6 +37,7 @@ theorem line_card_le_pair_error_union
     obtain ⟨hxi,hxj⟩ := Finset.mem_inter.mp hx
     have ei := (hag i hi x hxi).symm.trans (congrFun (hline i hi) x)
     have ej := (hag j hj x hxj).symm.trans (congrFun (hline j hj) x)
+    simp only [Pi.add_apply,Pi.smul_apply] at ei ej
     have hn : gamma i - gamma j ≠ 0 := sub_ne_zero.mpr (fun h => hij (hinj h))
     have hz : (gamma i - gamma j) • (u1 x - D x) = 0 := by
       calc
@@ -55,7 +56,7 @@ theorem line_card_le_pair_error_union
   have hex : ∀ i : ↥B, ∃ x ∈ T i.val, ¬ (u0 x = U x ∧ u1 x = D x) := by
     intro i
     by_contra hn
-    push_neg at hn
+    push Not at hn
     apply hno i.val i.property
     refine ⟨U,hUC,D,hDC,?_⟩
     intro x hx
@@ -65,8 +66,9 @@ theorem line_card_le_pair_error_union
     intro i j he
     by_contra hn
     have hv : i.val ≠ j.val := fun h => hn (Subtype.ext h)
-    have hxj : xs i ∈ T j.val := by rw [he]
-                                 exact hxsT j
+    have hxj : xs i ∈ T j.val := by
+      rw [he]
+      exact hxsT j
     exact hxsNot i (hpin i.val i.property j.val j.property hv (xs i)
       (Finset.mem_inter.mpr ⟨hxsT i,hxj⟩))
   have hsub : (Finset.univ.image xs) ⊆ (T a)ᶜ ∪ (T b)ᶜ := by
@@ -188,7 +190,7 @@ theorem weighted_block_step [DecidableEq I]
   have hinside : (∑ z ∈ collinearTriples gamma w B, weight z) ≤
       B.card^3*(D0-B.card) := by
     calc
-      _ ≤ ∑ _z ∈ collinearTriples gamma w B, D0-B.card :=
+      _ ≤ ∑ _z ∈ collinearTriples gamma w B, (D0-B.card) :=
         Finset.sum_le_sum (fun z hz => hlocal z hz)
       _ = (collinearTriples gamma w B).card*(D0-B.card) := by
         simp only [Finset.sum_const,smul_eq_mul]
@@ -273,7 +275,12 @@ theorem weighted_triple_budget [DecidableEq I]
             _ = _ := by simp only [Finset.sum_const,smul_eq_mul]
         have h1 := Nat.mul_le_mul_right D0 hc
         have h2 := Nat.mul_le_mul_left s (hsum.trans h1)
-        nlinarith [h2]
+        calc
+          _ ≤ s*(Q.card^2*s*D0) := h2
+          _ = D0*(s^2*Q.card^2) := by ring
+          _ ≤ D0*(3*Q.card^3+s^2*Q.card^2) :=
+            Nat.mul_le_mul_left D0 (by omega)
+          _ ≤ _ := by omega
   exact hall S.card S rfl (fun _ h => h)
 
 /-- Distance forces all deficit outside distinct collinear triples onto the
@@ -287,7 +294,7 @@ theorem weighted_mass_lower [DecidableEq I]
     (d+1)*S.card^3 ≤
       (∑ a ∈ S, ∑ b ∈ S, ∑ c ∈ S, (E a ∪ E b ∪ E c).card) +
       (∑ p ∈ collinearTriples gamma w S,
-        d+1-(E p.1 ∪ E p.2.1 ∪ E p.2.2).card) + (d+1)*3*S.card^2 := by
+        (d+1-(E p.1 ∪ E p.2.1 ∪ E p.2.2).card)) + (d+1)*3*S.card^2 := by
   classical
   let P := S ×ˢ (S ×ˢ S)
   let R := P.filter (fun p => p.1 = p.2.1 ∨ p.1 = p.2.2 ∨ p.2.1 = p.2.2)
