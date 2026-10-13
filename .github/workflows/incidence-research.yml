@@ -22,7 +22,7 @@ jobs:
       - name: Fetch dependency cache
         run: ./scripts/lake-locked.sh exe cache get
       - name: Build existing coverage dependency
-        run: ./scripts/lake-locked.sh build ArkLib.Data.CodingTheory.ProximityGap.CoveragePigeonhole
+        run: ./scripts/lake-locked.sh build Research.ProximityPrize.Frontier._IncidenceAverageAnchor
       - name: Check research proof
         run: |
           set -o pipefail
@@ -38,7 +38,7 @@ jobs:
           assert 'sorryAx' not in s
           import re
           matches=re.findall(r'depends on axioms:\s*\[([^\]]*)\]',s)
-          assert len(matches)==26
+          assert len(matches)==29
           for names in matches:
               assert set(x.strip() for x in names.split(','))<= {'propext','Classical.choice','Quot.sound'}
           print('Research cube lemma axiom audit clean')

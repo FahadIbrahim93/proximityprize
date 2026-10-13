@@ -558,7 +558,8 @@ theorem repeated_triples_card_le [DecidableEq I] (S : Finset I) :
       p.1 = p.2.1 ∨ p.1 = p.2.2 ∨ p.2.1 = p.2.2)) ⊆ (AB ∪ AC) ∪ BC := by
     intro p hp
     obtain ⟨hpS,heq⟩ := Finset.mem_filter.mp hp
-    obtain ⟨ha,hb,hc⟩ := Finset.mem_product.mp hpS
+    obtain ⟨ha,hbcS⟩ := Finset.mem_product.mp hpS
+    obtain ⟨hb,hc⟩ := Finset.mem_product.mp hbcS
     rcases heq with hab | hac | hbc
     · apply Finset.mem_union.mpr
       left
@@ -623,7 +624,8 @@ theorem triple_union_mass_lower [DecidableEq I]
       have hnc : ¬ CollinearTriple gamma w p.1 p.2.1 p.2.2 := by
         intro h
         exact hpL (Finset.mem_filter.mpr ⟨hp,hne.1,hne.2.1,hne.2.2,h⟩)
-      obtain ⟨ha,hb,hc⟩ := Finset.mem_product.mp hp
+      obtain ⟨ha,hbcS⟩ := Finset.mem_product.mp hp
+      obtain ⟨hb,hc⟩ := Finset.mem_product.mp hbcS
       exact hlow _ ha _ hb _ hc hne.1 hne.2.1 hne.2.2 hnc
   have hsum := Finset.sum_le_sum hpoint
   have hind : (∑ p ∈ P, if p ∈ B then d + 1 else 0) = B.card * (d + 1) := by
@@ -633,7 +635,8 @@ theorem triple_union_mass_lower [DecidableEq I]
       simp only [Finset.mem_filter]
       exact ⟨fun h => h.2,fun h => ⟨hBsub h,h⟩⟩
     rw [hf,Finset.sum_const,smul_eq_mul]
-  rw [Finset.sum_add_distrib,hind] at hsum
+  simp only [Finset.sum_add_distrib] at hsum
+  rw [hind] at hsum
   have hPcard : P.card = S.card ^ 3 := by simp [P,Finset.card_product,pow_succ,pow_two]
   simp only [Finset.sum_const,smul_eq_mul,hPcard] at hsum
   have hmass : (∑ p ∈ P, (E p.1 ∪ E p.2.1 ∪ E p.2.2).card) =
