@@ -230,9 +230,101 @@ theorem collinearTriples_card_le_square_of_line_cap_three
       Finset.sum_le_sum (fun a ha => Finset.sum_le_sum (fun b hb => hrow a ha b hb))
     _ = _ := by simp [pow_two]
 
+/-- A pair-union certificate reduces the penalty for every nondiagonal
+degenerate triple from distance to the error budget. -/
+theorem triple_mass_lower_of_pair_union
+    {F I V X : Type} [Field F] [DecidableEq I] [DecidableEq X]
+    [AddCommGroup V] [Module F V]
+    (gamma : I → F) (w : I → V) (S : Finset I) (E : I → Finset X) (D t : ℕ)
+    (hpair : ∀ a ∈ S, ∀ b ∈ S, a ≠ b → D ≤ (E a ∪ E b).card+t)
+    (hlow : ∀ a ∈ S, ∀ b ∈ S, ∀ c ∈ S,
+      a ≠ b → a ≠ c → b ≠ c → ¬ CollinearTriple gamma w a b c →
+      D ≤ (E a ∪ E b ∪ E c).card) :
+    D*S.card^3 ≤ (∑ a ∈ S, ∑ b ∈ S, ∑ c ∈ S, (E a ∪ E b ∪ E c).card) +
+      t*((collinearTriples gamma w S).card+3*S.card^2)+D*S.card := by
+  classical
+  let P := S ×ˢ (S ×ˢ S)
+  let R := P.filter (fun p => p.1 = p.2.1 ∨ p.1 = p.2.2 ∨ p.2.1 = p.2.2)
+  let B := R ∪ collinearTriples gamma w S
+  let J := P.filter (fun p => p.1 = p.2.1 ∧ p.1 = p.2.2)
+  have hBsub : B ⊆ P := Finset.union_subset (Finset.filter_subset _ _)
+    (Finset.filter_subset _ _)
+  have hB : B.card ≤ (collinearTriples gamma w S).card+3*S.card^2 := by
+    have hr := repeated_triples_card_le S
+    have hu := Finset.card_union_le R (collinearTriples gamma w S)
+    dsimp [B,R] at *
+    omega
+  have hJ : J.card ≤ S.card := by
+    apply Finset.card_le_card_of_injOn (fun p : I × (I × I) => p.1)
+    · intro p hp
+      exact (Finset.mem_product.mp (Finset.mem_filter.mp hp).1).1
+    · intro p hp q hq he
+      have ep := (Finset.mem_filter.mp hp).2
+      have eq := (Finset.mem_filter.mp hq).2
+      exact Prod.ext he (Prod.ext (ep.1.symm.trans (he.trans eq.1))
+        (ep.2.symm.trans (he.trans eq.2)))
+  have hpoint : ∀ p ∈ P, D ≤ (E p.1 ∪ E p.2.1 ∪ E p.2.2).card +
+      (if p ∈ B then t else 0)+(if p ∈ J then D else 0) := by
+    intro p hp
+    obtain ⟨ha,hbc⟩ := Finset.mem_product.mp hp
+    obtain ⟨hb,hc⟩ := Finset.mem_product.mp hbc
+    by_cases hj : p ∈ J
+    · simp only [if_pos hj]
+      omega
+    · simp only [if_neg hj,add_zero]
+      by_cases hpb : p ∈ B
+      · simp only [if_pos hpb]
+        by_cases hab : p.1 = p.2.1
+        · have hac : p.1 ≠ p.2.2 := by
+            intro he
+            exact hj (Finset.mem_filter.mpr ⟨hp,hab,he⟩)
+          have h := hpair _ ha _ hc hac
+          have hm := Finset.card_le_card (show E p.1 ∪ E p.2.2 ⊆
+            E p.1 ∪ E p.2.1 ∪ E p.2.2 by
+              intro x hx
+              rcases Finset.mem_union.mp hx with hx | hx
+              · exact Finset.mem_union_left _ (Finset.mem_union_left _ hx)
+              · exact Finset.mem_union_right _ hx)
+          omega
+        · have h := hpair _ ha _ hb hab
+          have hm := Finset.card_le_card (Finset.subset_union_left
+            (s₁ := E p.1 ∪ E p.2.1) (s₂ := E p.2.2))
+          omega
+      · simp only [if_neg hpb,add_zero]
+        have hr : p ∉ R := fun h => hpb (Finset.mem_union_left _ h)
+        have hl : p ∉ collinearTriples gamma w S :=
+          fun h => hpb (Finset.mem_union_right _ h)
+        have hne : p.1 ≠ p.2.1 ∧ p.1 ≠ p.2.2 ∧ p.2.1 ≠ p.2.2 := by
+          simpa only [R,Finset.mem_filter,hp,true_and,not_or] using hr
+        have hnc : ¬ CollinearTriple gamma w p.1 p.2.1 p.2.2 := by
+          intro h
+          exact hl (Finset.mem_filter.mpr ⟨hp,hne.1,hne.2.1,hne.2.2,h⟩)
+        exact hlow _ ha _ hb _ hc hne.1 hne.2.1 hne.2.2 hnc
+  have hsum := Finset.sum_le_sum hpoint
+  have hind (K : Finset (I × (I × I))) (hK : K ⊆ P) (v : ℕ) :
+      (∑ p ∈ P, if p ∈ K then v else 0) = K.card*v := by
+    rw [← Finset.sum_filter]
+    have hf : P.filter (fun p => p ∈ K) = K := by
+      ext p
+      simp only [Finset.mem_filter]
+      exact ⟨fun h => h.2,fun h => ⟨hK h,h⟩⟩
+    rw [hf,Finset.sum_const,smul_eq_mul]
+  simp only [Finset.sum_add_distrib] at hsum
+  rw [hind B hBsub t,hind J (Finset.filter_subset _ _) D] at hsum
+  have hcP : P.card = S.card^3 := by
+    simp only [P,Finset.card_product]
+    ring
+  simp only [Finset.sum_const,smul_eq_mul,hcP] at hsum
+  have hm : (∑ p ∈ P, (E p.1 ∪ E p.2.1 ∪ E p.2.2).card) =
+      ∑ a ∈ S, ∑ b ∈ S, ∑ c ∈ S, (E a ∪ E b ∪ E c).card := by
+    simp only [P,Finset.sum_product]
+  rw [hm] at hsum
+  nlinarith [Nat.mul_le_mul_left t hB,Nat.mul_le_mul_left D hJ]
+
 end ProximityGap.IncidenceConstantLineCap
 
 #print axioms ProximityGap.IncidenceConstantLineCap.line_agreement_mass
 #print axioms ProximityGap.IncidenceConstantLineCap.bad_witness_pair_union_distance
+#print axioms ProximityGap.IncidenceConstantLineCap.triple_mass_lower_of_pair_union
 #print axioms ProximityGap.IncidenceConstantLineCap.bad_witness_line_cap_three
 #print axioms ProximityGap.IncidenceConstantLineCap.collinearTriples_card_le_square_of_line_cap_three
