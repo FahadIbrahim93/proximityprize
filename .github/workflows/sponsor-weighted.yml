@@ -2,6 +2,12 @@ name: Weighted sponsor geometry check
 on:
   push:
     branches: [research/sponsor-finite-bracket]
+    paths:
+      - Research/ProximityPrize/Frontier/_IncidenceWeightedTriples.lean
+      - Research/ProximityPrize/Frontier/_IncidenceAffineLines.lean
+      - .github/workflows/sponsor-weighted.yml
+      - lean-toolchain
+      - lake-manifest.json
   workflow_dispatch:
 permissions:
   contents: read

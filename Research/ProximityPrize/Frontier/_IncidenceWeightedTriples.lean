@@ -50,7 +50,6 @@ theorem line_card_le_pair_error_union
       rcases smul_eq_zero.mp hz with h | h
       · exact False.elim (hn h)
       · exact sub_eq_zero.mp h
-    simp only [Pi.add_apply,Pi.smul_apply] at ei
     rw [hu1] at ei
     exact ⟨add_right_cancel ei,hu1⟩
   have hex : ∀ i : ↥B, ∃ x ∈ T i.val, ¬ (u0 x = U x ∧ u1 x = D x) := by
