@@ -546,6 +546,132 @@ theorem error_union_gt_of_noncollinear
   exact hnoncol (collinear_of_error_union_le gamma w hinj C d hC T u0 u1 hab
     haC hbC hcC ha hb hc (Nat.le_of_not_gt h))
 
+/-- Repeated-index ordered triples contribute at most three square-size diagonals. -/
+theorem repeated_triples_card_le [DecidableEq I] (S : Finset I) :
+    ((S ×ˢ (S ×ˢ S)).filter (fun p =>
+      p.1 = p.2.1 ∨ p.1 = p.2.2 ∨ p.2.1 = p.2.2)).card ≤ 3 * S.card ^ 2 := by
+  classical
+  let AB := (S ×ˢ S).image (fun p => (p.1,(p.1,p.2)))
+  let AC := (S ×ˢ S).image (fun p => (p.1,(p.2,p.1)))
+  let BC := (S ×ˢ S).image (fun p => (p.1,(p.2,p.2)))
+  have hsub : ((S ×ˢ (S ×ˢ S)).filter (fun p =>
+      p.1 = p.2.1 ∨ p.1 = p.2.2 ∨ p.2.1 = p.2.2)) ⊆ (AB ∪ AC) ∪ BC := by
+    intro p hp
+    obtain ⟨hpS,heq⟩ := Finset.mem_filter.mp hp
+    obtain ⟨ha,hb,hc⟩ := Finset.mem_product.mp hpS
+    rcases heq with hab | hac | hbc
+    · apply Finset.mem_union.mpr
+      left
+      apply Finset.mem_union.mpr
+      left
+      exact Finset.mem_image.mpr ⟨(p.1,p.2.2),Finset.mem_product.mpr ⟨ha,hc⟩,
+        by simp only [hab]⟩
+    · apply Finset.mem_union.mpr
+      left
+      apply Finset.mem_union.mpr
+      right
+      exact Finset.mem_image.mpr ⟨(p.1,p.2.1),Finset.mem_product.mpr ⟨ha,hb⟩,
+        by simp only [hac]⟩
+    · apply Finset.mem_union.mpr
+      right
+      exact Finset.mem_image.mpr ⟨(p.1,p.2.1),Finset.mem_product.mpr ⟨ha,hb⟩,
+        by simp only [hbc]⟩
+  have hAB : AB.card ≤ S.card ^ 2 := by
+    exact (Finset.card_image_le).trans (by simp [Finset.card_product,pow_two])
+  have hAC : AC.card ≤ S.card ^ 2 := by
+    exact (Finset.card_image_le).trans (by simp [Finset.card_product,pow_two])
+  have hBC : BC.card ≤ S.card ^ 2 := by
+    exact (Finset.card_image_le).trans (by simp [Finset.card_product,pow_two])
+  have h1 := Finset.card_le_card hsub
+  have h2 := Finset.card_union_le (AB ∪ AC) BC
+  have h3 := Finset.card_union_le AB AC
+  omega
+
+/-- The distance lower bound on noncollinear triples controls total error-union mass. -/
+theorem triple_union_mass_lower [DecidableEq I]
+    {X : Type} [DecidableEq X]
+    (gamma : I → F) (w : I → V) (S : Finset I) (E : I → Finset X) (d : ℕ)
+    (hlow : ∀ a ∈ S, ∀ b ∈ S, ∀ c ∈ S,
+      a ≠ b → a ≠ c → b ≠ c → ¬ CollinearTriple gamma w a b c →
+      d < (E a ∪ E b ∪ E c).card) :
+    (d + 1) * S.card ^ 3 ≤
+      (∑ a ∈ S, ∑ b ∈ S, ∑ c ∈ S, (E a ∪ E b ∪ E c).card) +
+        (d + 1) * ((collinearTriples gamma w S).card + 3 * S.card ^ 2) := by
+  classical
+  let P := S ×ˢ (S ×ˢ S)
+  let R := P.filter (fun p => p.1 = p.2.1 ∨ p.1 = p.2.2 ∨ p.2.1 = p.2.2)
+  let B := R ∪ collinearTriples gamma w S
+  have hR : R.card ≤ 3 * S.card ^ 2 := repeated_triples_card_le S
+  have hB : B.card ≤ (collinearTriples gamma w S).card + 3 * S.card ^ 2 := by
+    have h := Finset.card_union_le R (collinearTriples gamma w S)
+    dsimp only [B]
+    omega
+  have hBsub : B ⊆ P := Finset.union_subset (Finset.filter_subset _ _)
+    (Finset.filter_subset _ _)
+  have hpoint : ∀ p ∈ P, d + 1 ≤ (E p.1 ∪ E p.2.1 ∪ E p.2.2).card +
+      (if p ∈ B then d + 1 else 0) := by
+    intro p hp
+    by_cases hpb : p ∈ B
+    · simp only [if_pos hpb]
+      omega
+    · simp only [if_neg hpb,add_zero]
+      have hpR : p ∉ R := fun h => hpb (Finset.mem_union.mpr (Or.inl h))
+      have hpL : p ∉ collinearTriples gamma w S :=
+        fun h => hpb (Finset.mem_union.mpr (Or.inr h))
+      have hne : p.1 ≠ p.2.1 ∧ p.1 ≠ p.2.2 ∧ p.2.1 ≠ p.2.2 := by
+        simpa only [R,Finset.mem_filter,hp,true_and,not_or] using hpR
+      have hnc : ¬ CollinearTriple gamma w p.1 p.2.1 p.2.2 := by
+        intro h
+        exact hpL (Finset.mem_filter.mpr ⟨hp,hne.1,hne.2.1,hne.2.2,h⟩)
+      obtain ⟨ha,hb,hc⟩ := Finset.mem_product.mp hp
+      exact hlow _ ha _ hb _ hc hne.1 hne.2.1 hne.2.2 hnc
+  have hsum := Finset.sum_le_sum hpoint
+  have hind : (∑ p ∈ P, if p ∈ B then d + 1 else 0) = B.card * (d + 1) := by
+    rw [← Finset.sum_filter]
+    have hf : P.filter (fun p => p ∈ B) = B := by
+      ext p
+      simp only [Finset.mem_filter]
+      exact ⟨fun h => h.2,fun h => ⟨hBsub h,h⟩⟩
+    rw [hf,Finset.sum_const,smul_eq_mul]
+  rw [Finset.sum_add_distrib,hind] at hsum
+  have hPcard : P.card = S.card ^ 3 := by simp [P,Finset.card_product,pow_succ,pow_two]
+  simp only [Finset.sum_const,smul_eq_mul,hPcard] at hsum
+  have hmass : (∑ p ∈ P, (E p.1 ∪ E p.2.1 ∪ E p.2.2).card) =
+      ∑ a ∈ S, ∑ b ∈ S, ∑ c ∈ S, (E a ∪ E b ∪ E c).card := by
+    simp only [P,Finset.sum_product]
+  rw [hmass] at hsum
+  nlinarith [Nat.mul_le_mul_left (d + 1) hB]
+
+/-- Canonical bad witnesses supply both the noncollinear distance bound and line cap. -/
+theorem bad_witness_triple_mass_lower [DecidableEq I]
+    {X A : Type} [Fintype X] [DecidableEq X] [AddCommGroup A] [Module F A]
+    (gamma : I → F) (w : I → (X → A)) (hinj : Function.Injective gamma)
+    (S : Finset I) (C : Submodule F (X → A)) (d t s : ℕ) (hs : 2 ≤ s)
+    (hC : ∀ z ∈ C, (∃ B : Finset X, B.card ≤ d ∧ ∀ x ∉ B, z x = 0) → z = 0)
+    (T : I → Finset X) (u0 u1 : X → A)
+    (hwC : ∀ i ∈ S, w i ∈ C)
+    (hcompl : ∀ i ∈ S, (T i)ᶜ.card ≤ t)
+    (hwag : ∀ i ∈ S, ∀ x ∈ T i, w i x = u0 x + gamma i • u1 x)
+    (hno : ∀ i ∈ S, ¬ ∃ f0 ∈ C, ∃ f1 ∈ C,
+      ∀ x ∈ T i, f0 x = u0 x ∧ f1 x = u1 x) :
+    s * (d + 1) * S.card ^ 3 ≤
+      s * (∑ a ∈ S, ∑ b ∈ S, ∑ c ∈ S,
+        (((T a)ᶜ ∪ (T b)ᶜ) ∪ (T c)ᶜ).card) +
+      (d + 1) * (s * S.card * (t + 1) ^ 2 + 3 * S.card ^ 3 +
+        s ^ 2 * S.card ^ 2 + 3 * s * S.card ^ 2) := by
+  classical
+  have hcap : ∀ U D, (S.filter (OnLine gamma w U D)).card ≤ t + 1 :=
+    bad_witness_line_cap t gamma w hinj S C T u0 u1 hwC hcompl hwag hno
+  have hcol := collinearTriples_card_budget gamma w hinj S s (t + 1) hs hcap
+  have hmass := triple_union_mass_lower gamma w S (fun i => (T i)ᶜ) d
+    (fun a ha b hb c hc hab _ _ hnc =>
+      error_union_gt_of_noncollinear gamma w hinj C d hC T u0 u1 hab
+        (hwC a ha) (hwC b hb) (hwC c hc)
+        (hwag a ha) (hwag b hb) (hwag c hc) hnc)
+  have hmassS := Nat.mul_le_mul_left s hmass
+  have hcolD := Nat.mul_le_mul_left (d + 1) hcol
+  nlinarith [hmassS,hcolD]
+
 end ProximityGap.IncidenceAffineLines
 #print axioms ProximityGap.IncidenceAffineLines.params_eq_of_two
 #print axioms ProximityGap.IncidenceAffineLines.distinct_lines_intersect_at_most_one
@@ -578,3 +704,6 @@ end ProximityGap.IncidenceAffineLines
 
 #print axioms ProximityGap.IncidenceAffineLines.collinear_of_error_union_le
 #print axioms ProximityGap.IncidenceAffineLines.error_union_gt_of_noncollinear
+#print axioms ProximityGap.IncidenceAffineLines.repeated_triples_card_le
+#print axioms ProximityGap.IncidenceAffineLines.triple_union_mass_lower
+#print axioms ProximityGap.IncidenceAffineLines.bad_witness_triple_mass_lower
