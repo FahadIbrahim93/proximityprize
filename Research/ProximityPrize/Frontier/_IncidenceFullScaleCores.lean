@@ -35,7 +35,7 @@ def commonEmb : Fin commonSize ↪ Coord where
   inj' := by
     intro a b h
     apply Fin.ext
-    exact congrArg Fin.val h
+    exact congrArg (fun x : Coord => x.val) h
 
 /-- Three disjoint coordinate groups, leaving one unused coordinate. -/
 def groupEmb (j : Fin 3) : Fin groupSize ↪ Coord where
@@ -155,11 +155,13 @@ noncomputable def v1 (j : Fin 3) : Coord → ZMod sponsorP := (j.val : ZMod spon
 noncomputable def v0 (j : Fin 3) : Coord → ZMod sponsorP := (j.val : ZMod sponsorP) ^ 2 • xz
 
 theorem z_mem : z ∈ prodCode := by
+  change ∃ q : Polynomial (ZMod sponsorP), q.degree < k ∧ z = fun i => q.eval (g ^ i.val)
   refine ⟨locator,?_,rfl⟩
   exact lt_of_le_of_lt Polynomial.degree_le_natDegree
     (by exact_mod_cast (locator_natDegree_le.trans_lt (by norm_num : commonSize < k)))
 
 theorem xz_mem : xz ∈ prodCode := by
+  change ∃ q : Polynomial (ZMod sponsorP), q.degree < k ∧ xz = fun i => q.eval (g ^ i.val)
   refine ⟨locator * Polynomial.X,?_,?_⟩
   · apply lt_of_le_of_lt (Polynomial.degree_mul_le _ _)
     have hz : locator.degree ≤ (commonSize : ℕ) :=
@@ -307,7 +309,8 @@ theorem support_threshold (j : Fin 3) (i : Coord) (hi : i ∉ core j) :
     (1 - (178956971 : ℝ≥0) / 536870912) * Fintype.card Coord ≤
       ((insert i (core j)).card : ℝ≥0) := by
   rw [support_card j i hi]
-  norm_num [Coord]
+  apply NNReal.coe_le_coe.mp
+  norm_num [Coord, n]
 
 noncomputable def scalar (j : Fin 3) (i : Coord) : ZMod sponsorP :=
   -((height i + j.val : ℕ) : ZMod sponsorP) * g ^ i.val
@@ -458,7 +461,8 @@ theorem image_card (j : Fin 3) : (image j).card = 357913943 := by
     intro a ha b hb he
     exact (scalar_injective (Finset.mem_compl.mp ha) (Finset.mem_compl.mp hb) he).2
   rw [image,Finset.card_image_iff.mpr hinj,Finset.card_compl,core_card]
-  norm_num [Coord]
+  apply NNReal.coe_le_coe.mp
+  norm_num [Coord, n]
 
 theorem images_disjoint {j j' : Fin 3} (hj : j ≠ j') : Disjoint (image j) (image j') := by
   classical

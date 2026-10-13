@@ -79,6 +79,35 @@ At `t=214719988` the slack is
 `-77933888686913623791819247124213472026898589548800`.
 These computations certify the displayed inequality, pending its Lean derivation.
 
+The exterior-witness continuation gives the stronger candidate lower bound
+
+`218759456/1073741824 ≤ mcaDeltaStar C epsStar`.
+
+Its exact budget passed in
+[hosted run 38374574903](https://github.com/mashingaan/proximityprize/actions/runs/38374574903)
+at `100980cf821015c01e253004d52463176114822d`.
+The improvement over PR 224 is `8075900` Hamming steps. The prospective interval
+width against the full-scale ceiling is `139154486/1073741824`.
+
+The additional line cap is a consequence of the same canonical witness data.
+Private coordinates on a line of size `ell` give
+`ell ≤ |E_a intersection E_b|+2` for any two distinct heads on that line.
+Since `|E_a|,|E_b|≤t`, their union has size at most `2t-ell+2`.
+There is a witness outside the line because its old occupancy cap is `t+1<m`.
+The triple formed by that witness and the two line heads is noncollinear.
+Distance forces its error union above `d`, whereas cardinality bounds it above
+by `3t-ell+2`. Consequently `ell≤3t-d+1`.
+
+For the literal first-sponsor budget, use
+`t=218759455`, `b=119407454`, `s=56756`.
+The strict integer slack is
+`139225481466661345557935197338264914234189314395700`.
+At the next error count the slack is
+`-32863596224077189172708874475821146373704584396800`.
+The canonical transfer is `IncidenceCanonicalExterior.firstPrime_exterior_floor`,
+pending its hosted kernel check. This refinement adds no polynomial, cross-ratio,
+or rational-function assumption beyond the distance condition already extracted.
+
 ## Construction audit
 
 Let `c = 536870910`, `a = 178956971`. Partition coordinates into the common
