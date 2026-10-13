@@ -51,7 +51,7 @@ jobs:
       - name: Fetch dependency cache
         run: ./scripts/lake-locked.sh exe cache get
       - name: Build existing incidence dependency
-        run: ./scripts/lake-locked.sh build Research.ProximityPrize.Frontier._SYZ3OverBudgetStackWitness
+        run: ./scripts/lake-locked.sh build Research.ProximityPrize.Frontier._IncidenceAverageAnchor
       - name: Check research proof
         run: |
           set -o pipefail
@@ -65,7 +65,7 @@ jobs:
           assert 'sorryAx' not in s
           import re
           matches=re.findall(r'depends on axioms:\s*\[([^\]]*)\]',s)
-          assert len(matches)==12
+          assert len(matches)==13
           for names in matches:
               assert set(x.strip() for x in names.split(','))<= {'propext','Classical.choice','Quot.sound'}
           print('Full-scale common-factor axiom audit clean')

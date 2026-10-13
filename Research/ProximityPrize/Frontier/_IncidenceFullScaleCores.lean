@@ -3,7 +3,7 @@ Copyright (c) 2026 Mikhail Izhutkin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mikhail Izhutkin (mashingaan, @mashingaan)
 -/
-import Research.ProximityPrize.Frontier._SYZ3OverBudgetStackWitness
+import Research.ProximityPrize.Frontier._IncidenceAverageAnchor
 
 set_option autoImplicit false
 set_option maxRecDepth 4096
@@ -179,9 +179,89 @@ theorem agree_v0 (j : Fin 3) : ∀ i ∈ core j, v0 j i = u0 i := by
   · have hh := (height_eq_iff j i).mpr hg
     simp [v0,u0,hh]
 
-open ArkLib.ProximityGap.Frontier.SYZ3OverBudgetStackWitness
 open ProximityGap Code
 open scoped NNReal ENNReal
+open ArkLib.ProximityGap.Frontier.PrizeShapeRateHalfBracket
+
+/- The four channel lemmas below retain the SYZ2/SYZ3 authorship and proofs.
+They are restated to keep this construction's imported proof cone small. -/
+section Channel
+
+variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
+
+/-- The pencil scalar attached to an off-`S` point `x` of a degenerate subset
+(SYZ2 `pencilScalar`). -/
+noncomputable def pencilScalar (u₀ u₁ v₀ v₁ : ι → F) (x : ι) : F :=
+  -((u₀ x - v₀ x) / (u₁ x - v₁ x))
+
+/-- SYZ2 channel theorem (a): the codeword pencil agrees with the line on `S ∪ {x}`. -/
+theorem pencil_line_agrees {S : Finset ι} {u₀ u₁ v₀ v₁ : ι → F}
+    (h₀ : ∀ i ∈ S, v₀ i = u₀ i) (h₁ : ∀ i ∈ S, v₁ i = u₁ i)
+    {x : ι} (hd₁ : u₁ x ≠ v₁ x) :
+    ∀ i ∈ insert x S,
+      (v₀ + pencilScalar u₀ u₁ v₀ v₁ x • v₁) i
+        = u₀ i + pencilScalar u₀ u₁ v₀ v₁ x • u₁ i := by
+  intro i hi
+  rcases Finset.mem_insert.mp hi with rfl | hiS
+  · have hne : u₁ i - v₁ i ≠ 0 := sub_ne_zero.mpr hd₁
+    have key : pencilScalar u₀ u₁ v₀ v₁ i * (u₁ i - v₁ i) = -(u₀ i - v₀ i) := by
+      rw [pencilScalar, neg_mul, div_mul_cancel₀ _ hne]
+    simp only [Pi.add_apply, Pi.smul_apply, smul_eq_mul]
+    linear_combination -key
+  · simp only [Pi.add_apply, Pi.smul_apply, smul_eq_mul, h₀ i hiS, h₁ i hiS]
+
+/-- SYZ2 channel theorem (b): the pair-joint clause fails on the enlarged witness set. -/
+theorem not_pairJointAgreesOn_insert (C : Submodule F (ι → F))
+    {S : Finset ι} {u₀ u₁ v₁ : ι → F}
+    (huniq₁ : ∀ w ∈ (C : Set (ι → F)), (∀ i ∈ S, w i = u₁ i) → w = v₁)
+    {x : ι} (hd₁ : u₁ x ≠ v₁ x) :
+    ¬ pairJointAgreesOn (C : Set (ι → F)) (insert x S) u₀ u₁ := by
+  rintro ⟨w₀, hw₀, w₁, hw₁, h⟩
+  have hw₁v : w₁ = v₁ :=
+    huniq₁ w₁ hw₁ fun i hi => (h i (Finset.mem_insert_of_mem hi)).2
+  have hx : w₁ x = u₁ x := (h x (Finset.mem_insert_self x S)).2
+  rw [hw₁v] at hx
+  exact hd₁ hx.symm
+
+/-- SYZ2 per-point channel: every eligible off-`S` point produces a literal
+`mcaEvent`-bad scalar. -/
+theorem mcaEvent_pencil (C : Submodule F (ι → F)) {δ : ℝ≥0}
+    {S : Finset ι} {u₀ u₁ v₀ v₁ : ι → F}
+    (hv₀ : v₀ ∈ C) (hv₁ : v₁ ∈ C)
+    (h₀ : ∀ i ∈ S, v₀ i = u₀ i) (h₁ : ∀ i ∈ S, v₁ i = u₁ i)
+    (huniq₁ : ∀ w ∈ (C : Set (ι → F)), (∀ i ∈ S, w i = u₁ i) → w = v₁)
+    {x : ι} (hd₁ : u₁ x ≠ v₁ x)
+    (hcard : (((insert x S).card : ℝ≥0)) ≥ (1 - δ) * Fintype.card ι) :
+    mcaEvent (C : Set (ι → F)) δ u₀ u₁ (pencilScalar u₀ u₁ v₀ v₁ x) :=
+  ⟨insert x S, hcard,
+    ⟨v₀ + pencilScalar u₀ u₁ v₀ v₁ x • v₁,
+      C.add_mem hv₀ (C.smul_mem _ hv₁),
+      pencil_line_agrees h₀ h₁ hd₁⟩,
+    not_pairJointAgreesOn_insert C huniq₁ hd₁⟩
+
+/-- SYZ2 Reed–Solomon interpolation uniqueness on any subset of at least `k` points. -/
+theorem rsCode_eq_of_agree_on_card_le {n : ℕ} [NeZero n]
+    (dom : Fin n ↪ F) {k : ℕ} {S : Finset (Fin n)} (hk : k ≤ S.card)
+    {w w' : Fin n → F} (hw : w ∈ rsCode dom k) (hw' : w' ∈ rsCode dom k)
+    (hagree : ∀ i ∈ S, w i = w' i) : w = w' := by
+  obtain ⟨p, hP, rfl⟩ := hw
+  obtain ⟨Q, hQ, rfl⟩ := hw'
+  have hPQ : p - Q = 0 := by
+    refine Polynomial.eq_zero_of_degree_lt_of_eval_finset_eq_zero
+      (f := p - Q) (s := S.image dom) ?_ ?_
+    · rw [Finset.card_image_of_injective _ dom.injective]
+      calc (p - Q).degree ≤ max p.degree Q.degree := Polynomial.degree_sub_le p Q
+        _ < (k : WithBot ℕ) := max_lt hP hQ
+        _ ≤ (S.card : WithBot ℕ) := by exact_mod_cast hk
+    · intro x hx
+      obtain ⟨i, hi, rfl⟩ := Finset.mem_image.mp hx
+      rw [Polynomial.eval_sub, sub_eq_zero]
+      exact hagree i hi
+  have hPQ' : p = Q := sub_eq_zero.mp hPQ
+  rw [hPQ']
+
+end Channel
 
 theorem row1_ne (j : Fin 3) (i : Coord) (hi : i ∉ core j) : u1 i ≠ v1 j i := by
   have hc : i ∉ common := fun h => hi (Finset.mem_union_left _ h)
@@ -308,7 +388,10 @@ theorem scalar_injective {j j' : Fin 3} {i i' : Coord}
     simpa only [scalar,neg_mul,neg_inj] using he
   have hg : ∀ m : ℕ, (g ^ m) ^ n = 1 := by
     intro m
-    rw [← pow_mul,Nat.mul_comm,pow_mul,g_pow_full,one_pow]
+    rw [← pow_mul,Nat.mul_comm,pow_mul]
+    have hfull : g ^ n = 1 := by
+      simpa only [orderOf_g] using pow_orderOf_eq_one g
+    rw [hfull,one_pow]
   have hp := congrArg (fun a : ZMod P => a ^ n) hh
   simp only [mul_pow,hg,mul_one] at hp
   have hab := coefficient_powers_injective (coefficient_bounds j i hi)
@@ -326,6 +409,32 @@ theorem scalar_injective {j j' : Fin 3} {i i' : Coord}
   subst i'
   have hjj : j = j' := Fin.ext (by omega)
   exact ⟨hjj,rfl⟩
+
+/-- The designated decoded head has no agreement coordinates beyond its witness. -/
+theorem exact_agreement_support (j : Fin 3) (i : Coord) (hi : i ∉ core j) (y : Coord) :
+    (v0 j + scalar j i • v1 j) y = u0 y + scalar j i * u1 y ↔
+      y ∈ insert i (core j) := by
+  constructor
+  · intro he
+    by_cases hy : y ∈ core j
+    · exact Finset.mem_insert_of_mem hy
+    · have hd := sub_ne_zero.mpr (row1_ne j y hy)
+      have hmul : scalar j i * (u1 y - v1 j y) = -(u0 y - v0 j y) := by
+        simp only [Pi.add_apply,Pi.smul_apply,smul_eq_mul] at he
+        linear_combination -he
+      have hscalar : scalar j i = pencilScalar u0 u1 (v0 j) (v1 j) y := by
+        unfold pencilScalar
+        apply neg_injective
+        rw [neg_neg]
+        apply (eq_div_iff hd).2
+        linear_combination -hmul
+      rw [← scalar_eq_pencil j y hy] at hscalar
+      have hiy := (scalar_injective hi hy hscalar).2
+      exact Finset.mem_insert.mpr (Or.inl hiy.symm)
+  · intro hy
+    have hag := pencil_line_agrees (agree_v0 j) (agree_v1 j) (row1_ne j i hi) y hy
+    rw [← scalar_eq_pencil j i hi] at hag
+    exact hag
 
 noncomputable def image (j : Fin 3) : Finset (ZMod P) := (core j)ᶜ.image (scalar j)
 
@@ -451,6 +560,7 @@ end ProximityGap.IncidenceFullScaleCores
 #print axioms ProximityGap.IncidenceFullScaleCores.scalar_bad
 #print axioms ProximityGap.IncidenceFullScaleCores.coefficient_powers_injective
 #print axioms ProximityGap.IncidenceFullScaleCores.scalar_injective
+#print axioms ProximityGap.IncidenceFullScaleCores.exact_agreement_support
 #print axioms ProximityGap.IncidenceFullScaleCores.allScalars_card
 #print axioms ProximityGap.IncidenceFullScaleCores.allScalars_bad
 

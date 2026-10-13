@@ -152,6 +152,32 @@ minimizes the strictly convex block cost over integers and searches the exact
 largest admissible `t`. All calculations use integers and rational arithmetic.
 Orders above three remain research derivations until formalized.
 
+The independent arithmetic check passed in
+[hosted run 38370208361](https://github.com/mashingaan/proximityprize/actions/runs/38370208361)
+at `250f0876459990653a2bafee77450ddc88c7b2ce`.
+
+| Order | Optimal integer block | Largest certified error count | Prospective lattice floor |
+| --- | --- | --- | --- |
+| 3 | 56756 | 210683555 | 210683556/1073741824 |
+| 4 | 1321123 | 169941563 | 169941564/1073741824 |
+| 5 | 6739646 | 138942677 | 138942678/1073741824 |
+| 6 | 18194417 | 117144077 | 117144078/1073741824 |
+
+The triple optimum selects block `56756`, one above the block used in PR 224.
+This improves arithmetic slack but not its integer threshold. Exact repeated-index
+partitions also leave that threshold unchanged.
+
+There is an all-orders obstruction for this particular budget. If `r≥4` and
+`t/n≥1/6`, dropping its nonnegative collinearity penalty and replacing
+`falling(m,r)` by `m^r` bounds its normalized slack above by
+
+`1/2 + 1/n + (5/6)^4 - 1 = 1/n - 23/1296 < 0`.
+
+Thus no higher order in this budget can certify even `1/6`, whereas the triple
+floor is strictly larger than `1/6`. Further blind iteration of this same budget
+cannot improve the current floor. This is an optimization obstruction for the
+displayed inequalities, not a countermodel to all canonical witness assumptions.
+
 Increasing the order in this particular budget is not automatically a stronger
 argument. Nor does failure of this budget establish a barrier for the full
 canonical assumptions. A barrier still requires a countermodel or sharp
