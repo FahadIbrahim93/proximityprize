@@ -176,10 +176,37 @@ def moment_frontier(r):
                 evidence='exact optimization of stated budget, no optimality claim for all moments')
 
 
+def weighted_slack(t, s):
+    m, d = N+1, K
+    penalty = (s*m*(t+1)**2*(d+1-(t+1))
+               + (d+1)*(3*m**3+s*s*m*m+3*s*m*m))
+    return (s*N*N*(d+1)*m**3+s*(m*(N-t))**3
+            -s*N**3*m**3-N*N*penalty)
+
+
+def weighted_frontier():
+    s = best_block(N+1,3)
+    lo, hi = 0, K//2
+    while lo < hi:
+        mid = (lo+hi+1)//2
+        if weighted_slack(mid,s) > 0:
+            lo = mid
+        else:
+            hi = mid-1
+    assert weighted_slack(lo,s) > 0
+    assert weighted_slack(lo+1,s) <= 0
+    assert 3*(lo+1) <= 2*(K+1)
+    return dict(block=s,max_error=lo,lattice_floor=str(Fraction(lo+1,N)),
+                improvement_steps=lo-210683555,
+                strict_slack=weighted_slack(lo,s),next_slack=weighted_slack(lo+1,s),
+                evidence='canonical weighted-line derivation awaiting kernel validation')
+
+
 if __name__ == '__main__':
     moments = [moment_frontier(r) for r in range(3,7)]
     assert moments[0]['max_error'] == 210683555
     assert all(moments[i+1]['max_error'] < moments[i]['max_error']
                for i in range(len(moments)-1))
     print(json.dumps(dict(construction=construction_arithmetic(),
-                          finite=finite_interpolation(),moment_budgets=moments),indent=2))
+                          finite=finite_interpolation(),moment_budgets=moments,
+                          weighted_triples=weighted_frontier()),indent=2))
