@@ -16,26 +16,26 @@ open ProximityGap.IncidenceTripleMass ProximityGap.IncidenceAffineLines
 /-- Triple-incidence mass excludes an over-budget family of canonical bad witnesses.
 The support predicate is the unfolded minimum-distance bound for the code. -/
 theorem no_bad_witness_family_of_triple_budget
-    {F I X A : Type} [Field F] [Fintype I] [DecidableEq I]
-    [Fintype X] [Nonempty X] [DecidableEq X] [AddCommGroup A] [Module F A]
-    (gamma : I → F) (w : I → (X → A)) (hinj : Function.Injective gamma)
-    (C : Submodule F (X → A)) (d t s : ℕ) (hs : 2 ≤ s)
-    (htn : t ≤ Fintype.card X)
-    (hC : ∀ z ∈ C, (∃ B : Finset X, B.card ≤ d ∧ ∀ x ∉ B, z x = 0) → z = 0)
-    (T : I → Finset X) (u0 u1 : X → A)
+    {F I Coord A : Type} [Field F] [Fintype I] [DecidableEq I]
+    [Fintype Coord] [Nonempty Coord] [DecidableEq Coord] [AddCommGroup A] [Module F A]
+    (gamma : I → F) (w : I → (Coord → A)) (hinj : Function.Injective gamma)
+    (C : Submodule F (Coord → A)) (d t s : ℕ) (hs : 2 ≤ s)
+    (htn : t ≤ Fintype.card Coord)
+    (hC : ∀ z ∈ C, (∃ B : Finset Coord, B.card ≤ d ∧ ∀ x ∉ B, z x = 0) → z = 0)
+    (T : I → Finset Coord) (u0 u1 : Coord → A)
     (hwC : ∀ i, w i ∈ C)
     (hcompl : ∀ i, (T i)ᶜ.card ≤ t)
     (hwag : ∀ i, ∀ x ∈ T i, w i x = u0 x + gamma i • u1 x)
     (hno : ∀ i, ¬ ∃ f0 ∈ C, ∃ f1 ∈ C,
       ∀ x ∈ T i, f0 x = u0 x ∧ f1 x = u1 x)
-    (hbig : s * Fintype.card X ^ 2 * (d + 1) * Fintype.card I ^ 3 +
-        s * (Fintype.card I * (Fintype.card X - t)) ^ 3 >
-      s * Fintype.card X ^ 3 * Fintype.card I ^ 3 +
-        Fintype.card X ^ 2 * (d + 1) *
+    (hbig : s * Fintype.card Coord ^ 2 * (d + 1) * Fintype.card I ^ 3 +
+        s * (Fintype.card I * (Fintype.card Coord - t)) ^ 3 >
+      s * Fintype.card Coord ^ 3 * Fintype.card I ^ 3 +
+        Fintype.card Coord ^ 2 * (d + 1) *
           (s * Fintype.card I * (t + 1) ^ 2 + 3 * Fintype.card I ^ 3 +
             s ^ 2 * Fintype.card I ^ 2 + 3 * s * Fintype.card I ^ 2)) : False := by
   classical
-  have hpad : ∀ i, ∃ E : Finset X, (T i)ᶜ ⊆ E ∧ E.card = t := by
+  have hpad : ∀ i, ∃ E : Finset Coord, (T i)ᶜ ⊆ E ∧ E.card = t := by
     intro i
     obtain ⟨E,hTE,_,hcard⟩ := Finset.exists_subsuperset_card_eq
       (Finset.subset_univ ((T i)ᶜ)) (hcompl i) (by simpa using htn)
@@ -56,8 +56,8 @@ theorem no_bad_witness_family_of_triple_budget
     exact Finset.card_le_card
       (Finset.union_subset_union (Finset.union_subset_union (hTE a) (hTE b)) (hTE c))
   have hmonoS := Nat.mul_le_mul_left s hmono
-  have hlowN := Nat.mul_le_mul_left (Fintype.card X ^ 2) hlow
-  have hmonoN := Nat.mul_le_mul_left (Fintype.card X ^ 2) hmonoS
+  have hlowN := Nat.mul_le_mul_left (Fintype.card Coord ^ 2) hlow
+  have hmonoN := Nat.mul_le_mul_left (Fintype.card Coord ^ 2) hmonoS
   have hupp := triple_union_mass_bound E t hEcard
   have huppS := Nat.mul_le_mul_left s hupp
   nlinarith [hlowN,hmonoN,huppS,hbig]
@@ -67,25 +67,25 @@ open scoped NNReal ENNReal
 
 /-- Triple incidence bounds the number of canonical MCA-bad scalars. -/
 theorem badScalars_card_le_of_triple_budget
-    {F X A : Type} [Field F] [Fintype F] [DecidableEq F]
-    [Fintype X] [Nonempty X] [DecidableEq X]
+    {F Coord A : Type} [Field F] [Fintype F] [DecidableEq F]
+    [Fintype Coord] [Nonempty Coord] [DecidableEq Coord]
     [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
-    (C : Submodule F (X → A)) (j d t s : ℕ) (hs : 2 ≤ s)
-    (htn : t ≤ Fintype.card X) (hC : NoWeightLE C d)
-    (hbig : s * Fintype.card X ^ 2 * (d + 1) * (j + 1) ^ 3 +
-        s * ((j + 1) * (Fintype.card X - t)) ^ 3 >
-      s * Fintype.card X ^ 3 * (j + 1) ^ 3 +
-        Fintype.card X ^ 2 * (d + 1) *
+    (C : Submodule F (Coord → A)) (j d t s : ℕ) (hs : 2 ≤ s)
+    (htn : t ≤ Fintype.card Coord) (hC : NoWeightLE C d)
+    (hbig : s * Fintype.card Coord ^ 2 * (d + 1) * (j + 1) ^ 3 +
+        s * ((j + 1) * (Fintype.card Coord - t)) ^ 3 >
+      s * Fintype.card Coord ^ 3 * (j + 1) ^ 3 +
+        Fintype.card Coord ^ 2 * (d + 1) *
           (s * (j + 1) * (t + 1) ^ 2 + 3 * (j + 1) ^ 3 +
             s ^ 2 * (j + 1) ^ 2 + 3 * s * (j + 1) ^ 2))
-    {δ : ℝ≥0} (hδ : δ * (Fintype.card X : ℝ≥0) < t + 1)
-    (u0 u1 : X → A) :
-    (Finset.univ.filter fun γ : F => mcaEvent (C : Set (X → A)) δ u0 u1 γ).card ≤ j := by
+    {δ : ℝ≥0} (hδ : δ * (Fintype.card Coord : ℝ≥0) < t + 1)
+    (u0 u1 : Coord → A) :
+    (Finset.univ.filter fun γ : F => mcaEvent (C : Set (Coord → A)) δ u0 u1 γ).card ≤ j := by
   classical
   by_contra hgt
   push Not at hgt
   obtain ⟨B,hBsub,hBcard⟩ := Finset.exists_subset_card_eq
-    (s := Finset.univ.filter (fun γ : F => mcaEvent (C : Set (X → A)) δ u0 u1 γ))
+    (s := Finset.univ.filter (fun γ : F => mcaEvent (C : Set (Coord → A)) δ u0 u1 γ))
     (n := j + 1) (by omega)
   let gamma : Fin (j + 1) → F :=
     fun i => (B.equivFin.symm (Fin.cast hBcard.symm i) : F)
@@ -94,7 +94,7 @@ theorem badScalars_card_le_of_triple_budget
     have h1 := Subtype.val_injective hab
     have h2 := B.equivFin.symm.injective h1
     exact Fin.cast_injective _ h2
-  have hbad : ∀ i, mcaEvent (C : Set (X → A)) δ u0 u1 (gamma i) := fun i =>
+  have hbad : ∀ i, mcaEvent (C : Set (Coord → A)) δ u0 u1 (gamma i) := fun i =>
     (Finset.mem_filter.mp (hBsub (B.equivFin.symm (Fin.cast hBcard.symm i)).2)).2
   choose T hTsz hwEx hno using hbad
   choose w hwC hwag using hwEx
