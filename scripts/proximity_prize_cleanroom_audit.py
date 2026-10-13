@@ -30,6 +30,7 @@ from pathlib import Path
 
 ALLOWED_AXIOMS = {"propext", "Classical.choice", "Quot.sound"}
 DEFAULT_MANIFEST = Path(__file__).resolve().parent / "proximity_prize_cleanroom_targets.txt"
+REPO_ROOT = Path(__file__).resolve().parent.parent
 
 DEP_RE = re.compile(r"'([^']+)' depends on axioms: \[([^\]]*)\]")
 NODEP_RE = re.compile(r"'([^']+)' does not depend on any axioms")
@@ -90,6 +91,18 @@ def build_probe(entries: list[Entry]) -> str:
         lines.append(f"#check {entry.decl}")
         lines.append(f"#print axioms {entry.decl}")
     return "\n".join(lines) + "\n"
+
+
+def missing_local_modules(entries: list[Entry], root: Path = REPO_ROOT) -> list[str]:
+    """Catch moved repository modules before a dry run claims a valid manifest."""
+    failures: list[str] = []
+    for module in sorted({entry.module for entry in entries if entry.status == "active"}):
+        parts = module.split(".")
+        if parts[0] in {"ArkLib", "Research"}:
+            source = root.joinpath(*parts).with_suffix(".lean")
+            if not source.is_file():
+                failures.append(f"active module {module}: source file does not exist")
+    return failures
 
 
 def run_lean(src: str, timeout: int) -> tuple[int, str]:
@@ -235,6 +248,11 @@ def main() -> int:
 
     active = [entry for entry in entries if entry.status == "active"]
     pending = [entry for entry in entries if entry.status == "pending"]
+    missing_modules = missing_local_modules(entries)
+    if missing_modules:
+        print("\n".join(missing_modules), file=sys.stderr)
+        print("clean-room audit: active manifest imports are invalid", file=sys.stderr)
+        return 1
 
     if args.dry_run:
         print(f"clean-room audit manifest: {len(active)} active, {len(pending)} pending")

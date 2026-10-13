@@ -18,6 +18,9 @@ before looking for the expected predicate. A signature such as
 axiom report is empty. Predicate occurrences solely in those premises cannot
 certify a prize conclusion. This remains a syntactic audit; it does not establish
 that a predicate's definition captures the intended mathematical statement.
+The manifest uses `Research.ProximityPrize.Resolution` for the retained resolution
+declarations. A dry run also rejects active `ArkLib`/`Research` modules whose
+source no longer exists; pending future entries remain permitted.
 Run its regression and independent Lean-output fixture with
 `python3 -m unittest discover -s scripts/tests -p 'test_cleanroom_conclusion.py'`.
 

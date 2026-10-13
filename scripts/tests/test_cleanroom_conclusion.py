@@ -91,5 +91,22 @@ class LeanReproductionTests(unittest.TestCase):
             self.assertIn("conclusion token", errors.getvalue())
 
 
+class ManifestModuleTests(unittest.TestCase):
+    def test_default_manifest_imports_exist(self):
+        self.assertEqual(audit.missing_local_modules(audit.parse_manifest(audit.DEFAULT_MANIFEST)), [])
+
+    def test_missing_active_module_is_rejected_and_pending_is_allowed(self):
+        with tempfile.TemporaryDirectory() as directory:
+            active = audit.Entry("active", "Research.ProximityPrize.Missing", "candidate", "mcaPrize", (), 1)
+            pending = audit.Entry("pending", "Research.ProximityPrize.Future", "future", "mcaPrize", (), 2)
+            failures = audit.missing_local_modules([active, pending], Path(directory))
+            self.assertEqual(len(failures), 1)
+            self.assertIn(active.module, failures[0])
+            source = Path(directory) / "Research/ProximityPrize/Missing.lean"
+            source.parent.mkdir(parents=True)
+            source.write_text("", encoding="utf-8")
+            self.assertEqual(audit.missing_local_modules([active, pending], Path(directory)), [])
+
+
 if __name__ == "__main__":
     unittest.main()
