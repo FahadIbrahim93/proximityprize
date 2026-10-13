@@ -5,6 +5,7 @@ on:
     paths:
       - Research/ProximityPrize/Frontier/_IncidenceWeightedTriples.lean
       - Research/ProximityPrize/Frontier/_IncidenceAffineLines.lean
+      - Research/ProximityPrize/Frontier/_IncidenceExteriorLineCap.lean
       - .github/workflows/sponsor-weighted.yml
       - lean-toolchain
       - lake-manifest.json
@@ -38,21 +39,22 @@ jobs:
       - name: Fetch Mathlib cache
         run: ./scripts/lake-locked.sh exe cache get
       - name: Build line geometry
-        run: ./scripts/lake-locked.sh build Research.ProximityPrize.Frontier._IncidenceAffineLines
+        run: ./scripts/lake-locked.sh build Research.ProximityPrize.Frontier._IncidenceWeightedTriples
       - name: Check weighted geometry and axioms
         run: |
           set -o pipefail
           lake env lean Research/ProximityPrize/Frontier/_IncidenceWeightedTriples.lean | tee weighted-axioms.log
+          lake env lean Research/ProximityPrize/Frontier/_IncidenceExteriorLineCap.lean | tee -a weighted-axioms.log
           python3 - <<'PY'
           from pathlib import Path
           import re
           log=Path('weighted-axioms.log').read_text()
           reports=re.findall(r'depends on axioms:\s*\[([^\]]*)\]',log)
-          assert len(reports)==6
+          assert len(reports)==8
           assert 'sorryAx' not in log
           for names in reports:
               assert set(x.strip() for x in names.split(',')) <= {'propext','Classical.choice','Quot.sound'}
-          print('Six weighted geometry declarations axiom-clean')
+          print('Eight weighted geometry declarations axiom-clean')
           PY
       - name: Stop Lean workers
         if: always() && !cancelled()

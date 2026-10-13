@@ -176,29 +176,34 @@ def moment_frontier(r):
                 evidence='exact optimization of stated budget, no optimality claim for all moments')
 
 
-def weighted_slack(t, s):
+def weighted_slack(t, s, cap=None):
     m, d = N+1, K
-    penalty = (s*m*(t+1)**2*(d+1-(t+1))
+    b = t+1 if cap is None else cap
+    penalty = (s*m*b**2*(d+1-b)
                + (d+1)*(3*m**3+s*s*m*m+3*s*m*m))
     return (s*N*N*(d+1)*m**3+s*(m*(N-t))**3
             -s*N**3*m**3-N*N*penalty)
 
 
-def weighted_frontier():
+def weighted_frontier(exterior=False):
     s = best_block(N+1,3)
+    def slack(t):
+        b = min(t+1,max(3*t-K,0)+1) if exterior else t+1
+        return weighted_slack(t,s,b)
     lo, hi = 0, K//2
     while lo < hi:
         mid = (lo+hi+1)//2
-        if weighted_slack(mid,s) > 0:
+        if slack(mid) > 0:
             lo = mid
         else:
             hi = mid-1
-    assert weighted_slack(lo,s) > 0
-    assert weighted_slack(lo+1,s) <= 0
+    assert slack(lo) > 0
+    assert slack(lo+1) <= 0
     assert 3*(lo+1) <= 2*(K+1)
     return dict(block=s,max_error=lo,lattice_floor=str(Fraction(lo+1,N)),
                 improvement_steps=lo-210683555,
-                strict_slack=weighted_slack(lo,s),next_slack=weighted_slack(lo+1,s),
+                strict_slack=slack(lo),next_slack=slack(lo+1),
+                line_cap=min(lo+1,max(3*lo-K,0)+1) if exterior else lo+1,
                 evidence='canonical weighted-line derivation awaiting kernel validation')
 
 
@@ -209,4 +214,5 @@ if __name__ == '__main__':
                for i in range(len(moments)-1))
     print(json.dumps(dict(construction=construction_arithmetic(),
                           finite=finite_interpolation(),moment_budgets=moments,
-                          weighted_triples=weighted_frontier()),indent=2))
+                          weighted_triples=weighted_frontier(),
+                          exterior_line_triples=weighted_frontier(True)),indent=2))
