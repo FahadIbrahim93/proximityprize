@@ -80,6 +80,11 @@ class ConclusionBoundaryTests(unittest.TestCase):
     def test_quoted_text_cannot_supply_the_conclusion_token(self):
         self.assertTrue(audit.check_signature(entry(), output(': "mcaPrize" = "mcaPrize"')))
 
+    def test_character_delimiters_do_not_hide_premises(self):
+        self.assertTrue(audit.check_signature(entry(), output(": '(' = '(' → mcaPrize 0 → True")))
+        self.assertEqual(audit.check_signature(entry(), output(": mcaPrize (fun _ => '\"')")), [])
+        self.assertEqual(audit.quoted_text_mask("x'"), "x'")
+
     def test_parenthesis_unwrapping_ignores_quoted_delimiters(self):
         self.assertTrue(audit.check_signature(entry(), output(': ("(" = "(" → mcaPrize 0 → True)')))
         self.assertEqual(audit.check_signature(entry(), output(': (mcaPrize ("("))')), [])
@@ -95,6 +100,8 @@ class LeanReproductionTests(unittest.TestCase):
              'theorem candidate («n → m» : Nat) : mcaPrize «n → m» := rfl\n', 0),
             ('def mcaPrize (n : Nat) : Prop := n = 0\n'
              'theorem candidate : "(" = "(" → mcaPrize 0 → True := fun _ _ => trivial\n', 1),
+            ('def mcaPrize (n : Nat) : Prop := n = 0\n'
+             "theorem candidate : '(' = '(' → mcaPrize 0 → True := fun _ _ => trivial\n", 1),
         ]
         for source_text, expected in fixtures:
             with self.subTest(expected=expected), tempfile.TemporaryDirectory() as directory:

@@ -134,8 +134,8 @@ def parse_axioms(output: str) -> dict[str, set[str]]:
 def quoted_text_mask(text: str) -> str:
     """Blank quoted identifier and string contents, preserving character offsets.
 
-    Lean prints escaped ordinary strings and guillemet identifiers in signatures.
-    Neither their contents nor raw string contents carry binder delimiters.
+    Lean prints strings, character literals and guillemet identifiers in signatures.
+    Their contents do not carry binder delimiters; identifier primes remain live.
     """
     chars = list(text)
     index = 0
@@ -144,6 +144,17 @@ def quoted_text_mask(text: str) -> str:
         if text[index] == "«":
             end = text.find("»", index + 1)
             index = len(text) if end < 0 else end + 1
+        elif text[index] == "'" and (
+            index == 0 or not (text[index - 1].isalnum() or text[index - 1] in "_'")
+        ):
+            literal = re.match(
+                r"'(?:[^\\'\n]|\\(?:[\\'\"ntr]|x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4}))'",
+                text[index:],
+            )
+            if literal is None:
+                index += 1
+                continue
+            index += literal.end()
         elif text[index] == '"':
             index += 1
             while index < len(text):
