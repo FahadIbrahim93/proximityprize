@@ -11,7 +11,10 @@ Usage:
   python3 scripts/sorry_census.py --out census.json
 
 A token is classified as:
-  hole — `sorry`/`admit` in live code (a tactic body or term position)
+  hole — `sorry`/`admit`/`sorryAx` in live code (a tactic body or term
+         position). `sorryAx` is the kernel axiom both `sorry` and `admit`
+         elaborate to (Lean `Init/Prelude.lean`); writing it directly is a
+         hole and must not slip past the `sorry` word-boundary match.
   doc  — inside a docstring `/-- ... -/`, block comment `/- ... -/`, or
          line comment `-- ...` (includes prose words containing 'admit')
 The containing declaration is the nearest preceding `theorem|lemma|def|
@@ -30,7 +33,7 @@ DECL_RE = re.compile(
     r"^\s*(?:@\[[^\]]*\]\s*)?(?:private\s+|protected\s+|noncomputable\s+|partial\s+|scoped\s+)*"
     r"(theorem|lemma|def|instance|example|abbrev|opaque)\s+([^\s({\[:]+)"
 )
-TOKEN_RE = re.compile(r"\b(sorry|admit)\b")
+TOKEN_RE = re.compile(r"\b(sorry|admit|sorryAx)\b")
 
 
 def strip_comments_map(text: str) -> list[bool]:
