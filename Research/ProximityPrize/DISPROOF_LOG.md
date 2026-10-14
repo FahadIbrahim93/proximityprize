@@ -54044,3 +54044,69 @@ and `scripts/lake-locked.sh build Research.ProximityPrize.Frontier._MCAGoodRadiu
 The four printed declarations use only `propext`, `Classical.choice`, and
 `Quot.sound`. The initial tracked build passed 3502 jobs. Full repository and
 hosted gates must be reported separately.
+
+## [164-r389-subfield-wick-budget] 2026-10-14
+
+Hardyzyt. Exact arithmetic certificates and an explicit family argument;
+no new Lean theorem.
+
+The all-finite-fields quantifier in
+`ArkLib.ProximityGap.R389WickBudgetSupBound.UniformSubgroupWickBudget`
+cannot hold with one absolute inflation constant. The new
+[probe](../../scripts/probes/probe_r389_subfield_wick_budget.py) targets that
+named input and its DC-subtracted normalization, rather than the original
+sponsor prime-field problem.
+
+The proper-subfield mechanism is already proved by
+[`FFModelW4.ffThin_prizeLaw_countermodel`](Frontier/_FunctionFieldModelSubfieldDegeneracy.lean).
+The new result supplies the quantitative obstruction to this particular Wick
+budget. It does not claim to discover the subfield no-cancellation mechanism.
+
+For a prime `s`, take `F = GF(s^2)` and its torsion subgroup
+`H = mu_(s-1) = GF(s)^*`. Set `d = s-1`, `q = s^2`, and
+`r = wickDepth(q) = ceil(log s)`. If `z,w` count sums of `r` elements of `H`
+equal to zero and to each fixed nonzero subfield element, respectively, then
+`z' = d*w` and `w' = z+(d-1)*w`, starting at `(1,0)`. Thus
+
+```
+E_r(H) = z^2+d*w^2 = (d^(2r)+d)/s,
+q*E_r(H)-d^(2r) = d^(2r+1)+s*d.
+```
+
+The probe certifies the route depth with rational Taylor bounds on `exp(1)`.
+It checks the energy both by the recurrence and by direct small-field
+convolution. Small quadratic-field enumeration also checks the torsion set.
+Integer budget boundaries use exact comparisons on both sides of the boundary.
+
+| Subfield size `s` | `d` | Route depth `r` | Smallest passing integer `C` |
+| ---: | ---: | ---: | ---: |
+| 17 | 16 | 3 | 3 |
+| 97 | 96 | 5 | 10 |
+| 257 | 256 | 6 | 22 |
+| 65537 | 65536 | 12 | 2863 |
+
+The last three rows reject `C=7/2`. The last subgroup has power-of-two order.
+For the whole family, the budget would require `C >= d/(16r)` when `C >= 0`:
+`q <= exp(2r) < 8^r`, `(2r-1)!! <= (2r)^r`, and the DC numerator is at least
+`d^(2r)`. Hence `d^(2r) <= (16r*C*d)^r` and `d <= 16r*C`.
+Since `r <= 2*sqrt(s)` and `d >= s/2`, this gives `C >= sqrt(s)/64`.
+Arbitrarily large primes exclude every absolute nonnegative `C`.
+Negative `C` already fails at `s=17`, where `r=3` and the budget's right side
+is negative. This is the written family argument, not a kernel-checked theorem.
+
+For the two actual sponsor primes `p`, the probe also embeds the actual
+`mu_(2^30)` into `GF(p^2)`. The existing prime and generator modules supply
+primality; the probe checks their constants and a quadratic nonsquare.
+All subgroup sums stay in `GF(p)`, so Cauchy-Schwarz gives
+`p*E_r >= n^(2r)`, hence DC at least `(p-1)*n^(2r)`.
+At route depths 110 and 111 this excludes integers `C <= 4886707` and
+`C <= 4856034`, respectively. The next integer is only not excluded by this
+lower bound; it is not certified to satisfy the actual energy budget.
+
+These sponsor certificates change the ambient field to a quadratic extension.
+They do not refute any budget over the original sponsor prime fields, prove
+the production threshold, or close #164. A surviving budget must impose and
+justify domain restrictions that exclude these proper-subfield families.
+The recorded definition and conditional consumers are preserved unchanged.
+
+Reproduce with `python3 scripts/probes/probe_r389_subfield_wick_budget.py`.
