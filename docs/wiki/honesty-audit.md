@@ -21,6 +21,8 @@ that a predicate's definition captures the intended mathematical statement.
 The manifest uses `Research.ProximityPrize.Resolution` for the retained resolution
 declarations. A dry run also rejects active `ArkLib`/`Research` modules whose
 source no longer exists; pending future entries remain permitted.
+Delimiter and predicate searches ignore quoted identifier and string contents,
+so a quoted arrow cannot split the result and a string bracket cannot hide a premise.
 Run its regression and independent Lean-output fixture with
 `python3 -m unittest discover -s scripts/tests -p 'test_cleanroom_conclusion.py'`.
 

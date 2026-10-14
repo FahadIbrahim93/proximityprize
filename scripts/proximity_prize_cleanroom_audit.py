@@ -131,17 +131,60 @@ def parse_axioms(output: str) -> dict[str, set[str]]:
     return reported
 
 
+def quoted_text_mask(text: str) -> str:
+    """Blank quoted identifier and string contents, preserving character offsets.
+
+    Lean prints escaped ordinary strings and guillemet identifiers in signatures.
+    Neither their contents nor raw string contents carry binder delimiters.
+    """
+    chars = list(text)
+    index = 0
+    while index < len(text):
+        start = index
+        if text[index] == "«":
+            end = text.find("»", index + 1)
+            index = len(text) if end < 0 else end + 1
+        elif text[index] == '"':
+            index += 1
+            while index < len(text):
+                if text[index] == "\\":
+                    index += 2
+                elif text[index] == '"':
+                    index += 1
+                    break
+                else:
+                    index += 1
+        elif text[index] == "r" and (
+            index == 0 or not (text[index - 1].isalnum() or text[index - 1] in "_'")
+        ):
+            quote = index + 1
+            while quote < len(text) and text[quote] == "#":
+                quote += 1
+            if quote == len(text) or text[quote] != '"':
+                index += 1
+                continue
+            closing = '"' + "#" * (quote - index - 1)
+            end = text.find(closing, quote + 1)
+            index = len(text) if end < 0 else end + len(closing)
+        else:
+            index += 1
+            continue
+        chars[start:min(index, len(text))] = " " * (min(index, len(text)) - start)
+    return "".join(chars)
+
+
 def top_level_positions(text: str, token: str) -> list[int]:
     """Locate delimiters outside printed Lean binder/type brackets."""
     closers: list[str] = []
     brackets = {"(": ")", "{": "}", "[": "]", "⦃": "⦄", "⟨": "⟩"}
     positions: list[int] = []
-    for index, char in enumerate(text):
+    live = quoted_text_mask(text)
+    for index, char in enumerate(live):
         if char in brackets:
             closers.append(brackets[char])
         elif closers and char == closers[-1]:
             closers.pop()
-        elif not closers and text.startswith(token, index):
+        elif not closers and live.startswith(token, index):
             positions.append(index)
     return positions
 
@@ -168,7 +211,7 @@ def conclusion_boundary(signature: str) -> int | None:
             # An outer pair encloses the whole type only if its first closing
             # parenthesis is at the end; `(P) → (Q)` must not be unwrapped.
             depth = 0
-            for index, char in enumerate(result):
+            for index, char in enumerate(quoted_text_mask(result)):
                 if char == "(":
                     depth += 1
                 elif char == ")":
@@ -203,12 +246,13 @@ def check_signature(entry: Entry, output: str) -> list[str]:
     boundary = conclusion_boundary(signature)
     if boundary is None:
         return [f"{entry.decl}: no declaration result type found in #check signature"]
-    conclusion_match = token_pattern(entry.conclusion).search(signature, boundary)
+    live_signature = quoted_text_mask(signature)
+    conclusion_match = token_pattern(entry.conclusion).search(live_signature, boundary)
     if conclusion_match is None:
         return [f"{entry.decl}: conclusion token {entry.conclusion!r} not found in result type"]
 
-    prefix = signature[:boundary]
-    before_predicate = signature[:conclusion_match.start()]
+    prefix = live_signature[:boundary]
+    before_predicate = live_signature[:conclusion_match.start()]
     failures: list[str] = []
     if token_pattern(entry.conclusion).search(prefix):
         failures.append(

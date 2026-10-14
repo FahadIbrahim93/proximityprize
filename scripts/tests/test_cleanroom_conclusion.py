@@ -65,8 +65,53 @@ class ConclusionBoundaryTests(unittest.TestCase):
     def test_multiline_printed_signature(self):
         self.assertTrue(audit.check_signature(entry(), output("(n : Nat)\n  (h : mcaPrize n) :\n  True")))
 
+    def test_quoted_identifier_delimiters_are_not_syntax(self):
+        for name in ("«n → m»", "«n ( : ) m»", "«n ] → m»"):
+            with self.subTest(name=name):
+                self.assertEqual(audit.check_signature(entry(), output(
+                    f"({name} : Nat) : mcaPrize {name}")), [])
+
+    def test_string_brackets_do_not_hide_arrow_premises(self):
+        for literal in ('"("', '"["', '"\\\"("', 'r#"(\\"#'):
+            with self.subTest(literal=literal):
+                self.assertTrue(audit.check_signature(entry(), output(
+                    f": {literal} = {literal} → mcaPrize 0 → True")))
+
+    def test_quoted_text_cannot_supply_the_conclusion_token(self):
+        self.assertTrue(audit.check_signature(entry(), output(': "mcaPrize" = "mcaPrize"')))
+
+    def test_parenthesis_unwrapping_ignores_quoted_delimiters(self):
+        self.assertTrue(audit.check_signature(entry(), output(': ("(" = "(" → mcaPrize 0 → True)')))
+        self.assertEqual(audit.check_signature(entry(), output(': (mcaPrize ("("))')), [])
+
 
 class LeanReproductionTests(unittest.TestCase):
+    def test_review_quoted_fixtures_with_real_lean_output(self):
+        lean = os.environ.get("LEAN_TEST_EXECUTABLE") or shutil.which("lean")
+        if not lean:
+            self.skipTest("Lean required for quoted-signature replay")
+        fixtures = [
+            ('def mcaPrize (n : Nat) : Prop := n = n\n'
+             'theorem candidate («n → m» : Nat) : mcaPrize «n → m» := rfl\n', 0),
+            ('def mcaPrize (n : Nat) : Prop := n = 0\n'
+             'theorem candidate : "(" = "(" → mcaPrize 0 → True := fun _ _ => trivial\n', 1),
+        ]
+        for source_text, expected in fixtures:
+            with self.subTest(expected=expected), tempfile.TemporaryDirectory() as directory:
+                source = Path(directory) / "Probe.lean"
+                source.write_text(source_text + '#check candidate\n#print axioms candidate\n', encoding="utf-8")
+                proc = subprocess.run([lean, str(source)], capture_output=True,
+                                      text=True, encoding="utf-8", timeout=60)
+                self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+                self.assertEqual(audit.parse_axioms(proc.stdout)["candidate"], set())
+                manifest = Path(directory) / "targets.txt"
+                manifest.write_text("active Init candidate mcaPrize\n", encoding="utf-8")
+                with patch.object(sys, "argv", ["audit", "--manifest", str(manifest)]), \
+                        patch.object(audit, "run_lean", return_value=(0, proc.stdout)), \
+                        contextlib.redirect_stdout(io.StringIO()), \
+                        contextlib.redirect_stderr(io.StringIO()):
+                    self.assertEqual(audit.main(), expected)
+
     def test_real_lean_output_fails_the_cli_audit(self):
         lean = os.environ.get("LEAN_TEST_EXECUTABLE") or shutil.which("lean")
         if not lean:
