@@ -267,12 +267,45 @@ def binder_names_and_type(content: str) -> tuple[list[str], str] | None:
     return out, typ.strip()
 
 
+# Surface syntax that can only spell a proposition.  `=` is matched only when
+# it is neither part of a `:=` / `=>` named argument nor `==`; comparisons must
+# be whitespace-delimited so the mathlib data types `ℝ≥0`, `ℝ≥0∞`, and `ℚ≥0`
+# do not match.
+BARE_EQUAL_RE = re.compile(r"(?<![=:])=(?![=>])")
+COMPARISON_RE = re.compile(r"(?<=\s)[<>≤≥](?=\s)")
+PROPOSITION_MARKERS = ("≠", "∈", "∉", "↔", "∨", "∧")
+
+
+def is_proposition_shaped(typ: str) -> bool:
+    """True when a flattened binder type can only be a proposition.
+
+    Subtypes (`{x // p x}`) are excluded: such a binder carries an element,
+    and its membership proof is part of the data type, not an extra
+    hypothesis.  Type families (`ι → Type`) carry no propositional syntax and
+    are excluded by the marker set itself.
+    """
+    if "//" in typ:
+        return False
+    return bool(
+        BARE_EQUAL_RE.search(typ)
+        or COMPARISON_RE.search(typ)
+        or any(marker in typ for marker in PROPOSITION_MARKERS)
+    )
+
+
 def looks_like_proof_assumption(names: list[str], typ: str) -> bool:
     """Heuristic for explicit binders that are hypotheses rather than data.
 
     We intentionally do not classify every explicit binder absent from a result
     as conditional: Lean result heads often omit inferred type/data parameters.
     Instead, we flag binders whose names or types look proof-like.
+
+    Proposition-shaped types join the `h`-prefix and literal `Prop`/`¬` tests:
+    hypotheses are not always named `h…`.  The motivating case is the
+    `coupling` binder of `fiatShamir_hvzkTransfer_of_coupling`
+    (ArkLib/OracleReduction/FiatShamir/HVZKTransferReduction.lean), whose
+    docstring calls it "an explicit hypothesis" — it was previously recorded
+    as an unconditional provider.
     """
     typ_flat = " ".join(typ.split())
     if any(name.startswith("h") or name.startswith("H") for name in names):
@@ -281,8 +314,9 @@ def looks_like_proof_assumption(names: list[str], typ: str) -> bool:
     # `∀`, `→`, or even bounded polynomial notation.  Residual dependencies are
     # tracked separately by exact name, so this field is just for obvious
     # hypothesis binders whose names do not appear in the residual instance.
-    proof_markers = ["Prop", "¬"]
-    return any(marker in typ_flat for marker in proof_markers)
+    if "Prop" in typ_flat or "¬" in typ_flat:
+        return True
+    return is_proposition_shaped(typ_flat)
 
 
 def extra_explicit_binders(binders: str, result: str) -> list[str]:

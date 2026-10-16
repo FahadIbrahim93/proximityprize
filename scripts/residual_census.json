@@ -2697,7 +2697,9 @@
      "file": "ArkLib/OracleReduction/FiatShamir/HVZKTransferReduction.lean",
      "line": 103,
      "conditional_on_residuals": [],
-     "extra_explicit_binders": [],
+     "extra_explicit_binders": [
+      "coupling"
+     ],
      "ambiguous_name_match": false
     },
     {
