@@ -27,18 +27,20 @@ namespace ProximityGap.FirstSponsorUDRFloor
 open ArkLib.ProximityGap.PrizeShapePrimeP30
 open ArkLib.ProximityGap.KKH26
 
-local instance : Fact P.Prime := ⟨prime_P⟩
+local notation "pSponsor" => ArkLib.ProximityGap.PrizeShapePrimeP30.P
+
+local instance : Fact pSponsor.Prime := ⟨prime_P⟩
 local instance : NeZero (2 ^ 30 : ℕ) := ⟨by norm_num⟩
 local instance : NeZero (2 ^ 29 : ℕ) := ⟨by norm_num⟩
 
 theorem generator_ne_zero : g ≠ 0 :=
   KKH26RegimeSplit.ne_zero_of_orderOf_eq orderOf_g
 
-def domain : Fin (2 ^ 30) ↪ ZMod P :=
+def domain : Fin (2 ^ 30) ↪ ZMod pSponsor :=
   KKH26RegimeSplit.powDomain g orderOf_g generator_ne_zero
 
-abbrev code : Set (Fin (2 ^ 30) → ZMod P) :=
-  (ReedSolomon.code domain (2 ^ 29) : Submodule (ZMod P) (Fin (2 ^ 30) → ZMod P))
+abbrev code : Set (Fin (2 ^ 30) → ZMod pSponsor) :=
+  (ReedSolomon.code domain (2 ^ 29) : Submodule (ZMod pSponsor) (Fin (2 ^ 30) → ZMod pSponsor))
 
 theorem canonical_code_eq : evalCode g (2 ^ 30) (2 ^ 29 - 1) = code := by
   rw [KKH26RegimeSplit.evalCode_eq_reedSolomon g orderOf_g generator_ne_zero
@@ -47,7 +49,7 @@ theorem canonical_code_eq : evalCode g (2 ^ 30) (2 ^ 29 - 1) = code := by
 
 theorem quarter_le_udr :
     (1 / 4 : ℝ≥0) ≤ relativeUniqueDecodingRadius
-      (ι := Fin (2 ^ 30)) (F := ZMod P) (C := ReedSolomon.code domain (2 ^ 29)) := by
+      (ι := Fin (2 ^ 30)) (F := ZMod pSponsor) (C := ReedSolomon.code domain (2 ^ 29)) := by
   rw [ReedSolomon.relativeUniqueDecodingRadius_RS_eq'
     (by norm_num : 2 ^ 29 ≤ Fintype.card (Fin (2 ^ 30))), Fintype.card_fin]
   norm_num
@@ -57,6 +59,10 @@ theorem quarter_agreement_ceiling :
       805306368 := by
   have hmass : (1 - (1 / 4 : ℝ≥0)) *
       (Fintype.card (Fin (2 ^ 30)) : ℝ≥0) = (805306368 : ℕ) := by
+    have hdelta : (1 / 4 : ℝ≥0) ≤ 1 := by norm_num
+    apply NNReal.coe_injective
+    rw [NNReal.coe_mul, NNReal.coe_sub hdelta]
+    push_cast
     norm_num
   rw [hmass, Nat.ceil_natCast]
 
@@ -68,20 +74,20 @@ theorem quarter_full_udr_regime :
   norm_num
 
 theorem canonical_epsMCA_quarter_le :
-    epsMCA (F := ZMod P) (A := ZMod P)
+    epsMCA (F := ZMod pSponsor) (A := ZMod pSponsor)
       (evalCode g (2 ^ 30) (2 ^ 29 - 1)) (1 / 4) ≤ (epsStar : ℝ≥0∞) := by
   rw [canonical_code_eq]
   refine (UDRwire.epsMCA_rs_udr_le_full domain (2 ^ 29)
     (by norm_num) (1 / 4) quarter_le_udr quarter_full_udr_regime).trans ?_
   rw [Fintype.card_fin, ZMod.card]
   have h := ArkLib.ProximityGap.Frontier.PrizeShapeRateHalfBracket.natCast_div_le_inv_of_mul_le
-    (E := 2 ^ 30) (Q := 2 ^ 128) (p := P)
-    (by norm_num) prime_P.pos (by norm_num [P])
+    (E := 2 ^ 30) (Q := 2 ^ 128) (p := pSponsor)
+    (by norm_num) prime_P.pos (by norm_num [pSponsor])
   rwa [epsStar_coe_eq_natCast_inv]
 
 theorem quarter_le_canonical_threshold :
     (1 / 4 : ℝ≥0) ≤ MCAThresholdLedger.mcaDeltaStar
-      (F := ZMod P) (A := ZMod P)
+      (F := ZMod pSponsor) (A := ZMod pSponsor)
       (evalCode g (2 ^ 30) (2 ^ 29 - 1)) (epsStar : ℝ≥0∞) := by
   apply MCAThresholdLedger.le_mcaDeltaStar_of_good
   · norm_num
