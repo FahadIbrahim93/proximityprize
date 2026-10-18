@@ -29,7 +29,7 @@ open ArkLib.ProximityGap.KKH26
 
 local notation "pSponsor" => ArkLib.ProximityGap.PrizeShapePrimeP30.P
 
-local instance : Fact pSponsor.Prime := ⟨prime_P⟩
+local instance : Fact (Nat.Prime pSponsor) := ⟨prime_P⟩
 local instance : NeZero (2 ^ 30 : ℕ) := ⟨by norm_num⟩
 local instance : NeZero (2 ^ 29 : ℕ) := ⟨by norm_num⟩
 
@@ -52,6 +52,17 @@ theorem quarter_le_udr :
       (ι := Fin (2 ^ 30)) (F := ZMod pSponsor) (C := ReedSolomon.code domain (2 ^ 29)) := by
   rw [ReedSolomon.relativeUniqueDecodingRadius_RS_eq'
     (by norm_num : 2 ^ 29 ≤ Fintype.card (Fin (2 ^ 30))), Fintype.card_fin]
+  have hrate : (2 ^ 29 : ℝ≥0) / (2 ^ 30 : ℝ≥0) = 1 / 2 := by
+    apply NNReal.coe_injective
+    push_cast
+    norm_num
+  rw [hrate]
+  have hhalf : (1 / 2 : ℝ≥0) ≤ 1 := by
+    rw [← NNReal.coe_le_coe]
+    push_cast
+    norm_num
+  rw [← NNReal.coe_le_coe]
+  push_cast [NNReal.coe_sub hhalf]
   norm_num
 
 theorem quarter_agreement_ceiling :
@@ -59,7 +70,10 @@ theorem quarter_agreement_ceiling :
       805306368 := by
   have hmass : (1 - (1 / 4 : ℝ≥0)) *
       (Fintype.card (Fin (2 ^ 30)) : ℝ≥0) = (805306368 : ℕ) := by
-    have hdelta : (1 / 4 : ℝ≥0) ≤ 1 := by norm_num
+    have hdelta : (1 / 4 : ℝ≥0) ≤ 1 := by
+      rw [← NNReal.coe_le_coe]
+      push_cast
+      norm_num
     apply NNReal.coe_injective
     rw [NNReal.coe_mul, NNReal.coe_sub hdelta]
     push_cast
@@ -90,7 +104,9 @@ theorem quarter_le_canonical_threshold :
       (F := ZMod pSponsor) (A := ZMod pSponsor)
       (evalCode g (2 ^ 30) (2 ^ 29 - 1)) (epsStar : ℝ≥0∞) := by
   apply MCAThresholdLedger.le_mcaDeltaStar_of_good
-  · norm_num
+  · rw [← NNReal.coe_le_coe]
+    push_cast
+    norm_num
   · exact canonical_epsMCA_quarter_le
 
 end ProximityGap.FirstSponsorUDRFloor
