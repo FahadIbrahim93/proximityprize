@@ -52,7 +52,7 @@ theorem quarter_le_udr :
       (ι := Fin (2 ^ 30)) (F := ZMod pSponsor) (C := ReedSolomon.code domain (2 ^ 29)) := by
   rw [ReedSolomon.relativeUniqueDecodingRadius_RS_eq'
     (by norm_num : 2 ^ 29 ≤ Fintype.card (Fin (2 ^ 30))), Fintype.card_fin]
-  have hrate : (2 ^ 29 : ℝ≥0) / (2 ^ 30 : ℝ≥0) = 1 / 2 := by
+  have hrate : ((2 ^ 29 : ℕ) : ℝ≥0) / ((2 ^ 30 : ℕ) : ℝ≥0) = 1 / 2 := by
     apply NNReal.coe_injective
     push_cast
     norm_num
@@ -96,8 +96,9 @@ theorem canonical_epsMCA_quarter_le :
   rw [Fintype.card_fin, ZMod.card]
   have h := ArkLib.ProximityGap.Frontier.PrizeShapeRateHalfBracket.natCast_div_le_inv_of_mul_le
     (E := 2 ^ 30) (Q := 2 ^ 128) (p := pSponsor)
-    (by norm_num) prime_P.pos (by norm_num [pSponsor])
-  rwa [epsStar_coe_eq_natCast_inv]
+    (by norm_num) prime_P.pos
+    (by norm_num [ArkLib.ProximityGap.PrizeShapePrimeP30.P])
+  rwa [ArkLib.ProximityGap.Frontier.PrizeShapeRateHalfBracket.epsStar_coe_eq_natCast_inv]
 
 theorem quarter_le_canonical_threshold :
     (1 / 4 : ℝ≥0) ≤ MCAThresholdLedger.mcaDeltaStar
