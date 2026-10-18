@@ -3,11 +3,13 @@ on:
   push:
     branches: [feat/first-sponsor-udr-floor]
     paths:
+      - Research/ProximityPrize/All.lean
       - Research/ProximityPrize/Frontier/_FirstSponsorUDRFloor.lean
       - .github/workflows/first-sponsor-udr.yml
   workflow_dispatch:
   pull_request:
     paths:
+      - Research/ProximityPrize/All.lean
       - Research/ProximityPrize/Frontier/_FirstSponsorUDRFloor.lean
       - .github/workflows/first-sponsor-udr.yml
 permissions:
