@@ -19,6 +19,7 @@ import Research.ProximityPrize.CS25SecondMomentIsolation
 import Research.ProximityPrize.CS25SecondMomentListSizeRS
 import Research.ProximityPrize.CapacityBounds
 import Research.ProximityPrize.CapacityBoundsAdmissible
+import Research.ProximityPrize.CapacityBoundsJohnsonJumpRegime
 import Research.ProximityPrize.CapacityBoundsProofs
 import Research.ProximityPrize.CellPackageSupplyShrink
 import Research.ProximityPrize.Collapse
