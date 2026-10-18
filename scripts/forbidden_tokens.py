@@ -163,7 +163,12 @@ def is_residual_like(name: str, allowlist: set[str]) -> bool:
     low = final.lower()
     return (
         is_allowlisted(name, allowlist)
-        or final.endswith("_residual")
+        # Obligation-like names carry the residual suffix in the library's
+        # camelCase convention (`fiatShamir_hvzkTransferResidual`,
+        # `claim57Residuals`) as well as snake_case (`foo_residual`); matching
+        # only the literal `_residual` spelling missed every residual in ArkLib.
+        or low.endswith("residual")
+        or low.endswith("residuals")
         or "keystone" in low
         or "conjecture" in low
     )
