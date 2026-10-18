@@ -1,0 +1,80 @@
+name: First sponsor UDR floor
+on:
+  push:
+    branches: [feat/first-sponsor-udr-floor]
+    paths:
+      - Research/ProximityPrize/Frontier/_FirstSponsorUDRFloor.lean
+      - .github/workflows/first-sponsor-udr.yml
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - Research/ProximityPrize/Frontier/_FirstSponsorUDRFloor.lean
+      - .github/workflows/first-sponsor-udr.yml
+permissions:
+  contents: read
+jobs:
+  kernel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      LEAN_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v7
+      - name: Independent literal arithmetic
+        run: |
+          python3 - <<'PY'
+          from fractions import Fraction
+          n = 2**30
+          k = 2**29
+          p = n*(2**128+192)+1
+          delta = Fraction(1, 4)
+          agreement = (1-delta)*n
+          assert agreement.denominator == 1
+          assert agreement == 805306368
+          assert 2*(n-agreement) < n-k+1
+          assert n*2**128 <= p
+          print({'n': n, 'k': k, 'delta': str(delta), 'agreement': int(agreement),
+                 'distance_slack': int(n-k+1-2*(n-agreement)),
+                 'field_budget_slack': p-n*2**128})
+          PY
+      - uses: leanprover/lean-action@v1.6.0
+        with:
+          auto-config: false
+          build: false
+          test: false
+          lint: false
+          use-github-cache: false
+          use-mathlib-cache: false
+      - uses: actions/cache/restore@v4
+        with:
+          path: .lake
+          key: udr-floor-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            udr-floor-dependencies-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
+            incidence-build-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
+            incidence-dependencies-${{ runner.os }}-
+      - run: ./scripts/lake-locked.sh exe cache get
+      - run: ./scripts/lake-locked.sh build Research.ProximityPrize.MCAUDRBound Research.ProximityPrize.KKH26RegimeSplit Research.ProximityPrize.Frontier._PrizeShapeRateHalfBracket
+      - uses: actions/cache/save@v4
+        with:
+          path: .lake
+          key: udr-floor-dependencies-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ github.run_id }}
+      - name: Check canonical consumer and source axioms
+        run: |
+          set -o pipefail
+          lake env lean Research/ProximityPrize/Frontier/_FirstSponsorUDRFloor.lean | tee udr-axioms.log
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+          text = Path('udr-axioms.log').read_text()
+          assert 'sorryAx' not in text
+          matches = re.findall(r"'([^']+)'\s+depends on axioms:\s*\[([^\]]*)\]", text)
+          expected = {
+            'ProximityGap.UDRwire.epsMCA_rs_udr_le_full',
+            'ProximityGap.FirstSponsorUDRFloor.canonical_epsMCA_quarter_le',
+            'ProximityGap.FirstSponsorUDRFloor.quarter_le_canonical_threshold'}
+          assert {name for name, _ in matches} == expected
+          for name, axioms in matches:
+              assert set(map(str.strip, axioms.split(','))) <= {'propext', 'Classical.choice', 'Quot.sound'}, name
+          print('Three canonical/source axiom audits passed')
+          PY
