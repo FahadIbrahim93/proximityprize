@@ -155,7 +155,7 @@ theorem frs_list_decoding_capacity_cz25_of_coordFiberCap_geomDomain
     (η : ℝ) (hη_pos : 0 < η) (hη_lt_s : 1 / η < s)
     (hCap : ∀ (τ : ℕ → ℝ) (C : Submodule F (Fin n → Fin s → F))
         (h : IsSubspaceDesign s τ C) (η' : ℝ) (hη' : 0 < η'),
-        CZ25CoordFiberCap s τ C h η' hη')
+        η' ≤ 1 → CZ25CoordFiberCap s τ C h η' hη')
     (hηnat : (1 : ℝ) / η = (Nat.floor (1 / η) : ℕ)) :
     let nLen : ℝ := Fintype.card (Fin n)
     let ρ : ℝ := k / nLen
@@ -181,7 +181,7 @@ theorem frs_list_decoding_capacity_cz25_of_coordFiberCap_geomDomain_eta_eq_one_d
     (η : ℝ) {m : ℕ} (hm : 0 < m) (hη : η = 1 / (m : ℝ)) (hms : m < s)
     (hCap : ∀ (τ : ℕ → ℝ) (C : Submodule F (Fin n → Fin s → F))
         (h : IsSubspaceDesign s τ C) (η' : ℝ) (hη' : 0 < η'),
-        CZ25CoordFiberCap s τ C h η' hη') :
+        η' ≤ 1 → CZ25CoordFiberCap s τ C h η' hη') :
     let nLen : ℝ := Fintype.card (Fin n)
     let ρ : ℝ := k / nLen
     let δ : ℝ := 1 - ρ * s / (s - 1 / η + 1) - η
@@ -210,7 +210,7 @@ theorem frs_list_decoding_capacity_cz25_of_coordFiberCap_geomDomain_prop
     (η : ℝ) (hη_pos : 0 < η) (hη_lt_s : 1 / η < s)
     (hCap : ∀ (τ : ℕ → ℝ) (C : Submodule F (Fin n → Fin s → F))
         (h : IsSubspaceDesign s τ C) (η' : ℝ) (hη' : 0 < η'),
-        CZ25CoordFiberCap s τ C h η' hη')
+        η' ≤ 1 → CZ25CoordFiberCap s τ C h η' hη')
     (hηnat : (1 : ℝ) / η = (Nat.floor (1 / η) : ℕ)) :
     frs_list_decoding_capacity_cz25
       (ReedSolomon.Folded.geomDomainEmb γ s n hs_pos hsn) k s γ
@@ -237,7 +237,7 @@ theorem frs_list_decoding_capacity_cz25_of_coordFiberCap_geomDomain_eta_eq_one_d
     {m : ℕ} (hm : 0 < m) (hη : η = 1 / (m : ℝ))
     (hCap : ∀ (τ : ℕ → ℝ) (C : Submodule F (Fin n → Fin s → F))
         (h : IsSubspaceDesign s τ C) (η' : ℝ) (hη' : 0 < η'),
-        CZ25CoordFiberCap s τ C h η' hη') :
+        η' ≤ 1 → CZ25CoordFiberCap s τ C h η' hη') :
     frs_list_decoding_capacity_cz25
       (ReedSolomon.Folded.geomDomainEmb γ s n hs_pos hsn) k s γ
       hs_pos η hη_pos hη_lt_s := by

@@ -329,6 +329,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentReduction
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentShell
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentUpper
 import ArkLib.Data.CodingTheory.ProximityGap.CS25TailSupport
+import ArkLib.Data.CodingTheory.ProximityGap.CZ25T34TauZeroRegime
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityFailureBandwidth
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityVacuity
 import ArkLib.Data.CodingTheory.ProximityGap.CappedSupplyMassIdentity
