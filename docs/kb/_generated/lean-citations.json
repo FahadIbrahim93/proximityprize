@@ -1,8 +1,8 @@
 {
   "counts": {
-    "files_with_citations": 451,
+    "files_with_citations": 452,
     "keys_cited": 35,
-    "total_citation_edges": 511
+    "total_citation_edges": 512
   },
   "files": {
     "ArkLib/AGM/Basic.lean": [
@@ -215,6 +215,9 @@
       "BCIKS20"
     ],
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/ListSizeResidual.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/ListSizeResidualRefutation.lean": [
       "BCIKS20"
     ],
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/PairSecondMoment.lean": [
@@ -1547,6 +1550,7 @@
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/GoodSetAggregate.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/JointAgreement.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/ListSizeResidual.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/ListSizeResidualRefutation.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/PairSecondMoment.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/Pigeonhole.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/SudanY2.lean",
