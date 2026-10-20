@@ -1,9 +1,9 @@
 {
  "summary": {
   "total": 89,
-  "open": 44,
+  "open": 43,
   "discharged": 44,
-  "refuted": 1,
+  "refuted": 2,
   "by_top_dir": {
    "(root)": {
     "total": 1,
@@ -13,9 +13,9 @@
    },
    "Data": {
     "total": 24,
-    "open": 16,
+    "open": 15,
     "discharged": 8,
-    "refuted": 0
+    "refuted": 1
    },
    "OracleReduction": {
     "total": 39,
@@ -1384,7 +1384,7 @@
      "name": "BCIKS20.HenselNumerator.Witness.faaDiBrunoSuccSumZeroResidual_false",
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P2OrderZeroRefutationWitness.lean",
-     "line": 168,
+     "line": 175,
      "conditional_on_residuals": [],
      "extra_explicit_binders": [],
      "ambiguous_name_match": false
@@ -1398,7 +1398,18 @@
    "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P2MatchProof.lean",
    "line": 42,
    "providers": [],
-   "status": "open"
+   "refutations": [
+    {
+     "name": "BCIKS20.HenselNumerator.Witness.restrictedFaaDiBrunoMatchResidual_false",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P2OrderZeroRefutationWitness.lean",
+     "line": 149,
+     "conditional_on_residuals": [],
+     "extra_explicit_binders": [],
+     "ambiguous_name_match": false
+    }
+   ],
+   "status": "refuted"
   },
   {
    "name": "StrictCoeffPolysLargeResidual",
