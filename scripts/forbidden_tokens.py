@@ -6,7 +6,12 @@ provided, scans only those Lean files/directories. Fails if live
 (non-comment) code contains:
   - `native_decide` / `bv_decide` (kernel-bypassing decision procedures), or
   - a custom `axiom` declaration whose name is not an allowlisted, documented
-    residual (see scripts/residual_axioms.txt), or
+    residual (see scripts/residual_axioms.txt). Declaration heads are matched in
+    the forms Lean accepts: optional doc comment and attributes, the full
+    `declModifiers` set (`private`/`public`, `noncomputable`, …, in any order),
+    a `set_option … in` prefix, a line break after the keyword, and Unicode or
+    `«quoted»` identifiers. An ASCII-only, line-anchored scan let each of those
+    forms hide an axiom from the allowlist entirely, or
   - a `theorem`/`lemma` whose statement type is exactly `True` (a vacuous
     placebo that discharges no real obligation, e.g.
     `theorem foo_residual : True := by trivial`). This is the axiom-laundering
@@ -35,19 +40,37 @@ import sys
 from pathlib import Path
 
 TOKEN_RE = re.compile(r"\b(native_decide|bv_decide)\b")
+# A Lean identifier as `declId` accepts it: a letter or `_`, Unicode letters
+# and digits/primes afterwards, or the quoted `«...»` escape. The ASCII-only
+# class this replaces let `axiom α : False` (and every other non-ASCII name)
+# past the gate, because the name failed to match and the whole declaration
+# went unreported.
+LEAN_IDENT = r"(?:«[^»\n]+»|(?:[^\W\d]|_)[\w'!?.]*)"
+# `declModifiers` in Lean 4.30: attributes, visibility (`private`/`public`),
+# `protected`, `meta`/`noncomputable`, `unsafe`, then `partial`/`nonrec`.
+# Accepting them in any order cannot miss a head Lean itself accepts.
+LEAN_DECL_MODIFIERS = (
+    r"(?:(?:public|private|protected|scoped|meta|noncomputable|unsafe|partial|nonrec)\s+)*"
+)
+# `set_option <option> <value> in <command>` is a documented Lean form: the
+# `in` is a trailing parser over `commandParser`, so a declaration may follow
+# it on the same line. Without this prefix an axiom hidden after `in` read as
+# an ordinary `set_option` line and was never checked against the allowlist.
+SET_OPTION_IN = r"(?:set_option\s+[^\s]+\s+(?:\"[^\"]*\"|[^\s]+)\s+in\s+)?"
 # Capture the declared axiom name so it can be checked against the residual
-# allowlist. The name may be namespaced/contain primes; we keep the simple
-# token as written at the declaration site.
+# allowlist. Scanned over comment-masked text (see `main`), so a preceding
+# `/-- ... -/` on the same line is blanked to spaces and the head stays
+# visible; `\s+` also spans the line break Lean allows after `axiom`.
 AXIOM_RE = re.compile(
-    r"^\s*(?:@\[[^\]]*\]\s*)?(?:protected\s+|private\s+|scoped\s+)*axiom\s+"
-    r"([A-Za-z_][A-Za-z0-9_'.]*)"
+    r"(?m)^[ \t]*" + SET_OPTION_IN +
+    r"(?:@\[[^\]]*\]\s*)*" + LEAN_DECL_MODIFIERS +
+    r"axiom\s+(" + LEAN_IDENT + r")"
 )
 DECL_RE = re.compile(
     # Keep leading indentation on one line: masked block comments can contain
     # thousands of whitespace-only lines, making ^\s* retry their whole suffix.
-    r"^[ \t]*(?:@\[[^\]]*\]\s*)?"
-    r"(?:protected\s+|private\s+|scoped\s+|noncomputable\s+)*"
-    r"(axiom|theorem|lemma|def|abbrev|opaque|constant)\s+([A-Za-z_][A-Za-z0-9_'.]*)",
+    r"^[ \t]*(?:@\[[^\]]*\]\s*)*" + LEAN_DECL_MODIFIERS +
+    r"(axiom|theorem|lemma|def|abbrev|opaque|constant)\s+(" + LEAN_IDENT + r")",
     re.MULTILINE,
 )
 
@@ -64,9 +87,9 @@ ALLOWLIST_PATH = Path(__file__).resolve().parent / "residual_axioms.txt"
 # vacuous `True`. Anchored at a line start (after optional attributes/modifiers)
 # so it matches a real declaration, not an in-proof `have … : True`.
 PLACEBO_DECL_RE = re.compile(
-    r"(?m)^[ \t]*(?:@\[[^\]]*\]\s*)*"
-    r"(?:noncomputable\s+|protected\s+|private\s+|scoped\s+|local\s+|partial\s+|unsafe\s+)*"
-    r"(theorem|lemma)\s+([A-Za-z_][A-Za-z0-9_'.]*)"
+    r"(?m)^[ \t]*(?:@\[[^\]]*\]\s*)*" + LEAN_DECL_MODIFIERS +
+    r"(?:local\s+)*"
+    r"(theorem|lemma)\s+(" + LEAN_IDENT + r")"
 )
 
 # Brackets that may carry binder/type colons we must skip when locating the
@@ -322,25 +345,18 @@ def main() -> int:
                     f"a vacuous {kind} of type True; keep real residual debt as an "
                     f"explicit axiom/Prop, or remove the allowlist entry"
                 )
-        pos = 0
-        for idx, line in enumerate(text.splitlines(True), start=1):
-            first_live = next((off for off, ch in enumerate(line) if not ch.isspace()), None)
-            if first_live is None or mask[pos + first_live]:
-                pos += len(line)
-                continue
-            am = AXIOM_RE.match(line)
-            if am:
-                name = am.group(1)
-                if is_allowlisted(name, allowlist):
-                    seen_allowed.add(simple_name(name))
-                    allowed_hits.append(f"{path}:{idx}: allowed documented residual axiom {name}")
-                else:
-                    failures.append(
-                        f"{path}:{idx}: forbidden custom axiom declaration {name} "
-                        f"(add to scripts/residual_axioms.txt only if it is a documented, "
-                        f"tracked residual)"
-                    )
-            pos += len(line)
+        for am in AXIOM_RE.finditer(live_text):
+            name = am.group(1)
+            idx = text.count("\n", 0, am.start()) + 1
+            if is_allowlisted(name, allowlist):
+                seen_allowed.add(simple_name(name))
+                allowed_hits.append(f"{path}:{idx}: allowed documented residual axiom {name}")
+            else:
+                failures.append(
+                    f"{path}:{idx}: forbidden custom axiom declaration {name} "
+                    f"(add to scripts/residual_axioms.txt only if it is a documented, "
+                    f"tracked residual)"
+                )
 
         for line_no, name in find_true_placebos(text, mask):
             failures.append(
