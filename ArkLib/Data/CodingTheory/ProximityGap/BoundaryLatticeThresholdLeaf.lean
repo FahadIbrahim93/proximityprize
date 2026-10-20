@@ -39,13 +39,13 @@ the **single** §5 coefficient-polynomial extraction residual:
   `BoundaryCardLatticeResidual` with the quantitative threshold in place of nonemptiness), and
   its reduction to extraction only.
 
-**The extraction hypothesis cannot be dropped.**  The falsify-first probe
-(`scripts/probes/probe_boundary_lattice_threshold.py`, 4 lattice endpoints: `q=11/17, n=8,
-deg=2, k=1`; `q=11, n=9, deg=1, k=1`; `q=29, n=8, deg=2, k=2`) found a stack over
-`GF(11)`, `n=8`, `deg=2`, `k=1` with good-set cardinality `10 > 9 = (n+1)k` and **no**
-`jointAgreement` (the per-z decoding lists admit a choice `P` with no coefficient polynomial
-`B`, exhaustively checked) — so the quantitative threshold *alone* is false as a lattice-leaf
-hypothesis.  The composite (threshold + extraction) survived all 4 points with 0 violations.
+**The extraction hypothesis cannot be dropped.**  This is kernel-checked, not merely probed:
+`ArkLib.BoundaryLatticeThresholdRefutation.not_boundaryCardLatticeThresholdResidual`
+refutes `BoundaryCardLatticeThresholdResidual` at `ZMod 7`, `n = 4`, `deg = 1`, `k = 1`
+(a lattice endpoint, `deg·n = 4 = 2²`, `δ = 1/2`), where the good set has cardinality
+at least `6 > 5 = (n+1)k` (`Pr ≥ 6/7 > 5/7`) while `jointAgreement` fails.  Hence the
+quantitative threshold *alone* is false as a lattice-leaf hypothesis, and the composite
+(threshold + extraction) is the surviving surface.
 
 The witness namespace instantiates the per-stack theorem end-to-end at a genuine lattice
 endpoint (`ZMod 11`, `n = 8`, `deg = 2`, `deg·n = 16 = 4²`, `δ·n = 4` integral): the zero stack
