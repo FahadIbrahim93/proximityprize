@@ -30,8 +30,9 @@ the **single** §5 coefficient-polynomial extraction residual:
 
 * `jointAgreement_of_latticeThreshold_of_coeffPolys` — per stack: quantitative threshold +
   extraction ⟹ `jointAgreement`, at every radius `δ` (in particular the exact lattice endpoint).
-* `LatticeCoeffPolyExtraction` — the extraction-only residual surface (the genuine open core:
-  BCIKS20 §5 list-decoding at the endpoint).
+* `LatticeCoeffPolyExtraction` — the extraction-only residual surface (BCIKS20 §5 list-decoding
+  at the endpoint).  Its *unconditional* form is refuted at small parameters (see below), so the
+  surviving frontier is a regime-restricted version, not this Prop as stated.
 * `correlatedAgreementCurves_of_latticeExtraction` — consumer shape: the extraction supply alone
   yields `δ_ε_correlatedAgreementCurves` with `ε = (n+1)/|F|`.
 * `BoundaryCardLatticeThresholdResidual` + `boundaryCardLatticeThresholdResidual_of_extraction`
@@ -44,8 +45,12 @@ the **single** §5 coefficient-polynomial extraction residual:
 refutes `BoundaryCardLatticeThresholdResidual` at `ZMod 7`, `n = 4`, `deg = 1`, `k = 1`
 (a lattice endpoint, `deg·n = 4 = 2²`, `δ = 1/2`), where the good set has cardinality
 at least `6 > 5 = (n+1)k` (`Pr ≥ 6/7 > 5/7`) while `jointAgreement` fails.  Hence the
-quantitative threshold *alone* is false as a lattice-leaf hypothesis, and the composite
-(threshold + extraction) is the surviving surface.
+quantitative threshold *alone* is false as a lattice-leaf hypothesis.  The extraction is
+load-bearing, not droppable: the same endpoint refutes the extraction-only surface itself
+(`not_latticeCoeffPolyExtraction`, hence also the canonical-family form
+`not_latticeCanonicalCoeffPolyExtraction`), so the surviving frontier is a regime-restricted
+extraction statement, not the unconditional one — the `ZMod 11` witness below shows that
+restriction is not vacuity.
 
 The witness namespace instantiates the per-stack theorem end-to-end at a genuine lattice
 endpoint (`ZMod 11`, `n = 8`, `deg = 2`, `deg·n = 16 = 4²`, `δ·n = 4` integral): the zero stack
@@ -224,9 +229,11 @@ strict-Johnson window hypotheses replaced by the quantitative count threshold
 residual from it via the (radius-generic, proven) canonical-agreement transport
 `coeff_polys_for_all_decoded_of_canonical_agreement`.
 
-This is a reduction layer, not a closure: the canonical Prop is still open (its content is
-BCIKS20 §5 list-decoding at the exact endpoint — same open core as
-`StrictCanonicalCoeffPolysResidual`, with the strict-radius slack no longer available). -/
+This is a reduction layer, not a closure, and the unconditional canonical Prop is *false* at the
+`ZMod 7` endpoint of `BoundaryLatticeThresholdRefutation`
+(`not_latticeCanonicalCoeffPolyExtraction`).  What remains open is the regime-restricted version:
+BCIKS20 §5 list-decoding at the exact endpoint — the same open core as
+`StrictCanonicalCoeffPolysResidual`, with the strict-radius slack no longer available. -/
 
 omit [Nonempty ι] in
 /-- **Canonical-family form of the lattice extraction residual.**  For every stack over the

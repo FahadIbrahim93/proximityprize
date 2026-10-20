@@ -13,6 +13,8 @@ ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ReedSolomonGap ProximityGap.proxim
 
 # ── Boundary lattice residual: threshold-alone refutation ──────────────
 ArkLib.Data.CodingTheory.ProximityGap.BoundaryLatticeThresholdRefutation ArkLib.BoundaryLatticeThresholdRefutation.not_boundaryCardLatticeThresholdResidual
+ArkLib.Data.CodingTheory.ProximityGap.BoundaryLatticeThresholdRefutation ArkLib.BoundaryLatticeThresholdRefutation.not_latticeCoeffPolyExtraction
+ArkLib.Data.CodingTheory.ProximityGap.BoundaryLatticeThresholdRefutation ArkLib.BoundaryLatticeThresholdRefutation.not_latticeCanonicalCoeffPolyExtraction
 
 # ── Grand-challenge collapse (kernel-proven refutation + collapse) ─────
 Research.ProximityPrize.Collapse ProximityGap.not_listDecodingPrize

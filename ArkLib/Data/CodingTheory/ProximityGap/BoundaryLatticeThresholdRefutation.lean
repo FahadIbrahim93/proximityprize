@@ -26,8 +26,10 @@ The good set contains `{0, 1, 3, 4, 5, 6}`: six of the seven parameters place th
 within distance `1/2` of a constant word, so `Pr ≥ 6/7 > 5/7 = k·(n+1)/|F|`.  But
 `jointAgreement` needs a common agreement set of size at least `(1-δ)·4 = 2`, and `u 1` is
 injective, so no constant codeword can agree with it on two coordinates.  Hence the residual is
-false as stated, and the §5 coefficient-polynomial extraction is genuinely load-bearing at the
-lattice endpoint.
+false as stated.  Moreover the extraction-only surface `LatticeCoeffPolyExtraction` is itself
+refuted at this endpoint (`not_latticeCoeffPolyExtraction`): the extraction is load-bearing, but
+the unconditional formulation of it is too strong — the surviving frontier is a regime-restricted
+extraction statement, not the unconditional one.
 
 ## Verification
 `./scripts/pg-iterate.sh ArkLib/Data/CodingTheory/ProximityGap/BoundaryLatticeThresholdRefutation.lean`
@@ -256,6 +258,25 @@ theorem not_boundaryCardLatticeThresholdResidual :
   exact not_jointAgreement
     (h (by norm_num) u rfl boundary_floor_cast (by simpa using prob_hypothesis))
 
+/-- The extraction-only residual is also false at this endpoint: extraction at the count
+threshold would yield `BoundaryCardLatticeThresholdResidual` through
+`boundaryCardLatticeThresholdResidual_of_extraction`, and that surface is refuted above.  So the
+unconditional extraction hypothesis is not merely open — it is unsatisfiable here. -/
+theorem not_latticeCoeffPolyExtraction :
+    ¬ LatticeCoeffPolyExtraction (k := 1) (deg := 1) (domain := domain)
+      (δ := 1 - ReedSolomon.sqrtRate 1 domain) :=
+  fun hExt =>
+    not_boundaryCardLatticeThresholdResidual
+      (boundaryCardLatticeThresholdResidual_of_extraction hExt)
+
+/-- The canonical-family form is refuted at the same endpoint: it implies the all-families
+extraction, which is false here. -/
+theorem not_latticeCanonicalCoeffPolyExtraction :
+    ¬ LatticeCanonicalCoeffPolyExtraction (k := 1) (deg := 1) (domain := domain)
+      (δ := 1 - ReedSolomon.sqrtRate 1 domain) :=
+  fun hCanon => not_latticeCoeffPolyExtraction
+    (latticeCoeffPolyExtraction_of_canonical hCanon)
+
 end BoundaryLatticeThresholdRefutation
 
 end ArkLib
@@ -266,3 +287,5 @@ end ArkLib
 #print axioms ArkLib.BoundaryLatticeThresholdRefutation.prob_hypothesis
 #print axioms ArkLib.BoundaryLatticeThresholdRefutation.not_jointAgreement
 #print axioms ArkLib.BoundaryLatticeThresholdRefutation.not_boundaryCardLatticeThresholdResidual
+#print axioms ArkLib.BoundaryLatticeThresholdRefutation.not_latticeCoeffPolyExtraction
+#print axioms ArkLib.BoundaryLatticeThresholdRefutation.not_latticeCanonicalCoeffPolyExtraction
