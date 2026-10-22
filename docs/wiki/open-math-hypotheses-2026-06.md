@@ -179,9 +179,14 @@ Per-hypothesis discipline: constraints → new direction → why nobody has done
   (`ProximityGap.StrictCanonicalCoeffPolysRefutation.not_strictCanonicalCoeffPolysResidual`
   in `BCIKS20/Curves/CanonicalCoeffExtractionRefutation.lean`): its uniqueness clause is false,
   since a constant curve makes the good-coefficient set the whole field and one word can sit at
-  the same radius from two distinct codewords. The §5 strict-interior target must be re-stated
-  (existence-only extraction, or uniqueness below the unique-decoding radius), not taken as
-  given. Census: `docs/wiki/residual-census.md`.
+  the same radius from two distinct codewords. The same witness refutes the broad
+  `StrictCoeffPolysResidual` and its large-good-set sector `StrictCoeffPolysLargeResidual`
+  (`not_strictCoeffPolysResidual`, `not_strictCoeffPolysLargeResidual`): an adversarial decoder
+  is decoded everywhere while its `coeff 1` layer is a two-point indicator, which no degree
+  `< k + 1` polynomial interpolates. The §5 strict-interior target must be re-stated
+  (existence-only extraction, a fixed canonical decoder, or uniqueness below the
+  unique-decoding radius), not taken as given. Census:
+  `docs/wiki/residual-census.md`.
 - **Proof plan**: shape-confirmation; then the window dictionary (`O111` is at modulus n with
   arbitrary Z-weights — the boundary weights are the coefficient extractions); then O123.
 

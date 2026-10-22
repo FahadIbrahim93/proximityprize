@@ -4,19 +4,23 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffLargeReduction
 import Mathlib.FieldTheory.Finite.GaloisField
 
 /-!
-# Counterexample to `StrictCanonicalCoeffPolysResidual`
+# Counterexamples to the strict-Johnson coefficient-extraction residuals
 
-`StrictCanonicalCoeffPolysResidual` is the canonical-family form of the BCIKS20 §5/§6
-strict Johnson-branch coefficient extraction. Besides supplying one decoded family `P₀` with
-coefficient-polynomial witnesses, it asks that **every** family `P` that is decoded on the
-good-coefficient set `S = RS_goodCoeffsCurve u δ` agree with `P₀` on `S`.
+The BCIKS20 §5/§6 strict Johnson-branch extraction is formalized by two named residual surfaces:
 
-That uniqueness clause is false as stated: decoding inside a `δ`-ball need not be unique, and
-`S` is allowed to contain parameters where two distinct decoded families are simultaneously
-close to the curve word. This file gives a kernel-checked counterexample.
+* `StrictCoeffPolysResidual` (broad form): for every curve `u`, every parameter family `P` that is
+  decoded on the good-coefficient set `S = RS_goodCoeffsCurve u δ` has coefficient polynomials
+  `B j` of degree `< k + 1` interpolating `z ↦ (P z).coeff j` on `S`;
+* `StrictCanonicalCoeffPolysResidual` (canonical form): one decoded family `P₀` carries such
+  witnesses, and **every** other family decoded on `S` agrees with `P₀` on `S`.
+
+Both are false as stated, and one witness refutes them simultaneously.
+`StrictCoeffPolysLargeResidual` (the large-good-set sector, equivalent to the broad form by
+`strictCoeffPolysResidual_iff_large`) fails at the same instance.
 
 ## The witness
 
@@ -30,20 +34,33 @@ close to the curve word. This file gives a kernel-checked counterexample.
 * `curveStack` is the constant curve `u 0 = eWord`, `u 1 = 0`, so every line word equals
   `eWord` and the good-coefficient set is all of `F`.
 
-The two constant families `P z = linPoly` and `P z = 0` are therefore both decoded on all of
-`S` (degree `< 2`, distance `3/7 ≤ δ`), while they differ at every `z`. Uniqueness would force
-`linPoly = 0`, contradicting `linPoly.natDegree = 1`.
-
 The probability hypothesis is satisfied because the field is huge: the rate is `2/7`, so in the
 strict Johnson strip the BCIKS20 error bound is `errorBound δ 2 domain7 < 1`, and `|S|/|F| = 1`.
 
+## Why the canonical form fails
+
+The two constant families `P z = linPoly` and `P z = 0` are both decoded on all of `S` (degree
+`< 2`, distance `3/7 ≤ δ`), while they differ at every `z`. Uniqueness would force
+`linPoly = 0`, contradicting `linPoly.natDegree = 1`. The uniqueness clause — not the existence
+of coefficient witnesses — is the false content.
+
+## Why the broad form fails
+
+The broad form quantifies over *every* decoded family, so we may choose an adversarial decoder.
+Let `stepFamily z = linPoly` for `z ∈ {domain7 1, domain7 2}` and `stepFamily z = 0` otherwise.
+Every member is decoded on all of `S`, but `(stepFamily z).coeff 1` is `1` exactly on the
+two-point set `{domain7 1, domain7 2}` and `0` at `domain7 3` and `domain7 4`. A polynomial of
+degree `< k + 1 = 2` cannot take the value `1` at `domain7 1` and `0` at the two distinct points
+`domain7 3`, `domain7 4`, so no coefficient witness `B 1` exists. Since `|S| = 2⁶⁴ > k + 1`, the
+same family refutes `StrictCoeffPolysLargeResidual`.
+
 ## Scope
 
-This refutes `StrictCanonicalCoeffPolysResidual` (and hence any unconditional use of it) as a
-mathematical statement; it does not refute the BCIKS20 list-decoding theorem, the production
-`δ*` conjecture, or the existence half of the residual. A repaired statement must either make
-the choice of `P₀` part of the data (a genuine canonical decoder) or restrict `P` by a
-uniqueness hypothesis, for example by working below the unique-decoding radius. Axiom-clean:
+This refutes the two residual *statements* (and hence any unconditional use of them); it does not
+refute the BCIKS20 list-decoding theorem, the production `δ*` conjecture, or the existence half of
+the extraction. A repaired statement must fix the decoded family canonically (a genuine canonical
+decoder) rather than quantifying over all of them, or must restrict to a regime where decoding is
+unique, for example below the unique-decoding radius. Axiom-clean:
 `[propext, Classical.choice, Quot.sound]`.
 -/
 
@@ -279,7 +296,26 @@ theorem errorBound_lt_one : errorBound (3 / 7 : ℝ≥0) 2 domain7 < 1 := by
   have h4 : (4 : ℝ) < (53 / 1000 : ℝ) ^ 7 * 2 ^ 64 := by norm_num
   linarith
 
-/-! ## The refutation -/
+/-! ## The probability hypothesis -/
+
+/-- The good-coefficient set is the whole field, so a random line is close to the code with
+probability `1`, which dominates `k · errorBound`. -/
+theorem prob_gt_k_errorBound :
+    Pr_{let z ← $ᵖ GF64}[
+      δᵣ(∑ t : Fin (1 + 1), (z ^ (t : ℕ)) • curveStack t,
+        ReedSolomon.code domain7 2) ≤ (3 / 7 : ℝ≥0)] >
+      (((1 : ℕ) : ENNReal) * (errorBound (3 / 7 : ℝ≥0) 2 domain7 : ENNReal)) := by
+  rw [prob_close_curve_eq_card_goodCoeffsCurve_div_card (k := 1) (deg := 2)
+    (domain := domain7) (δ := (3 / 7 : ℝ≥0)) curveStack]
+  rw [goodCoeffsCurve_eq_univ, Finset.card_univ]
+  simp only [Nat.cast_one, one_mul]
+  rw [ENNReal.div_self (by simp) (by simp), ← ENNReal.coe_one]
+  change ((errorBound (3 / 7 : ℝ≥0) 2 domain7 : ℝ≥0) : ENNReal) <
+    ((1 : ℝ≥0) : ENNReal)
+  rw [ENNReal.coe_lt_coe]
+  exact errorBound_lt_one
+
+/-! ## The canonical refutation -/
 
 /-- **The canonical strict coefficient-polynomial residual is false as stated.** The constant
 curve through `eWord` has good-coefficient set all of `F`, and the two constant decoded families
@@ -288,22 +324,9 @@ theorem not_strictCanonicalCoeffPolysResidual :
     ¬ StrictCanonicalCoeffPolysResidual (k := 1) (deg := 2) (domain := domain7)
       (δ := (3 / 7 : ℝ≥0)) := by
   classical
-  have hprob :
-      Pr_{let z ← $ᵖ GF64}[
-        δᵣ(∑ t : Fin (1 + 1), (z ^ (t : ℕ)) • curveStack t,
-          ReedSolomon.code domain7 2) ≤ (3 / 7 : ℝ≥0)] >
-        (((1 : ℕ) : ENNReal) * (errorBound (3 / 7 : ℝ≥0) 2 domain7 : ENNReal)) := by
-    rw [prob_close_curve_eq_card_goodCoeffsCurve_div_card (k := 1) (deg := 2)
-      (domain := domain7) (δ := (3 / 7 : ℝ≥0)) curveStack]
-    rw [goodCoeffsCurve_eq_univ, Finset.card_univ]
-    simp only [Nat.cast_one, one_mul]
-    rw [ENNReal.div_self (by simp) (by simp), ← ENNReal.coe_one]
-    change ((errorBound (3 / 7 : ℝ≥0) 2 domain7 : ℝ≥0) : ENNReal) <
-      ((1 : ℝ≥0) : ENNReal)
-    rw [ENNReal.coe_lt_coe]
-    exact errorBound_lt_one
   intro h
-  obtain ⟨P₀, _hCoeff, huniq⟩ := h (by norm_num) curveStack hprob johnson_side_lt sqrtRate_lt
+  obtain ⟨P₀, _hCoeff, huniq⟩ :=
+    h (by norm_num) curveStack prob_gt_k_errorBound johnson_side_lt sqrtRate_lt
   have hPc : ∀ z ∈ RS_goodCoeffsCurve (k := 1) (deg := 2) (domain := domain7) curveStack
       (3 / 7 : ℝ≥0),
       ((fun _ : GF64 => linPoly) z).natDegree < 2 ∧
@@ -344,6 +367,109 @@ theorem not_strictCanonicalCoeffPolysResidual :
   rw [linPoly_natDegree] at hdeg
   norm_num at hdeg
 
+/-! ## The broad refutation
+
+The broad residual quantifies over *every* decoded family, so the constant families above are not
+needed: an adversarial decoder whose coefficients cannot possibly be interpolated refutes it. -/
+
+/-- Two evaluation points at which the adversarial decoder selects `linPoly`. -/
+def stepSet : Finset GF64 := {domain7 1, domain7 2}
+
+/-- The adversarial decoder: `linPoly` on `stepSet`, the zero polynomial elsewhere. -/
+def stepFamily : GF64 → GF64[X] := fun z => if z ∈ stepSet then linPoly else 0
+
+lemma mem_stepSet_one : domain7 1 ∈ stepSet := by
+  simp [stepSet]
+
+lemma notMem_stepSet_three : domain7 3 ∉ stepSet := by
+  simp only [stepSet, mem_insert, mem_singleton, not_or]
+  exact ⟨fun h => absurd (domain7.injective h) (by decide),
+    fun h => absurd (domain7.injective h) (by decide)⟩
+
+lemma notMem_stepSet_four : domain7 4 ∉ stepSet := by
+  simp only [stepSet, mem_insert, mem_singleton, not_or]
+  exact ⟨fun h => absurd (domain7.injective h) (by decide),
+    fun h => absurd (domain7.injective h) (by decide)⟩
+
+lemma stepFamily_coeff_one_of_mem {z : GF64} (hz : z ∈ stepSet) :
+    (stepFamily z).coeff 1 = 1 := by
+  rw [show stepFamily z = linPoly from by simp [stepFamily, hz]]
+  simp [linPoly]
+
+lemma stepFamily_coeff_one_of_notMem {z : GF64} (hz : z ∉ stepSet) :
+    (stepFamily z).coeff 1 = 0 := by
+  rw [show stepFamily z = (0 : GF64[X]) from by simp [stepFamily, hz]]
+  simp
+
+/-- Every member of the adversarial family is decoded on the good-coefficient set. -/
+lemma stepFamily_decoded (z : GF64) :
+    (stepFamily z).natDegree < 2 ∧
+      δᵣ(∑ t : Fin (1 + 1), (z ^ (t : ℕ)) • curveStack t,
+        (stepFamily z).eval ∘ domain7) ≤ (3 / 7 : ℝ≥0) := by
+  by_cases hz : z ∈ stepSet
+  · rw [show stepFamily z = linPoly from by simp [stepFamily, hz]]
+    exact ⟨by rw [linPoly_natDegree]; norm_num, by
+      rw [line_curveStack, show (linPoly.eval ∘ domain7) = wLin from rfl, relDist_e_wLin,
+        coe_three_sevenths_nn]⟩
+  · rw [show stepFamily z = (0 : GF64[X]) from by simp [stepFamily, hz]]
+    constructor
+    · rw [natDegree_zero]
+      norm_num
+    · rw [line_curveStack]
+      have hz0 : ((0 : GF64[X]).eval ∘ domain7) = (0 : Fin 7 → GF64) := by
+        funext i
+        simp
+      rw [hz0, relDist_e_zero, coe_three_sevenths_nn]
+
+/-- **The broad strict coefficient-polynomial residual is false as stated.** The adversarial
+decoder is decoded at every parameter, but `(stepFamily z).coeff 1` is the indicator of a
+two-point set, which no polynomial of degree `< k + 1 = 2` can interpolate on `S = univ`. -/
+theorem not_strictCoeffPolysResidual :
+    ¬ StrictCoeffPolysResidual (k := 1) (deg := 2) (domain := domain7)
+      (δ := (3 / 7 : ℝ≥0)) := by
+  classical
+  intro h
+  obtain ⟨B, hBdeg, hBeval⟩ :=
+    h (by norm_num) curveStack prob_gt_k_errorBound johnson_side_lt sqrtRate_lt
+      stepFamily (fun z _ => stepFamily_decoded z)
+  have h1 : (B 1).eval (domain7 1) = 1 := by
+    have h' := hBeval (domain7 1) (mem_goodCoeffsCurve (domain7 1)) 1 (by norm_num)
+    rw [stepFamily_coeff_one_of_mem mem_stepSet_one] at h'
+    exact h'.symm
+  have h3 : (B 1).eval (domain7 3) = 0 := by
+    have h' := hBeval (domain7 3) (mem_goodCoeffsCurve (domain7 3)) 1 (by norm_num)
+    rw [stepFamily_coeff_one_of_notMem notMem_stepSet_three] at h'
+    exact h'.symm
+  have h4 : (B 1).eval (domain7 4) = 0 := by
+    have h' := hBeval (domain7 4) (mem_goodCoeffsCurve (domain7 4)) 1 (by norm_num)
+    rw [stepFamily_coeff_one_of_notMem notMem_stepSet_four] at h'
+    exact h'.symm
+  have hcard : ({domain7 3, domain7 4} : Finset GF64).card = 2 :=
+    Finset.card_pair (fun hEq => absurd (domain7.injective hEq) (by decide))
+  have hB1 : B 1 = 0 := by
+    refine Polynomial.eq_zero_of_natDegree_lt_card_of_eval_eq_zero' (B 1)
+      {domain7 3, domain7 4} ?_ ?_
+    · intro x hx
+      rcases mem_insert.mp hx with rfl | hx
+      · exact h3
+      · rw [mem_singleton.mp hx]
+        exact h4
+    · rw [hcard]
+      simpa using hBdeg 1 (by norm_num)
+  rw [hB1, Polynomial.eval_zero] at h1
+  exact one_ne_zero h1.symm
+
+/-- **The large-sector strict coefficient-polynomial residual is false as stated.** By
+`strictCoeffPolysResidual_iff_large` the adversarial curve — whose good-coefficient set has
+`|S| = 2⁶⁴ > k + 1 = 2` — refutes the sector that carries the content of the residual. -/
+theorem not_strictCoeffPolysLargeResidual :
+    ¬ StrictCoeffPolysLargeResidual (k := 1) (deg := 2) (domain := domain7)
+      (δ := (3 / 7 : ℝ≥0)) :=
+  fun hLarge =>
+    not_strictCoeffPolysResidual
+      (strictCoeffPolysResidual_of_large (k := 1) (deg := 2) (domain := domain7)
+        (δ := (3 / 7 : ℝ≥0)) hLarge)
+
 end StrictCanonicalCoeffPolysRefutation
 
 end
@@ -353,4 +479,7 @@ end ProximityGap
 /-! ## Axiom audit -/
 
 #print axioms ProximityGap.StrictCanonicalCoeffPolysRefutation.not_strictCanonicalCoeffPolysResidual
+#print axioms ProximityGap.StrictCanonicalCoeffPolysRefutation.not_strictCoeffPolysResidual
+#print axioms
+  ProximityGap.StrictCanonicalCoeffPolysRefutation.not_strictCoeffPolysLargeResidual
 #print axioms ProximityGap.StrictCanonicalCoeffPolysRefutation.errorBound_lt_one

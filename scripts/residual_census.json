@@ -1,9 +1,9 @@
 {
  "summary": {
   "total": 89,
-  "open": 43,
+  "open": 42,
   "discharged": 44,
-  "refuted": 2,
+  "refuted": 3,
   "by_top_dir": {
    "(root)": {
     "total": 1,
@@ -13,9 +13,9 @@
    },
    "Data": {
     "total": 24,
-    "open": 15,
+    "open": 14,
     "discharged": 8,
-    "refuted": 1
+    "refuted": 2
    },
    "OracleReduction": {
     "total": 39,
@@ -436,13 +436,13 @@
    "name": "StrictCoeffPolysResidual",
    "fq_name": "ProximityGap.StrictCoeffPolysResidual",
    "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean",
-   "line": 2505,
+   "line": 2514,
    "providers": [
     {
      "name": "ProximityGap.strictCoeffPolysResidual_of_strictCanonicalCoeffPolysResidual",
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean",
-     "line": 2566,
+     "line": 2575,
      "conditional_on_residuals": [
       "StrictCanonicalCoeffPolysResidual"
      ],
@@ -514,7 +514,7 @@
      "name": "ProximityGap.strictCoeffPolysResidual_of_large",
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffLargeReduction.lean",
-     "line": 119,
+     "line": 126,
      "conditional_on_residuals": [
       "StrictCoeffPolysLargeResidual"
      ],
@@ -527,7 +527,7 @@
      "name": "ProximityGap.strictCoeffPolysResidual_iff_large",
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffLargeReduction.lean",
-     "line": 142,
+     "line": 149,
      "conditional_on_residuals": [],
      "extra_explicit_binders": [],
      "ambiguous_name_match": false
@@ -676,20 +676,31 @@
      "ambiguous_name_match": false
     }
    ],
+   "refutations": [
+    {
+     "name": "ProximityGap.StrictCanonicalCoeffPolysRefutation.not_strictCoeffPolysResidual",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CanonicalCoeffExtractionRefutation.lean",
+     "line": 427,
+     "conditional_on_residuals": [],
+     "extra_explicit_binders": [],
+     "ambiguous_name_match": false
+    }
+   ],
    "status": "discharged"
   },
   {
    "name": "StrictCanonicalCoeffPolysResidual",
    "fq_name": "ProximityGap.StrictCanonicalCoeffPolysResidual",
    "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean",
-   "line": 2540,
+   "line": 2549,
    "providers": [],
    "refutations": [
     {
      "name": "ProximityGap.StrictCanonicalCoeffPolysRefutation.not_strictCanonicalCoeffPolysResidual",
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CanonicalCoeffExtractionRefutation.lean",
-     "line": 287,
+     "line": 323,
      "conditional_on_residuals": [],
      "extra_explicit_binders": [],
      "ambiguous_name_match": false
@@ -701,7 +712,7 @@
    "name": "BoundaryCardResidual",
    "fq_name": "ProximityGap.BoundaryCardResidual",
    "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean",
-   "line": 2590,
+   "line": 2599,
    "providers": [
     {
      "name": "ArkLib.BoundaryCardResidual.boundaryCardResidual_of_not_lattice",
@@ -904,13 +915,13 @@
    "name": "BoundaryProbabilityResidual",
    "fq_name": "ProximityGap.BoundaryProbabilityResidual",
    "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean",
-   "line": 2609,
+   "line": 2618,
    "providers": [
     {
      "name": "ProximityGap.boundaryProbabilityResidual_of_boundaryCardResidual",
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean",
-     "line": 2623,
+     "line": 2632,
      "conditional_on_residuals": [
       "BoundaryCardResidual"
      ],
@@ -1415,7 +1426,7 @@
    "name": "StrictCoeffPolysLargeResidual",
    "fq_name": "ProximityGap.StrictCoeffPolysLargeResidual",
    "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffLargeReduction.lean",
-   "line": 96,
+   "line": 103,
    "providers": [
     {
      "name": "ArkLib.RawGS304.strictCoeffPolysLargeResidual_of_rawGSCargo",
@@ -1443,7 +1454,7 @@
      "name": "ProximityGap.strictCoeffPolysLargeResidual_of_residual",
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffLargeReduction.lean",
-     "line": 133,
+     "line": 140,
      "conditional_on_residuals": [
       "StrictCoeffPolysResidual"
      ],
@@ -1475,7 +1486,18 @@
      "ambiguous_name_match": false
     }
    ],
-   "status": "open"
+   "refutations": [
+    {
+     "name": "ProximityGap.StrictCanonicalCoeffPolysRefutation.not_strictCoeffPolysLargeResidual",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CanonicalCoeffExtractionRefutation.lean",
+     "line": 465,
+     "conditional_on_residuals": [],
+     "extra_explicit_binders": [],
+     "ambiguous_name_match": false
+    }
+   ],
+   "status": "refuted"
   },
   {
    "name": "StrictCoeffPolysExcResidual",

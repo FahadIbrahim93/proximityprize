@@ -54076,9 +54076,10 @@ numerical bound `errorBound_lt_one`. The residual is now classified `refuted` by
 
 Scope: this refutes the residual as stated, and therefore every consumer that assumes it
 unconditionally — in particular `strictCoeffPolysResidual_of_strictCanonicalCoeffPolysResidual`
-is vacuous. It says nothing about the strict Johnson existence statement
-`StrictCoeffPolysResidual` itself, about the production parameters `n = 2^32`, or about the
-δ* conjecture, which remains open.
+is vacuous. It says nothing about the strict Johnson existence statement as a mathematical
+question at production parameters `n = 2^32`, nor about the δ* conjecture, which remains open.
+(The broad `StrictCoeffPolysResidual` surface is refuted by the same witness; see the next
+entry.)
 
 Reproduce with
 ```
@@ -54087,3 +54088,43 @@ scripts/lake-locked.sh build ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curve
 ```
 The printed declarations `not_strictCanonicalCoeffPolysResidual` and `errorBound_lt_one` use
 only `propext`, `Classical.choice`, and `Quot.sound`.
+
+### [164-strict-coeff-polys-broad-refuted] The broad and large-sector strict extraction residuals are false: an adversarial decoder has non-interpolable coefficients
+
+2026-10-22, gitzlx (Slop contribution). Kernel-checked, same instance as the previous entry.
+
+`ProximityGap.StrictCoeffPolysResidual` quantifies over *every* family `P` decoded on the
+good-coefficient set, asking for coefficient polynomials `B j` of degree `< k + 1` with
+`(P z).coeff j = (B j).eval z` there. `ProximityGap.StrictCoeffPolysLargeResidual` is its
+`k + 1 < |S|` sector, which by `strictCoeffPolysResidual_iff_large` carries the whole content of
+the surface. Both statements are false, and the curve from the previous entry refutes them.
+
+Witness: `k = 1`, `deg = 2`, `δ = 3/7`, `GaloisField 2 64`, the seven-point domain and the
+constant curve `u 0 = e`, `u 1 = 0` (so `S = univ` and the probability is `1`). Replace the
+constant families by the adversarial decoder `stepFamily z = X - C(domain 0)` on
+`{domain 1, domain 2}` and `stepFamily z = 0` elsewhere. Every member is decoded (degree `< 2`,
+distance `3/7`), but `(stepFamily z).coeff 1` is `1` on `{domain 1, domain 2}` and `0` at
+`domain 3` and `domain 4`. A witness `B 1` of degree `< 2` would vanish at the two distinct
+points `domain 3`, `domain 4`, hence be zero by
+`Polynomial.eq_zero_of_natDegree_lt_card_of_eval_eq_zero'`, contradicting its value `1` at
+`domain 1`. Since `|S| = 2^64 > k + 1 = 2`, the same family refutes the large sector, and
+`strictCoeffPolysResidual_of_large` transfers the failure to the broad form.
+
+Formal payload, same file: `not_strictCoeffPolysResidual` and
+`not_strictCoeffPolysLargeResidual`, on top of the shared `prob_gt_k_errorBound`,
+`stepFamily_decoded`, and the coefficient lemmas `stepFamily_coeff_one_of_mem` /
+`stepFamily_coeff_one_of_notMem`.
+
+Scope: this refutes the broad and large-sector statements, so every unconditional consumer is
+vacuous, including `correlatedAgreement_affine_curves_of_largeResidual`. It does not refute the
+BCIKS20 list-decoding theorem (which fixes a decoder), the δ* conjecture, or the unique-decoding
+regime; a repaired surface must select the decoded family canonically. Census caveat:
+`scripts/residual_census.py` still labels `StrictCoeffPolysResidual` as `discharged` because a
+vacuous `k := 0` provider (`ArkLib.KeystoneStrictResidual.strictCoeffPolysResidual_zero`, whose
+`0 < 0` hypothesis is unsatisfiable) outranks refutations in the status precedence order; the
+`refutations` list in `scripts/residual_census.json` records both new theorems. Treat the JSON
+`refutations` list as authoritative until the precedence is revisited.
+
+Reproduce with the same two commands as the previous entry and observe `#print axioms` for
+`not_strictCoeffPolysResidual` and `not_strictCoeffPolysLargeResidual`: only `propext`,
+`Classical.choice`, and `Quot.sound`.

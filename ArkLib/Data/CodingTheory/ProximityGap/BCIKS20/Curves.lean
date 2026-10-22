@@ -2501,7 +2501,16 @@ theorem correlatedAgreement_affine_curves_of_strict_canonical_coeff_polys {k : �
 
 omit [DecidableEq ι] in
 /-- Explicit residual for the strict Johnson list-decoding extraction needed by the final
-correlated-agreement keystone. -/
+correlated-agreement keystone.
+
+**REFUTED — this Prop is FALSE as stated** (axiom-clean, in-tree):
+`StrictCanonicalCoeffPolysRefutation.not_strictCoeffPolysResidual`
+(`CanonicalCoeffExtractionRefutation.lean`) uses the same `k = 1`, `deg = 2`, `δ = 3/7`
+counterexample curve as the canonical form. The broad quantifier over decoded families `P` is
+the false content: the adversarial decoder `stepFamily` is decoded on the whole good-coefficient
+set, yet `(stepFamily z).coeff 1` is the indicator of a two-point set, so no polynomial `B 1` of
+degree `< k + 1 = 2` interpolates it. This def is retained ONLY as a documented-false assumption
+surface for explicitly-conditional adapters; do not try to discharge it. -/
 def StrictCoeffPolysResidual {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} : Prop :=
   ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
     Pr_{
