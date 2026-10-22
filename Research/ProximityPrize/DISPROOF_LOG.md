@@ -54187,3 +54187,46 @@ The printed declarations `not_strictCoeffPolysExcResidual_of_two_mul_add_two_lt_
 `not_strictCoeffPolysExcResidual_one` use only `propext`, `Classical.choice`, and `Quot.sound`.
 `scripts/residual_census.py` now classifies `StrictCoeffPolysExcResidual` as `refuted` (there is
 no competing provider for it).
+
+### [164-curve-common-agreement-refuted] The geometric §5 common-agreement residual is false at the same witness
+
+The transparent geometric form of the §5 extraction, `CurveCommonAgreementResidual`
+(`ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CoeffExtractionResidual.lean`), says that a
+family `P` decoded on the good-coefficient set `S` admits `k + 1` sample parameters whose decodings
+share a `≥ deg`-size common agreement set with `P z` at every good `z`. No new construction is
+needed: the file itself proves the reduction
+`strictCoeffPolysResidual_of_commonAgreement` (the algebraic broad form follows from the geometric
+one by bivariate Lagrange interpolation), and the previous entry refutes the broad form at the
+adversarial curve. The refutation is therefore the one-line corollary
+`not_curveCommonAgreementResidual` in
+`ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CanonicalCoeffExtractionRefutation.lean`:
+
+```
+theorem not_curveCommonAgreementResidual :
+    ¬ CurveCommonAgreementResidual (k := 1) (deg := 2) (domain := domain7)
+      (δ := (3 / 7 : ℝ≥0)) :=
+  fun h => not_strictCoeffPolysResidual
+    (strictCoeffPolysResidual_of_commonAgreement (k := 1) (deg := 2)
+      (domain := domain7) (δ := (3 / 7 : ℝ≥0)) h)
+```
+
+Witness: `k = 1`, `deg = 2`, `δ = 3/7`, `GaloisField 2 64`, the seven-point domain, the constant
+curve `u 0 = e`, `u 1 = 0`, and the block-decoder family — the same data as the earlier entries.
+
+Scope: this closes the geometric root of the §5 strict chain, so the §5 keystones
+`strictCoeffPolysResidual_of_commonAgreement`, `strictCoeffPolysResidual_of_large`, and
+`correlatedAgreement_affine_curves_of_strictCanonicalCoeffPolysResidual` cannot be used to claim
+the extraction: their hypotheses are false at this witness. It says nothing about the BCIKS20
+list-decoding theorem, about statements that fix the decoded family canonically, about the
+unique-decoding regime, or about the `δ*` conjecture, all of which remain as before.
+
+Reproduce with
+
+```
+scripts/pg-iterate.sh ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CanonicalCoeffExtractionRefutation.lean
+scripts/lake-locked.sh build ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.CanonicalCoeffExtractionRefutation
+```
+
+`#print axioms not_curveCommonAgreementResidual` reports only `propext`, `Classical.choice`, and
+`Quot.sound`. `scripts/residual_census.py` now classifies `CurveCommonAgreementResidual` as
+`refuted` (none of its `curveCommonAgreementResidual_of_*` adapters is a concrete provider).

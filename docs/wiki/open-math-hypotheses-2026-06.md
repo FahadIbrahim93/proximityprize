@@ -190,8 +190,10 @@ Per-hypothesis discipline: constraints → new direction → why nobody has done
   of a `(b + 1)`-point parameter block, which cannot be matched off fewer than half the field's
   worth of exceptions. So "allow `O(n)` exceptional parameters" is NOT an adequate repair; the
   §5 strict-interior target must be re-stated (existence-only extraction, a fixed canonical
-  decoder, or uniqueness below the unique-decoding radius), not taken as given. Census:
-  `docs/wiki/residual-census.md`.
+  decoder, or uniqueness below the unique-decoding radius), not taken as given. The geometric
+  root of the chain falls too: `CurveCommonAgreementResidual` is refuted at the same witness by
+  `not_curveCommonAgreementResidual`, since it implies the broad form via
+  `strictCoeffPolysResidual_of_commonAgreement`. Census: `docs/wiki/residual-census.md`.
 - **Proof plan**: shape-confirmation; then the window dictionary (`O111` is at modulus n with
   arbitrary Z-weights — the boundary weights are the coefficient extractions); then O123.
 

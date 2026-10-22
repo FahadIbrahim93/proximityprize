@@ -33,7 +33,13 @@ decodings share a `≥ deg`-size common agreement set with `P z` at every good p
 This is the genuinely deep content of [BCIKS20] §6: in the regime `(1-ρ)/2 < δ < 1-√ρ`, the
 decoded family is forced onto a single global low-degree bivariate structure, so the agreement
 sets of different parameters overlap on `≥ deg` points. The algebraic conclusion follows from
-this geometric one by pure Lagrange interpolation (`RS_coeffPolys_of_commonAgreement`). -/
+this geometric one by pure Lagrange interpolation (`RS_coeffPolys_of_commonAgreement`).
+
+> **Status (2026-10-22): REFUTED as stated.** At `k = 1`, `deg = 2`, `δ = 3/7` over
+> `GaloisField 2 64` on a seven-point domain,
+> `ProximityGap.StrictCanonicalCoeffPolysRefutation.not_curveCommonAgreementResidual` proves the
+> negation, because the statement implies `StrictCoeffPolysResidual` and that broad form is
+> already false there. The reduction below stays valid; its hypothesis is what fails. -/
 def CurveCommonAgreementResidual {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} : Prop :=
   ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
     Pr_{
@@ -62,7 +68,9 @@ polynomials in the curve parameter) follows from the transparent geometric resid
 `CurveCommonAgreementResidual` (the decoded family has large common agreement with `k+1` sampled
 decodings), via the bivariate Lagrange lift `RS_coeffPolys_of_commonAgreement`. This isolates
 the genuinely deep BCIKS Johnson-radius counting (the common agreement) from the mechanical
-interpolation, which is fully discharged. -/
+interpolation, which is fully discharged. The hypothesis is refuted as stated (see the status
+note on `CurveCommonAgreementResidual`), so this is a conditional reduction from a false premise
+and does not by itself discharge `StrictCoeffPolysResidual`. -/
 theorem strictCoeffPolysResidual_of_commonAgreement {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     [NeZero deg]
     (h : CurveCommonAgreementResidual (k := k) (deg := deg) (domain := domain) (δ := δ)) :

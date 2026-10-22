@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.CoeffExtractionResidual
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffLargeReduction
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffPolysExceptional
 import Mathlib.FieldTheory.Finite.GaloisField
@@ -11,8 +12,10 @@ import Mathlib.FieldTheory.Finite.GaloisField
 /-!
 # Counterexamples to the strict-Johnson coefficient-extraction residuals
 
-The BCIKS20 §5/§6 strict Johnson-branch extraction is formalized by four named residual surfaces:
+The BCIKS20 §5/§6 strict Johnson-branch extraction is formalized by five named residual surfaces:
 
+* `CurveCommonAgreementResidual` (geometric form, the §5 root): the decoded family admits `k + 1`
+  sample parameters whose decodings share a `≥ deg`-size agreement set with every good decoding;
 * `StrictCoeffPolysResidual` (broad form): for every curve `u`, every parameter family `P` that is
   decoded on the good-coefficient set `S = RS_goodCoeffsCurve u δ` has coefficient polynomials
   `B j` of degree `< k + 1` interpolating `z ↦ (P z).coeff j` on `S`;
@@ -24,7 +27,9 @@ The BCIKS20 §5/§6 strict Johnson-branch extraction is formalized by four named
   as `StrictCoeffPolysResidual`, relaxed to hold only at good parameters outside an exceptional
   set `E` with `E.card ≤ b`.
 
-All four are false as stated, and one witness refutes them simultaneously. The exceptional-set
+All five are false as stated, and one witness refutes them simultaneously — the geometric form
+because it implies the broad form (`strictCoeffPolysResidual_of_commonAgreement`). The
+exceptional-set
 repair survives only once its budget reaches half the field: it is refuted at every `b` with
 `2b + 2 < |F|`, which is the whole regime in which the repaired §6 consumer chain
 (`correlatedAgreement_affine_curves_of_strict_coeff_polys_exc`, at proximity error
@@ -76,7 +81,7 @@ which is far outside the regime where the exceptional-set §6 consumer chain is 
 
 ## Scope
 
-This refutes the four residual *statements* (and hence any unconditional use of them); it does not
+This refutes the five residual *statements* (and hence any unconditional use of them); it does not
 refute the BCIKS20 list-decoding theorem, the production `δ*` conjecture, or the existence half of
 the extraction. In particular it refutes the exceptional-set repair at every budget `2b + 2 < |F|`;
 budgets at or above half the field are left untouched (no claim of satisfiability is made there).
@@ -511,6 +516,25 @@ theorem not_strictCoeffPolysLargeResidual :
       (strictCoeffPolysResidual_of_large (k := 1) (deg := 2) (domain := domain7)
         (δ := (3 / 7 : ℝ≥0)) hLarge)
 
+/-! ## The geometric refutation
+
+`CurveCommonAgreementResidual` is the transparent geometric form of the §5 extraction: the
+decoded family must admit `k + 1` sample parameters whose decodings share a `≥ deg`-size common
+agreement set with `P z` at every good `z`. Since
+`strictCoeffPolysResidual_of_commonAgreement` derives the algebraic broad form from it, the same
+witness refutes the geometric statement. -/
+
+/-- **The geometric §5 common-agreement residual is false as stated.** It implies the broad
+coefficient-polynomial form (`strictCoeffPolysResidual_of_commonAgreement`), which the adversarial
+curve refutes at these parameters. -/
+theorem not_curveCommonAgreementResidual :
+    ¬ CurveCommonAgreementResidual (k := 1) (deg := 2) (domain := domain7)
+      (δ := (3 / 7 : ℝ≥0)) :=
+  fun h =>
+    not_strictCoeffPolysResidual
+      (strictCoeffPolysResidual_of_commonAgreement (k := 1) (deg := 2)
+        (domain := domain7) (δ := (3 / 7 : ℝ≥0)) h)
+
 /-! ## The exceptional-set refutation
 
 `StrictCoeffPolysExcResidual b` relaxes the broad form by allowing the coefficient identity to
@@ -604,6 +628,7 @@ open ProximityGap.StrictCanonicalCoeffPolysRefutation
 #print axioms not_strictCanonicalCoeffPolysResidual
 #print axioms not_strictCoeffPolysResidual
 #print axioms not_strictCoeffPolysLargeResidual
+#print axioms not_curveCommonAgreementResidual
 #print axioms not_strictCoeffPolysExcResidual_of_two_mul_add_two_lt_card
 #print axioms not_strictCoeffPolysExcResidual_one
 #print axioms errorBound_lt_one
