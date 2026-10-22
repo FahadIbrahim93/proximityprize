@@ -54128,3 +54128,62 @@ vacuous `k := 0` provider (`ArkLib.KeystoneStrictResidual.strictCoeffPolysResidu
 Reproduce with the same two commands as the previous entry and observe `#print axioms` for
 `not_strictCoeffPolysResidual` and `not_strictCoeffPolysLargeResidual`: only `propext`,
 `Classical.choice`, and `Quot.sound`.
+
+### [164-strict-coeff-polys-exceptional-refuted] The exceptional-set repair is false below half the field: a block decoder's indicator is not interpolable off a small exceptional set
+
+2026-10-22, gitzlx (Slop contribution). Kernel-checked finite-field counterexample, same witness
+field and curve as the two previous entries.
+
+`ProximityGap.StrictCoeffPolysExcResidual b`
+(`ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysExceptional.lean`) is the
+proposed honest repair of the refuted broad extraction residual: same hypotheses, same demand
+for coefficient polynomials `B j` of degree `< k + 1`, but the identity
+`(P z).coeff j = (B j).eval z` is only required at good parameters outside an exceptional set `E`
+with `E.card ≤ b`. The repair is false for **every budget `b` with `2b + 2 < |F|`**, which is the
+whole regime in which the repaired §6 consumer chain runs (its proximity error is
+`ε = errorBound + b/|F|`, so a budget anywhere near `|F|/2` makes the statement useless).
+
+Witness (`blockFamily`): keep `k = 1`, `deg = 2`, `δ = 3/7`, `GaloisField 2 64`, the seven-point
+domain, and the constant curve `u 0 = e`, `u 1 = 0` of the previous entries (good-coefficient set
+all of `F`, probability `1`). Pick any parameter block `S` with `|S| = b + 1` (exists since
+`b + 1 ≤ |F|` follows from `2b + 2 < |F|`) and set `P z = X - C(domain 0)` for `z ∈ S`,
+`P z = 0` otherwise. Every member is decoded at every parameter, and
+`(P z).coeff 1` is the indicator function of `S`. A witness `B 1` of degree `< 2` matching it off
+`E` cannot exist:
+
+* if `B 1 = 0`, then every `z ∈ S` with `z ∉ E` would have to satisfy `1 = 0`, so `S ⊆ E` and
+  `b + 1 = |S| ≤ |E| ≤ b`;
+* otherwise `B 1 ≠ 0` has degree `≤ 1`, so its vanishing set `Z` has at most one point
+  (`Finset.card_le_one` plus
+  `Polynomial.eq_zero_of_natDegree_lt_card_of_eval_eq_zero'`), yet every
+  `z ∈ (univ \ S) \ E` lies in `Z`; with
+  `Finset.le_card_sdiff` and `Finset.card_sdiff` this gives
+  `|F| - (b + 1) - |E| ≤ 1`, hence `|F| ≤ 2b + 2`, contradicting `2b + 2 < |F|`.
+
+Formal payload, same file as the previous entries:
+`not_strictCoeffPolysExcResidual_of_two_mul_add_two_lt_card` is the general refutation (budget
+hypothesis `2b + 2 < Fintype.card GF64`), and `not_strictCoeffPolysExcResidual_one` is the
+concrete budget-`1` instance. Both reuse `blockFamily_decoded` and the indicator lemmas
+`blockFamily_coeff_one_of_mem` / `blockFamily_coeff_one_of_notMem`; `Finset.exists_subset_card_eq`
+supplies the parameter block.
+
+Scope: the exceptional-set residual is documented-false at every sub-half-field budget, so the
+keystones `correlatedAgreement_affine_curves_of_strict_coeff_polys_exc` and
+`correlatedAgreement_affine_curves_strict_of_strict_coeff_polys_exc` are conditional reductions
+from a refuted hypothesis: they do not deliver Theorem 1.5 at any meaningful proximity error.
+Budget regimes `b ≥ (|F| - 2)/2` are **not** refuted here, and no satisfiability claim is made
+there. The refutation says nothing about the BCIKS20 list-decoding theorem, about extraction
+statements that fix the decoded family canonically, about the unique-decoding regime, or about
+the `δ*` conjecture, all of which remain as before.
+
+Reproduce with
+
+```
+scripts/pg-iterate.sh ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CanonicalCoeffExtractionRefutation.lean
+scripts/lake-locked.sh build ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.CanonicalCoeffExtractionRefutation
+```
+
+The printed declarations `not_strictCoeffPolysExcResidual_of_two_mul_add_two_lt_card` and
+`not_strictCoeffPolysExcResidual_one` use only `propext`, `Classical.choice`, and `Quot.sound`.
+`scripts/residual_census.py` now classifies `StrictCoeffPolysExcResidual` as `refuted` (there is
+no competing provider for it).

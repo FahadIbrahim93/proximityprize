@@ -5,22 +5,30 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffLargeReduction
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffPolysExceptional
 import Mathlib.FieldTheory.Finite.GaloisField
 
 /-!
 # Counterexamples to the strict-Johnson coefficient-extraction residuals
 
-The BCIKS20 §5/§6 strict Johnson-branch extraction is formalized by two named residual surfaces:
+The BCIKS20 §5/§6 strict Johnson-branch extraction is formalized by four named residual surfaces:
 
 * `StrictCoeffPolysResidual` (broad form): for every curve `u`, every parameter family `P` that is
   decoded on the good-coefficient set `S = RS_goodCoeffsCurve u δ` has coefficient polynomials
   `B j` of degree `< k + 1` interpolating `z ↦ (P z).coeff j` on `S`;
+* `StrictCoeffPolysLargeResidual` (the large-good-set sector, equivalent to the broad form by
+  `strictCoeffPolysResidual_iff_large`);
 * `StrictCanonicalCoeffPolysResidual` (canonical form): one decoded family `P₀` carries such
-  witnesses, and **every** other family decoded on `S` agrees with `P₀` on `S`.
+  witnesses, and **every** other family decoded on `S` agrees with `P₀` on `S`;
+* `StrictCoeffPolysExcResidual b` (the exceptional-set repair of the broad form): the same demand
+  as `StrictCoeffPolysResidual`, relaxed to hold only at good parameters outside an exceptional
+  set `E` with `E.card ≤ b`.
 
-Both are false as stated, and one witness refutes them simultaneously.
-`StrictCoeffPolysLargeResidual` (the large-good-set sector, equivalent to the broad form by
-`strictCoeffPolysResidual_iff_large`) fails at the same instance.
+All four are false as stated, and one witness refutes them simultaneously. The exceptional-set
+repair survives only once its budget reaches half the field: it is refuted at every `b` with
+`2b + 2 < |F|`, which is the whole regime in which the repaired §6 consumer chain
+(`correlatedAgreement_affine_curves_of_strict_coeff_polys_exc`, at proximity error
+`errorBound + b/|F|`) is meant to run.
 
 ## The witness
 
@@ -54,13 +62,27 @@ degree `< k + 1 = 2` cannot take the value `1` at `domain7 1` and `0` at the two
 `domain7 3`, `domain7 4`, so no coefficient witness `B 1` exists. Since `|S| = 2⁶⁴ > k + 1`, the
 same family refutes `StrictCoeffPolysLargeResidual`.
 
+## Why the exceptional-set repair fails
+
+`StrictCoeffPolysExcResidual b` keeps the adversarial decoder in play but lets the coefficient
+identity fail on an exceptional set `E` of size `≤ b`. The `coeff 1` of the adversarial decoder is
+now an *indicator function* instead of a two-point one: pick a parameter block `S` of size `b + 1`
+and set `P z = linPoly` on `S`, `P z = 0` off `S`. Any witness `B 1` of degree `< 2` that matches
+this indicator off `E` is impossible once `2b + 2 < |F|`: a nonzero polynomial of degree `≤ 1`
+takes the value `0` at no more than one point, so the `|F| - (b + 1)` off-block parameters outside
+`E` would all have to be that single point, while the very same estimate also forces
+`|F| - (b + 1) - b ≤ 1`. In other words the repair needs a budget of at least half the field,
+which is far outside the regime where the exceptional-set §6 consumer chain is meaningful.
+
 ## Scope
 
-This refutes the two residual *statements* (and hence any unconditional use of them); it does not
+This refutes the four residual *statements* (and hence any unconditional use of them); it does not
 refute the BCIKS20 list-decoding theorem, the production `δ*` conjecture, or the existence half of
-the extraction. A repaired statement must fix the decoded family canonically (a genuine canonical
-decoder) rather than quantifying over all of them, or must restrict to a regime where decoding is
-unique, for example below the unique-decoding radius. Axiom-clean:
+the extraction. In particular it refutes the exceptional-set repair at every budget `2b + 2 < |F|`;
+budgets at or above half the field are left untouched (no claim of satisfiability is made there).
+A repaired statement must fix the decoded family canonically (a genuine canonical decoder) rather
+than quantifying over all of them, or must restrict to a regime where decoding is unique, for
+example below the unique-decoding radius. Axiom-clean:
 `[propext, Classical.choice, Quot.sound]`.
 -/
 
@@ -375,8 +397,13 @@ needed: an adversarial decoder whose coefficients cannot possibly be interpolate
 /-- Two evaluation points at which the adversarial decoder selects `linPoly`. -/
 def stepSet : Finset GF64 := {domain7 1, domain7 2}
 
-/-- The adversarial decoder: `linPoly` on `stepSet`, the zero polynomial elsewhere. -/
-def stepFamily : GF64 → GF64[X] := fun z => if z ∈ stepSet then linPoly else 0
+/-- The adversarial decoder attached to a parameter block `S`: `linPoly` on `S`, the zero
+polynomial elsewhere. Every member is decoded at every parameter, while
+`(blockFamily S z).coeff 1` is the indicator function of `S`. -/
+def blockFamily (S : Finset GF64) : GF64 → GF64[X] := fun z => if z ∈ S then linPoly else 0
+
+/-- The two-point adversarial decoder: `linPoly` on `stepSet`, the zero polynomial elsewhere. -/
+def stepFamily : GF64 → GF64[X] := blockFamily stepSet
 
 lemma mem_stepSet_one : domain7 1 ∈ stepSet := by
   simp [stepSet]
@@ -391,27 +418,35 @@ lemma notMem_stepSet_four : domain7 4 ∉ stepSet := by
   exact ⟨fun h => absurd (domain7.injective h) (by decide),
     fun h => absurd (domain7.injective h) (by decide)⟩
 
-lemma stepFamily_coeff_one_of_mem {z : GF64} (hz : z ∈ stepSet) :
-    (stepFamily z).coeff 1 = 1 := by
-  rw [show stepFamily z = linPoly from by simp [stepFamily, hz]]
+lemma blockFamily_coeff_one_of_mem {S : Finset GF64} {z : GF64} (hz : z ∈ S) :
+    (blockFamily S z).coeff 1 = 1 := by
+  rw [show blockFamily S z = linPoly from by simp [blockFamily, hz]]
   simp [linPoly]
 
-lemma stepFamily_coeff_one_of_notMem {z : GF64} (hz : z ∉ stepSet) :
-    (stepFamily z).coeff 1 = 0 := by
-  rw [show stepFamily z = (0 : GF64[X]) from by simp [stepFamily, hz]]
+lemma blockFamily_coeff_one_of_notMem {S : Finset GF64} {z : GF64} (hz : z ∉ S) :
+    (blockFamily S z).coeff 1 = 0 := by
+  rw [show blockFamily S z = (0 : GF64[X]) from by simp [blockFamily, hz]]
   simp
 
+lemma stepFamily_coeff_one_of_mem {z : GF64} (hz : z ∈ stepSet) :
+    (stepFamily z).coeff 1 = 1 :=
+  blockFamily_coeff_one_of_mem hz
+
+lemma stepFamily_coeff_one_of_notMem {z : GF64} (hz : z ∉ stepSet) :
+    (stepFamily z).coeff 1 = 0 :=
+  blockFamily_coeff_one_of_notMem hz
+
 /-- Every member of the adversarial family is decoded on the good-coefficient set. -/
-lemma stepFamily_decoded (z : GF64) :
-    (stepFamily z).natDegree < 2 ∧
+lemma blockFamily_decoded (S : Finset GF64) (z : GF64) :
+    (blockFamily S z).natDegree < 2 ∧
       δᵣ(∑ t : Fin (1 + 1), (z ^ (t : ℕ)) • curveStack t,
-        (stepFamily z).eval ∘ domain7) ≤ (3 / 7 : ℝ≥0) := by
-  by_cases hz : z ∈ stepSet
-  · rw [show stepFamily z = linPoly from by simp [stepFamily, hz]]
+        (blockFamily S z).eval ∘ domain7) ≤ (3 / 7 : ℝ≥0) := by
+  by_cases hz : z ∈ S
+  · rw [show blockFamily S z = linPoly from by simp [blockFamily, hz]]
     exact ⟨by rw [linPoly_natDegree]; norm_num, by
       rw [line_curveStack, show (linPoly.eval ∘ domain7) = wLin from rfl, relDist_e_wLin,
         coe_three_sevenths_nn]⟩
-  · rw [show stepFamily z = (0 : GF64[X]) from by simp [stepFamily, hz]]
+  · rw [show blockFamily S z = (0 : GF64[X]) from by simp [blockFamily, hz]]
     constructor
     · rw [natDegree_zero]
       norm_num
@@ -420,6 +455,12 @@ lemma stepFamily_decoded (z : GF64) :
         funext i
         simp
       rw [hz0, relDist_e_zero, coe_three_sevenths_nn]
+
+lemma stepFamily_decoded (z : GF64) :
+    (stepFamily z).natDegree < 2 ∧
+      δᵣ(∑ t : Fin (1 + 1), (z ^ (t : ℕ)) • curveStack t,
+        (stepFamily z).eval ∘ domain7) ≤ (3 / 7 : ℝ≥0) :=
+  blockFamily_decoded stepSet z
 
 /-- **The broad strict coefficient-polynomial residual is false as stated.** The adversarial
 decoder is decoded at every parameter, but `(stepFamily z).coeff 1` is the indicator of a
@@ -470,6 +511,86 @@ theorem not_strictCoeffPolysLargeResidual :
       (strictCoeffPolysResidual_of_large (k := 1) (deg := 2) (domain := domain7)
         (δ := (3 / 7 : ℝ≥0)) hLarge)
 
+/-! ## The exceptional-set refutation
+
+`StrictCoeffPolysExcResidual b` relaxes the broad form by allowing the coefficient identity to
+fail on an exceptional parameter set of size `≤ b`. The relaxation does not rescue the statement
+in the regime where it is used: a block decoder of block size `b + 1` has an indicator function
+as its `coeff 1`, and a degree `≤ 1` polynomial cannot match a `0/1` function off `b` exceptions
+unless the field has at most `2b + 2` elements. -/
+
+/-- **The exceptional-set strict coefficient-polynomial residual is false below half the field.**
+For every budget `b` with `2b + 2 < |F|`, the block decoder on a `(b + 1)`-point parameter set is
+decoded on the whole good-coefficient set but admits no witness `B 1` matching the indicator
+function of the block off any exceptional set of size `≤ b`. -/
+theorem not_strictCoeffPolysExcResidual_of_two_mul_add_two_lt_card {b : ℕ}
+    (hb : 2 * b + 2 < Fintype.card GF64) :
+    ¬ StrictCoeffPolysExcResidual (k := 1) (deg := 2) (domain := domain7)
+      (δ := (3 / 7 : ℝ≥0)) b := by
+  classical
+  intro h
+  obtain ⟨S, _hSsub, hScard⟩ :=
+    Finset.exists_subset_card_eq (s := (Finset.univ : Finset GF64)) (n := b + 1) (by
+      rw [Finset.card_univ]
+      omega)
+  obtain ⟨B, E, hEcard, hBdeg, hBid⟩ :=
+    h (by norm_num) curveStack prob_gt_k_errorBound johnson_side_lt sqrtRate_lt
+      (blockFamily S) (fun z _ => blockFamily_decoded S z)
+  have hB1deg : (B 1).natDegree < 2 := hBdeg 1 (by norm_num)
+  rcases eq_or_ne (B 1) 0 with hB0 | hBne
+  · -- A vanishing witness forces the parameter block into the exceptional set.
+    have hsub : S ⊆ E := by
+      intro z hz
+      by_contra hzE
+      have h' := hBid z (mem_goodCoeffsCurve z) hzE 1 (by norm_num)
+      rw [blockFamily_coeff_one_of_mem hz, hB0, Polynomial.eval_zero] at h'
+      exact one_ne_zero h'
+    have := Finset.card_le_card hsub
+    omega
+  · -- Otherwise the vanishing set of `B 1` has at most one point, yet it must contain every
+    -- off-block parameter outside `E`.
+    have hZle : (Finset.univ.filter (fun z => (B 1).eval z = 0)).card ≤ 1 := by
+      rw [Finset.card_le_one]
+      intro a ha b hb'
+      by_contra hab
+      have ha' : (B 1).eval a = 0 := (Finset.mem_filter.mp ha).2
+      have hb'' : (B 1).eval b = 0 := (Finset.mem_filter.mp hb').2
+      have hcard : ({a, b} : Finset GF64).card = 2 := Finset.card_pair hab
+      have hzero : B 1 = 0 := by
+        refine Polynomial.eq_zero_of_natDegree_lt_card_of_eval_eq_zero' (B 1) {a, b} ?_ ?_
+        · intro x hx
+          rcases Finset.mem_insert.mp hx with rfl | hx
+          · exact ha'
+          · rw [Finset.mem_singleton.mp hx]
+            exact hb''
+        · rw [hcard]
+          exact hB1deg
+      exact hBne hzero
+    have hsub : (Finset.univ \ S) \ E ⊆
+        Finset.univ.filter (fun z => (B 1).eval z = 0) := by
+      intro z hz
+      have hzS : z ∉ S := (Finset.mem_sdiff.mp (Finset.mem_sdiff.mp hz).1).2
+      have hzE : z ∉ E := (Finset.mem_sdiff.mp hz).2
+      have h' := hBid z (mem_goodCoeffsCurve z) hzE 1 (by norm_num)
+      rw [blockFamily_coeff_one_of_notMem hzS] at h'
+      exact Finset.mem_filter.mpr ⟨Finset.mem_univ z, h'.symm⟩
+    have hcard₁ : ((Finset.univ \ S) \ E).card ≤ 1 :=
+      le_trans (Finset.card_le_card hsub) hZle
+    have hcard₂ : (Finset.univ \ S).card - E.card ≤ ((Finset.univ \ S) \ E).card :=
+      Finset.le_card_sdiff E (Finset.univ \ S)
+    have hUS : (Finset.univ \ S).card = Fintype.card GF64 - S.card := by
+      rw [Finset.card_sdiff, Finset.inter_univ, Finset.card_univ]
+    omega
+
+/-- In particular the exceptional-set residual fails at budget `1`: a two-point block already
+defeats every exceptional set of size `≤ 1`. -/
+theorem not_strictCoeffPolysExcResidual_one :
+    ¬ StrictCoeffPolysExcResidual (k := 1) (deg := 2) (domain := domain7)
+      (δ := (3 / 7 : ℝ≥0)) 1 := by
+  refine not_strictCoeffPolysExcResidual_of_two_mul_add_two_lt_card ?_
+  rw [card_GF64]
+  norm_num
+
 end StrictCanonicalCoeffPolysRefutation
 
 end
@@ -478,8 +599,11 @@ end ProximityGap
 
 /-! ## Axiom audit -/
 
-#print axioms ProximityGap.StrictCanonicalCoeffPolysRefutation.not_strictCanonicalCoeffPolysResidual
-#print axioms ProximityGap.StrictCanonicalCoeffPolysRefutation.not_strictCoeffPolysResidual
-#print axioms
-  ProximityGap.StrictCanonicalCoeffPolysRefutation.not_strictCoeffPolysLargeResidual
-#print axioms ProximityGap.StrictCanonicalCoeffPolysRefutation.errorBound_lt_one
+open ProximityGap.StrictCanonicalCoeffPolysRefutation
+
+#print axioms not_strictCanonicalCoeffPolysResidual
+#print axioms not_strictCoeffPolysResidual
+#print axioms not_strictCoeffPolysLargeResidual
+#print axioms not_strictCoeffPolysExcResidual_of_two_mul_add_two_lt_card
+#print axioms not_strictCoeffPolysExcResidual_one
+#print axioms errorBound_lt_one

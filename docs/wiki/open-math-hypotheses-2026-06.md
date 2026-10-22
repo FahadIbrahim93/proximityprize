@@ -183,9 +183,14 @@ Per-hypothesis discipline: constraints → new direction → why nobody has done
   `StrictCoeffPolysResidual` and its large-good-set sector `StrictCoeffPolysLargeResidual`
   (`not_strictCoeffPolysResidual`, `not_strictCoeffPolysLargeResidual`): an adversarial decoder
   is decoded everywhere while its `coeff 1` layer is a two-point indicator, which no degree
-  `< k + 1` polynomial interpolates. The §5 strict-interior target must be re-stated
-  (existence-only extraction, a fixed canonical decoder, or uniqueness below the
-  unique-decoding radius), not taken as given. Census:
+  `< k + 1` polynomial interpolates. The same witness also kills the exceptional-set repair
+  `StrictCoeffPolysExcResidual b` at every budget `2b + 2 < |F|`
+  (`not_strictCoeffPolysExcResidual_of_two_mul_add_two_lt_card`, plus the concrete `b = 1`
+  instance `not_strictCoeffPolysExcResidual_one`): a block decoder's `coeff 1` is the indicator
+  of a `(b + 1)`-point parameter block, which cannot be matched off fewer than half the field's
+  worth of exceptions. So "allow `O(n)` exceptional parameters" is NOT an adequate repair; the
+  §5 strict-interior target must be re-stated (existence-only extraction, a fixed canonical
+  decoder, or uniqueness below the unique-decoding radius), not taken as given. Census:
   `docs/wiki/residual-census.md`.
 - **Proof plan**: shape-confirmation; then the window dictionary (`O111` is at modulus n with
   arbitrary Z-weights — the boundary weights are the coefficient extractions); then O123.

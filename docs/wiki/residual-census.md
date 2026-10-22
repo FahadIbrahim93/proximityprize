@@ -61,21 +61,32 @@ always check this census before treating a `*Residual` name as open proof debt.
 > `correlatedAgreement_affine_curves_of_largeResidual` — is therefore vacuous, and the §5
 > strict-interior targets must repair the statement (fix a canonical decoder, or restrict to the
 > unique-decoding regime) rather than try to discharge it. The δ* conjecture is untouched and
-> remains **OPEN**. Totals at this commit: 89 strict residuals, 42 open, 44 discharged,
-> 3 refuted.
+> remains **OPEN**.
+>
+> **Update (exceptional-set repair, 2026-10-22).** The honest repair `StrictCoeffPolysExcResidual b`
+> (coefficient identity required only outside an exceptional set of size `≤ b`) is refuted too, for
+> every budget `2b + 2 < |F|`: `not_strictCoeffPolysExcResidual_of_two_mul_add_two_lt_card` and its
+> concrete `b = 1` instance `not_strictCoeffPolysExcResidual_one` use a block decoder whose
+> `coeff 1` is the indicator of a `(b + 1)`-point parameter block. That name has no competing
+> provider, so it is classified `refuted` below, and the exceptional-set keystones
+> `correlatedAgreement_affine_curves_of_strict_coeff_polys_exc` /
+> `correlatedAgreement_affine_curves_strict_of_strict_coeff_polys_exc` are conditional reductions
+> from a refuted hypothesis at every meaningful `ε = errorBound + b/|F|`. Budgets
+> `b ≥ (|F| - 2)/2` are not refuted here and no satisfiability claim is made there.
+> Totals at this commit: 89 strict residuals, 41 open, 44 discharged, 4 refuted.
 
 ## Summary
 
 - **Total strict residuals:** 89
-- **Open:** 42
+- **Open:** 41
 - **Discharged:** 44
-- **Refuted:** 3
+- **Refuted:** 4
 - **Residual-like near misses:** 33 (listed below and in `scripts/residual_census.json`)
 
 | top-level directory | total | open | discharged | refuted |
 |---|---:|---:|---:|---:|
 | `(root)` | 1 | 0 | 1 | 0 |
-| `Data` | 24 | 14 | 8 | 2 |
+| `Data` | 24 | 13 | 8 | 3 |
 | `OracleReduction` | 39 | 22 | 17 | 0 |
 | `ProofSystem` | 14 | 6 | 8 | 0 |
 | `ToMathlib` | 11 | 0 | 10 | 1 |
@@ -93,7 +104,6 @@ always check this census before treating a `*Residual` name as open proof debt.
 - `BCIKS20.HenselNumerator.βHenselSuccTermWeightResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean:1654` — conditional providers only (residual deps: `βHenselSuccTermStructuredWeightResidual`; extra assumptions: `hStructured`, `hterm`)
 - `BCIKS20.HenselNumerator.βHenselSuccTermStructuredWeightResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean:1735` — conditional providers only (extra assumptions: `hDRx0`, `hRgraded`, `hW`, `hdHd`)
 - `BCIKS20.HenselNumerator.RestrictedFaaDiBrunoMatchResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P2MatchProof.lean:42`
-- `ProximityGap.StrictCoeffPolysExcResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysExceptional.lean:157` — conditional providers only (residual deps: `StrictCoeffPolysExcResidual`, `StrictCoeffPolysResidual`; extra assumptions: `h`, `hbb`)
 - `ArkLib.BoundaryLatticeThresholdLeaf.BoundaryCardLatticeThresholdResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BoundaryLatticeThresholdLeaf.lean:196` — conditional providers only (extra assumptions: `hCanon`, `hExt`, `hProd`)
 - `ProximityGap.Ownership.SubJohnsonListResidual` — `ArkLib/Data/CodingTheory/ProximityGap/SubJohnsonListSupply.lean:76`
 - `Reduction.reductionAppendCompletenessResidual` — `ArkLib/OracleReduction/Composition/Sequential/Append.lean:844` — conditional providers only (extra assumptions: `hDir`, `hDir₂`, `hInit`, `himplNF`, `himplSP`, `himplVB`, `hn`)
@@ -168,8 +178,9 @@ proof debt and naming drift.
 
 ## Refuted Residuals
 
-- `ProximityGap.StrictCanonicalCoeffPolysResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean:2549` — refuted by `ProximityGap.StrictCanonicalCoeffPolysRefutation.not_strictCanonicalCoeffPolysResidual` (ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CanonicalCoeffExtractionRefutation.lean:323)
-- `ProximityGap.StrictCoeffPolysLargeResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffLargeReduction.lean:103` — refuted by `ProximityGap.StrictCanonicalCoeffPolysRefutation.not_strictCoeffPolysLargeResidual` (ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CanonicalCoeffExtractionRefutation.lean:465)
+- `ProximityGap.StrictCanonicalCoeffPolysResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean:2549` — refuted by `ProximityGap.StrictCanonicalCoeffPolysRefutation.not_strictCanonicalCoeffPolysResidual` (ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CanonicalCoeffExtractionRefutation.lean:345)
+- `ProximityGap.StrictCoeffPolysLargeResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffLargeReduction.lean:103` — refuted by `ProximityGap.StrictCanonicalCoeffPolysRefutation.not_strictCoeffPolysLargeResidual` (ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CanonicalCoeffExtractionRefutation.lean:506)
+- `ProximityGap.StrictCoeffPolysExcResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysExceptional.lean:180` — refuted by `ProximityGap.StrictCanonicalCoeffPolysRefutation.not_strictCoeffPolysExcResidual_one` (ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CanonicalCoeffExtractionRefutation.lean:587)
 - `CodingTheory.CS25.DeepHole.DeepHoleProbResidual` — `ArkLib/ToMathlib/CS25DeepHoleFinish.lean:265` — refuted by `CodingTheory.CS25.DeepHole.not_deepHoleProbResidual_negativeEpsilon_zmod2` (ArkLib/ToMathlib/CS25DeepHoleFinish.lean:286)
 
 ## Discharged Residuals
