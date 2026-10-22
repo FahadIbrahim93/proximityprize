@@ -54044,3 +54044,46 @@ and `scripts/lake-locked.sh build Research.ProximityPrize.Frontier._MCAGoodRadiu
 The four printed declarations use only `propext`, `Classical.choice`, and
 `Quot.sound`. The initial tracked build passed 3502 jobs. Full repository and
 hosted gates must be reported separately.
+
+### [164-strict-canonical-coeff-polys-refuted] The canonical-family extraction residual is false: a constant curve has two decoded families at the same radius
+
+2026-10-22, gitzlx (Slop contribution). Kernel-checked finite-field counterexample.
+
+`ProximityGap.StrictCanonicalCoeffPolysResidual` (`ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean`)
+adds a uniqueness clause to the strict Johnson extraction surface: after the §5 side
+supplies one decoded family `P₀` with coefficient-polynomial witnesses, every other
+decoded family `P` on `RS_goodCoeffsCurve u δ` must agree with `P₀` there. That clause
+is false, and it is the only false content — the existence of `P₀` is not what fails.
+
+Witness: `k = 1`, `deg = 2`, `δ = 3/7`, field `GaloisField 2 64` (`Fintype.card = 2^64`),
+domain the first seven elements of a fixed enumeration. Let `e` be the weight-three word
+that keeps the nonzero entries of `X - C(domain 0)` at coordinates `{1,2,3}` and zeroes the
+rest. The constant curve `u 0 = e`, `u 1 = 0` makes every line word equal `e`, so the
+good-coefficient set is all of the field and the probability is `1`. Meanwhile `e` sits at
+relative distance exactly `3/7` from both `0` and `eval (X - C(domain 0))`, so both constant
+families `P z = X - C(domain 0)` and `P z = 0` meet the decoded hypothesis at every good
+coefficient. Uniqueness forces `X - C(domain 0) = 0`, contradicting `natDegree = 1`.
+The hypothesis side is satisfied: `rate = 2/7`, `(1-ρ)/2 < 3/7`, `3/7 < 1 - √ρ`, and
+`errorBound (3/7) 2 = 4/((2·min(1-√ρ-3/7, √ρ/20))^7 · 2^64) < 1`, so a probability of one
+strictly exceeds `k · errorBound`.
+
+Formal payload `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CanonicalCoeffExtractionRefutation.lean`:
+`not_strictCanonicalCoeffPolysResidual` is the refutation, with supporting lemmas for the
+distance computations (`relDist_e_zero`, `relDist_e_wLin`), the good set
+(`goodCoeffsCurve_eq_univ`), the rate and Johnson/sqrt-rate side conditions, and the
+numerical bound `errorBound_lt_one`. The residual is now classified `refuted` by
+`scripts/residual_census.py`.
+
+Scope: this refutes the residual as stated, and therefore every consumer that assumes it
+unconditionally — in particular `strictCoeffPolysResidual_of_strictCanonicalCoeffPolysResidual`
+is vacuous. It says nothing about the strict Johnson existence statement
+`StrictCoeffPolysResidual` itself, about the production parameters `n = 2^32`, or about the
+δ* conjecture, which remains open.
+
+Reproduce with
+```
+scripts/pg-iterate.sh ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CanonicalCoeffExtractionRefutation.lean
+scripts/lake-locked.sh build ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.CanonicalCoeffExtractionRefutation
+```
+The printed declarations `not_strictCanonicalCoeffPolysResidual` and `errorBound_lt_one` use
+only `propext`, `Classical.choice`, and `Quot.sound`.

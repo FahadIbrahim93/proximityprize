@@ -1,9 +1,9 @@
 {
  "summary": {
   "total": 89,
-  "open": 44,
+  "open": 43,
   "discharged": 44,
-  "refuted": 1,
+  "refuted": 2,
   "by_top_dir": {
    "(root)": {
     "total": 1,
@@ -13,9 +13,9 @@
    },
    "Data": {
     "total": 24,
-    "open": 16,
+    "open": 15,
     "discharged": 8,
-    "refuted": 0
+    "refuted": 1
    },
    "OracleReduction": {
     "total": 39,
@@ -442,7 +442,7 @@
      "name": "ProximityGap.strictCoeffPolysResidual_of_strictCanonicalCoeffPolysResidual",
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean",
-     "line": 2554,
+     "line": 2566,
      "conditional_on_residuals": [
       "StrictCanonicalCoeffPolysResidual"
      ],
@@ -682,15 +682,26 @@
    "name": "StrictCanonicalCoeffPolysResidual",
    "fq_name": "ProximityGap.StrictCanonicalCoeffPolysResidual",
    "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean",
-   "line": 2528,
+   "line": 2540,
    "providers": [],
-   "status": "open"
+   "refutations": [
+    {
+     "name": "ProximityGap.StrictCanonicalCoeffPolysRefutation.not_strictCanonicalCoeffPolysResidual",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CanonicalCoeffExtractionRefutation.lean",
+     "line": 287,
+     "conditional_on_residuals": [],
+     "extra_explicit_binders": [],
+     "ambiguous_name_match": false
+    }
+   ],
+   "status": "refuted"
   },
   {
    "name": "BoundaryCardResidual",
    "fq_name": "ProximityGap.BoundaryCardResidual",
    "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean",
-   "line": 2578,
+   "line": 2590,
    "providers": [
     {
      "name": "ArkLib.BoundaryCardResidual.boundaryCardResidual_of_not_lattice",
@@ -893,13 +904,13 @@
    "name": "BoundaryProbabilityResidual",
    "fq_name": "ProximityGap.BoundaryProbabilityResidual",
    "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean",
-   "line": 2597,
+   "line": 2609,
    "providers": [
     {
      "name": "ProximityGap.boundaryProbabilityResidual_of_boundaryCardResidual",
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean",
-     "line": 2611,
+     "line": 2623,
      "conditional_on_residuals": [
       "BoundaryCardResidual"
      ],

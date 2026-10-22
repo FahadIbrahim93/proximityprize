@@ -2524,7 +2524,19 @@ omit [DecidableEq ι] in
 /-- Canonical-family form of the strict Johnson extraction residual. This is
 strictly more structured than `StrictCoeffPolysResidual`: the §5 side supplies
 one decoded family, coefficient-polynomial witnesses for that family, and
-uniqueness for every other decoded family on the same good-coefficient set. -/
+uniqueness for every other decoded family on the same good-coefficient set.
+
+**REFUTED — this Prop is FALSE as stated** (axiom-clean, in-tree):
+`StrictCanonicalCoeffPolysRefutation.not_strictCanonicalCoeffPolysResidual`
+(`CanonicalCoeffExtractionRefutation.lean`) exhibits `k = 1`, `deg = 2`, `δ = 3/7`
+over `GaloisField 2 64` on a 7-point domain, where a constant curve (`u 0 = e`,
+`u 1 = 0`) makes the good-coefficient set the whole field while `e` sits at exact
+relative distance `3/7` from two distinct codewords; uniqueness therefore forces
+`X - C(domain 0) = 0`, which is false.  The uniqueness clause — not the existence
+of coefficient witnesses — is the false content.  This def is retained ONLY as a
+documented-false assumption surface for explicitly-conditional adapters
+(e.g. `strictCoeffPolysResidual_of_strictCanonicalCoeffPolysResidual`); do not try
+to discharge it. -/
 def StrictCanonicalCoeffPolysResidual {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} :
     Prop :=
   ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),

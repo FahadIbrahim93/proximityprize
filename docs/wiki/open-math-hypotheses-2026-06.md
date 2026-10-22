@@ -174,6 +174,14 @@ Per-hypothesis discipline: constraints → new direction → why nobody has done
   strict-interior object (`StrictCanonicalCoeffPolysResidual` / the `RS_goodCoeffsCurve`
   counting) — whether THAT bad set is power-sum-expressible over smooth domains is the
   corrected open question.
+- **CORRECTED 2026-10-22**: that retarget is dead as stated too.
+  `StrictCanonicalCoeffPolysResidual` is now refuted in-tree, axiom-clean
+  (`ProximityGap.StrictCanonicalCoeffPolysRefutation.not_strictCanonicalCoeffPolysResidual`
+  in `BCIKS20/Curves/CanonicalCoeffExtractionRefutation.lean`): its uniqueness clause is false,
+  since a constant curve makes the good-coefficient set the whole field and one word can sit at
+  the same radius from two distinct codewords. The §5 strict-interior target must be re-stated
+  (existence-only extraction, or uniqueness below the unique-decoding radius), not taken as
+  given. Census: `docs/wiki/residual-census.md`.
 - **Proof plan**: shape-confirmation; then the window dictionary (`O111` is at modulus n with
   arbitrary Z-weights — the boundary weights are the coefficient extractions); then O123.
 
