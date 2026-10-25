@@ -52,15 +52,13 @@ jobs:
           path: .lake
           key: udr-floor-${{ runner.os }}-${{ github.run_id }}
           restore-keys: |
+            ${{ runner.os }}-lean-ci-${{ hashFiles('lake-manifest.json') }}-
+            ${{ runner.os }}-lean-docs-${{ hashFiles('lake-manifest.json') }}
             udr-floor-dependencies-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
             incidence-build-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
             incidence-dependencies-${{ runner.os }}-
       - run: ./scripts/lake-locked.sh exe cache get
       - run: ./scripts/lake-locked.sh build Research.ProximityPrize.MCAUDRBound Research.ProximityPrize.KKH26RegimeSplit Research.ProximityPrize.Frontier._PrizeShapeRateHalfBracket
-      - uses: actions/cache/save@v4
-        with:
-          path: .lake
-          key: udr-floor-dependencies-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ github.run_id }}
       - name: Check canonical consumer and source axioms
         run: |
           set -o pipefail
