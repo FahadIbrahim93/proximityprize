@@ -190,9 +190,8 @@ theorem full_support_relation_of_active_coordinates
     change relationMap c = 0
     simpa [relationMap] using hc
   obtain ⟨c, hc⟩ := full_support_vector_of_active_submodule R hcardActive
-  have hcRel : relationMap (c : I → F) = 0 := c.property
-  refine ⟨c, ?_, fun i => (hc i (hactiveR i)).1⟩
-  simpa [relationMap] using hcRel
+  have hcRel : (∑ i, (c : I → F) i • e i) = 0 := c.property
+  exact ⟨c, hcRel, fun i => (hc i).mp (hactiveR i)⟩
 
 /-- If every `r` vectors are independent and the whole family has rank at
 most `r`, an active coordinate occurs in at least `n - r + 1` vectors. -/
