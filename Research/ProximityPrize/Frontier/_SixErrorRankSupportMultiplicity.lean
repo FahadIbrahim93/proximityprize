@@ -37,8 +37,8 @@ theorem rank_coordinate_multiplicity
   classical
   by_contra hn
   let Z := {j : Fin n // e j x = 0}
-  have hN : Fintype.card {j : Fin n // e j x ≠ 0} ≤ n - r := by
-    rw [Fintype.card_of_subtype (p := fun j : Fin n => e j x ≠ 0) N hNmem]
+  have hN : Fintype.card {j : Fin n // ¬ e j x = 0} ≤ n - r := by
+    rw [Fintype.card_of_subtype (p := fun j : Fin n => ¬ e j x = 0) N hNmem]
     omega
   have hcomp := Fintype.card_subtype_compl (fun j : Fin n => e j x = 0)
   have hZle := Fintype.card_subtype_le (fun j : Fin n => e j x = 0)
