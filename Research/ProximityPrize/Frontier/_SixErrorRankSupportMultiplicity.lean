@@ -37,8 +37,9 @@ theorem full_support_relation_of_rank
   classical
   have hnot : ¬ LinearIndependent F e := by
     intro hlin
-    have hcard := hlin.fintype_card_le_finrank
-    simp only [Fintype.card_fin] at hcard
+    have hspan := hrank
+    rw [finrank_span_eq_card hlin] at hspan
+    simp only [Fintype.card_fin] at hspan
     omega
   obtain ⟨c, hsum, hc⟩ := Fintype.not_linearIndependent_iff.mp hnot
   refine ⟨c, hsum, ?_⟩
@@ -53,10 +54,10 @@ theorem full_support_relation_of_rank
       rcases Finset.mem_image.mp hj with ⟨k, _hk, rfl⟩
       exact Finset.mem_erase.mpr ⟨Fin.succAbove_ne i k, Finset.mem_univ _⟩
     · calc
-        (Finset.univ.erase i).card = r := by simp
-        _ = (Finset.univ.image b).card := by
+        (Finset.univ.image b).card = r := by
           rw [Finset.card_image_of_injective _ hb]
           simp
+        _ = (Finset.univ.erase i).card := by simp
   have hsumErase :
       (∑ j ∈ Finset.univ.erase i, c j • e j) = 0 := by
     have hsplit := Finset.sum_erase_add Finset.univ (fun j => c j • e j)
@@ -73,15 +74,16 @@ theorem full_support_relation_of_rank
   have hcoeff : ∀ j : Fin r, c (b j) = 0 := by
     have hz := Fintype.linearIndependent_iff.mp (hLI i) (fun j => c (b j)) hsumB
     intro j
-    simpa using congrFun hz j
+    simpa using hz j
   have hcAll : ∀ j : Fin (r + 1), c j = 0 := by
     intro j
     by_cases hji : j = i
     · simpa [hji] using hci
     · obtain ⟨k, hk⟩ := Fin.exists_succAbove_eq hji
-      rw [hk]
+      rw [← hk]
       exact hcoeff k
-  exact hc (funext hcAll)
+  rcases hc with ⟨j, hj⟩
+  exact hj (hcAll j)
 
 /-- If every `r` vectors are independent and the whole family has rank at
 most `r`, an active coordinate occurs in at least `n - r + 1` vectors. -/
