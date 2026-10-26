@@ -2801,6 +2801,7 @@ import Research.ProximityPrize.Frontier._ShawValueSaturationBddCapstone
 import Research.ProximityPrize.Frontier._ShawValueScalarEquivalence
 import Research.ProximityPrize.Frontier._ShawValueSharpenedBGKCorridorFamily
 import Research.ProximityPrize.Frontier._ShawVanishingCoefficient
+import Research.ProximityPrize.Frontier._SixErrorRankSupportMultiplicity
 import Research.ProximityPrize.Frontier._SparseCoeffZeros
 import Research.ProximityPrize.Frontier._SparseRootCheck
 import Research.ProximityPrize.Frontier._SpecF7_GoodPrimeCollisionCount
@@ -3312,4 +3313,3 @@ import Research.ProximityPrize.Support.GG25RandomRSMCAProof
 import Research.ProximityPrize.Support.KK25NearCapacityProof
 import Research.ProximityPrize.Support.RateEliasCapacity
 import Research.ProximityPrize.Support.UnifiedProducerWindowGlue
-import Research.ProximityPrize.Frontier._SixErrorRankSupportMultiplicity
