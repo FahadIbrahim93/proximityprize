@@ -51,11 +51,12 @@ jobs:
               'rank_support_mass',
               'full_support_relation_of_rank',
               'full_support_relation_of_active_coordinates',
+              'full_support_vector_of_active_submodule',
           }
           assert {name.rsplit('.', 1)[1] for name, _, _ in matches} == expected
-          assert len(matches) == 4
+          assert len(matches) == 5
           for name, names, no_axioms in matches:
               if not no_axioms:
                   assert set(axis.strip() for axis in names.split(',')) <= {'propext', 'Classical.choice', 'Quot.sound'}
-          print('Four rank-to-support and circuit declarations kernel checked')
+          print('Five rank-to-support and circuit declarations kernel checked')
           PY

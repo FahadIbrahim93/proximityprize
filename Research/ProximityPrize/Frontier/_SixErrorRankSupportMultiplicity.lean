@@ -14,8 +14,9 @@ If every `r` members of an `n`-vector family are linearly independent while
 the full span has dimension at most `r`, each active coordinate must occur in
 at least `n - r + 1` vectors. Summing this multiplicity yields a support-mass
 lower bound. At `n = 6` and `r = 4`, this is the rank-four obstruction used in
-six-error circuit analysis. It is a necessary condition, not an independence
-result.
+six-error circuit analysis. A separate finite-field lemma produces one
+subspace vector whose support is exactly the union of all active coordinates.
+The rank-support statement is a necessary condition, not an independence result.
 -/
 
 set_option autoImplicit false
@@ -82,6 +83,81 @@ theorem full_support_relation_of_rank
   rcases hc with ⟨j, hj⟩
   exact hj (hcAll j)
 
+/-- In a subspace of a finite coordinate space, if the field is larger than the set of active
+coordinates, one vector is nonzero at every active coordinate. Every vector in the subspace
+vanishes at inactive coordinates by definition, so this vector has support exactly equal to the
+union of supports of the subspace. -/
+theorem full_support_vector_of_active_submodule
+    {F I : Type*} [Field F] [Fintype F] [Fintype I]
+    (R : Submodule F (I → F))
+    (hcard : (Finset.univ.filter
+      (fun i => ∃ v : R, (v : I → F) i ≠ 0)).card < Fintype.card F) :
+    ∃ v : R, ∀ i,
+      (∃ w : R, (w : I → F) i ≠ 0) ↔ (v : I → F) i ≠ 0 := by
+  classical
+  let active : I → Prop := fun i => ∃ w : R, (w : I → F) i ≠ 0
+  let A : Finset I := Finset.univ.filter active
+  have hstep : ∀ s : Finset I, (∀ i ∈ s, active i) →
+      ∃ v : R, ∀ i ∈ s, (v : I → F) i ≠ 0 := by
+    intro s
+    induction s using Finset.induction_on with
+    | empty =>
+        intro _
+        exact ⟨0, by simp⟩
+    | @insert i s hi ih =>
+        intro hs
+        obtain ⟨v, hv⟩ := ih (fun j hj => hs j (Finset.mem_insert_of_mem hj))
+        obtain ⟨w, hw⟩ := hs i (Finset.mem_insert_self i s)
+        let bad := (insert i s).image (fun j =>
+          if (w : I → F) j = 0 then 0 else -(v : I → F) j / (w : I → F) j)
+        have hsub : insert i s ⊆ A := by
+          intro j hj
+          exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, hs j hj⟩
+        have hbad : bad.card < Fintype.card F := by
+          calc
+            bad.card ≤ (insert i s).card := Finset.card_image_le
+            _ ≤ A.card := Finset.card_le_card hsub
+            _ < Fintype.card F := by simpa [A, active] using hcard
+        have hbadCompl : 0 < badᶜ.card := by
+          rw [Finset.card_compl]
+          omega
+        obtain ⟨a, ha⟩ := Finset.card_pos.mp hbadCompl
+        have haBad : a ∉ bad := by simpa using ha
+        have hnew : ∀ j ∈ insert i s, (v : I → F) j + a * (w : I → F) j ≠ 0 := by
+          intro j hj hzero
+          have hvj : (v : I → F) j ≠ 0 ∨ j = i := by
+            rcases Finset.mem_insert.mp hj with hji | hjs
+            · exact Or.inr hji
+            · exact Or.inl (hv j hjs)
+          by_cases hwj : (w : I → F) j = 0
+          · rcases hvj with hvj | hji
+            · exact hvj (by simpa [hwj] using hzero)
+            · subst j
+              exact hw hwj
+          · have haEq : a = -(v : I → F) j / (w : I → F) j := by
+              have hmul : a * (w : I → F) j = -(v : I → F) j := by
+                linear_combination hzero
+              calc
+                a = (a * (w : I → F) j) / (w : I → F) j := by field_simp [hwj]
+                _ = -(v : I → F) j / (w : I → F) j := by rw [hmul]
+            apply haBad
+            apply Finset.mem_image.mpr
+            exact ⟨j, hj, by simp [hwj, haEq]⟩
+        refine ⟨v + a • w, ?_⟩
+        intro j hj
+        simpa using hnew j hj
+  have hactive : ∀ i ∈ A, active i := by
+    intro i hi
+    exact (Finset.mem_filter.mp hi).2
+  obtain ⟨v, hv⟩ := hstep A hactive
+  refine ⟨v, ?_⟩
+  intro i
+  constructor
+  · intro hi
+    exact hv i (Finset.mem_filter.mpr ⟨Finset.mem_univ _, hi⟩)
+  · intro hi
+    exact ⟨v, hi⟩
+
 /-- If every member of a finite vector family participates in some linear dependence, and the
 field has more elements than the family has members, then one dependence has full support.
 This is the finite-field hyperplane-avoidance step that converts coordinatewise activity into a
@@ -93,69 +169,30 @@ theorem full_support_relation_of_active_coordinates
     (hactive : ∀ i, ∃ c : I → F, (∑ j, c j • e j = 0) ∧ c i ≠ 0) :
     ∃ c : I → F, (∑ j, c j • e j = 0) ∧ ∀ i, c i ≠ 0 := by
   classical
-  have hstep : ∀ s : Finset I, ∃ c : I → F,
-      (∑ j, c j • e j = 0) ∧ ∀ i ∈ s, c i ≠ 0 := by
-    intro s
-    induction s using Finset.induction_on with
-    | empty =>
-        exact ⟨0, by simp, by simp⟩
-    | @insert i s hi ih =>
-        obtain ⟨v, hv, hvS⟩ := ih
-        obtain ⟨w, hw, hwi⟩ := hactive i
-        let bad := (insert i s).image (fun j =>
-          if w j = 0 then 0 else -v j / w j)
-        have hbad : bad.card < Fintype.card F := by
-          calc
-            bad.card ≤ (insert i s).card := Finset.card_image_le
-            _ ≤ Fintype.card I := Finset.card_le_univ _
-            _ < Fintype.card F := hcard
-        have hbadCompl : 0 < badᶜ.card := by
-          rw [Finset.card_compl]
-          omega
-        obtain ⟨a, ha⟩ := Finset.card_pos.mp hbadCompl
-        have haBad : a ∉ bad := by simpa using ha
-        have hnew : ∀ j ∈ insert i s, v j + a * w j ≠ 0 := by
-          intro j hj hzero
-          have hvj : v j ≠ 0 ∨ j = i := by
-            rcases Finset.mem_insert.mp hj with hji | hjs
-            · exact Or.inr hji
-            · exact Or.inl (hvS j hjs)
-          by_cases hwj : w j = 0
-          · rcases hvj with hvj | hji
-            · exact hvj (by simpa [hwj] using hzero)
-            · subst j
-              exact hwi hwj
-          · have haEq : a = -v j / w j := by
-              have hmul : a * w j = -v j := by linear_combination hzero
-              calc
-                a = (a * w j) / w j := by field_simp [hwj]
-                _ = -v j / w j := by rw [hmul]
-            apply haBad
-            apply Finset.mem_image.mpr
-            exact ⟨j, hj, by simp [hwj, haEq]⟩
-        have hrel : (∑ j, (v j + a * w j) • e j) = 0 := by
-          have hmul : (∑ j, (a * w j) • e j) = a • (∑ j, w j • e j) := by
-            calc
-              (∑ j, (a * w j) • e j) = ∑ j, a • (w j • e j) := by
-                apply Finset.sum_congr rfl
-                intro j hj
-                rw [mul_smul]
-              _ = a • (∑ j, w j • e j) := by rw [Finset.smul_sum]
-          calc
-            (∑ j, (v j + a * w j) • e j) =
-                ∑ j, (v j • e j + (a * w j) • e j) := by
-                  apply Finset.sum_congr rfl
-                  intro j hj
-                  rw [add_smul]
-            _ = (∑ j, v j • e j) + ∑ j, (a * w j) • e j := by
-              rw [Finset.sum_add_distrib]
-            _ = (∑ j, v j • e j) + a • (∑ j, w j • e j) := by rw [hmul]
-            _ = 0 := by rw [hv, hw]; simp
-        refine ⟨fun j => v j + a * w j, hrel, ?_⟩
-        intro j hj
-        exact hnew j hj
-  obtain ⟨c, hc, hall⟩ := hstep Finset.univ
-  exact ⟨c, hc, fun i => hall i (Finset.mem_univ i)⟩
+  let relationMap : (I → F) →ₗ[F] V :=
+    { toFun := fun c => ∑ i, c i • e i
+      map_add' := by
+        intro c d
+        simp [add_smul, Finset.sum_add_distrib]
+      map_smul' := by
+        intro a c
+        simp [smul_eq_mul, Finset.smul_sum, mul_smul] }
+  let R : Submodule F (I → F) := LinearMap.ker relationMap
+  have hcardActive : (Finset.univ.filter
+      (fun i => ∃ c : R, (c : I → F) i ≠ 0)).card < Fintype.card F := by
+    calc
+      _ ≤ Fintype.card I := Finset.card_le_univ _
+      _ < Fintype.card F := hcard
+  have hactiveR : ∀ i, ∃ c : R, (c : I → F) i ≠ 0 := by
+    intro i
+    obtain ⟨c, hc, hci⟩ := hactive i
+    refine ⟨⟨c, ?_⟩, hci⟩
+    change relationMap c = 0
+    simpa [relationMap] using hc
+  obtain ⟨c, hc⟩ := full_support_vector_of_active_submodule R hcardActive
+  have hcRel : relationMap (c : I → F) = 0 := c.property
+  refine ⟨c, ?_, fun i => (hc i (hactiveR i)).1⟩
+  simpa [relationMap] using hcRel
 
 /-- If every `r` vectors are independent and the whole family has rank at
 most `r`, an active coordinate occurs in at least `n - r + 1` vectors. -/
@@ -258,3 +295,4 @@ end ProximityGap.SixErrorRankSupportMultiplicity
 #print axioms ProximityGap.SixErrorRankSupportMultiplicity.rank_support_mass
 #print axioms ProximityGap.SixErrorRankSupportMultiplicity.full_support_relation_of_rank
 #print axioms ProximityGap.SixErrorRankSupportMultiplicity.full_support_relation_of_active_coordinates
+#print axioms ProximityGap.SixErrorRankSupportMultiplicity.full_support_vector_of_active_submodule
