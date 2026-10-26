@@ -53,11 +53,8 @@ theorem full_support_relation_of_rank
     · intro j hj
       rcases Finset.mem_image.mp hj with ⟨k, _hk, rfl⟩
       exact Finset.mem_erase.mpr ⟨Fin.succAbove_ne i k, Finset.mem_univ _⟩
-    · calc
-        (Finset.univ.image b).card = r := by
-          rw [Finset.card_image_of_injective _ hb]
-          simp
-        _ = (Finset.univ.erase i).card := by simp
+    · rw [Finset.card_image_of_injective _ hb]
+      simp
   have hsumErase :
       (∑ j ∈ Finset.univ.erase i, c j • e j) = 0 := by
     have hsplit := Finset.sum_erase_add Finset.univ (fun j => c j • e j)
