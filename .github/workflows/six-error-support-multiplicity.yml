@@ -46,7 +46,7 @@ jobs:
           text = Path('six-error-axioms.log').read_text()
           assert 'sorryAx' not in text
           matches = re.findall(r"'(ProximityGap\.SixErrorRankSupportMultiplicity\.[^']+)'\s+(?:depends on axioms:\s*\[([^\]]*)\]|(does not depend on any axioms))", text)
-          expected = {'rank_four_coordinate_multiplicity', 'rank_four_support_mass'}
+          expected = {'rank_coordinate_multiplicity', 'rank_support_mass'}
           assert {name.rsplit('.', 1)[1] for name, _, _ in matches} == expected
           assert len(matches) == 2
           for name, names, no_axioms in matches:
