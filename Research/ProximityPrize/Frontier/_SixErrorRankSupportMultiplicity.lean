@@ -111,7 +111,6 @@ theorem full_support_relation_of_active_coordinates
             _ < Fintype.card F := hcard
         have hbadCompl : 0 < badᶜ.card := by
           rw [Finset.card_compl]
-          simp only [Finset.card_univ]
           omega
         obtain ⟨a, ha⟩ := Finset.card_pos.mp hbadCompl
         have haBad : a ∉ bad := by simpa using ha
@@ -133,12 +132,19 @@ theorem full_support_relation_of_active_coordinates
                 _ = -v j / w j := by rw [hmul]
             apply haBad
             apply Finset.mem_image.mpr
-            exact ⟨j, hj, by simp [bad, hwj, haEq]⟩
+            exact ⟨j, hj, by simp [hwj, haEq]⟩
         have hrel : (∑ j, (v j + a * w j) • e j) = 0 := by
+          have hmul : (∑ j, (a * w j) • e j) = a • (∑ j, w j • e j) := by
+            calc
+              (∑ j, (a * w j) • e j) = ∑ j, a • (w j • e j) := by
+                apply Finset.sum_congr rfl
+                intro j hj
+                rw [mul_smul]
+              _ = a • (∑ j, w j • e j) := by rw [Finset.smul_sum]
           calc
             (∑ j, (v j + a * w j) • e j) =
                 (∑ j, v j • e j) + a • (∑ j, w j • e j) := by
-                  simp [Finset.sum_add_distrib, Finset.mul_sum, mul_smul]
+                  rw [Finset.sum_add_distrib, add_smul, hmul]
             _ = 0 := by rw [hv, hw]; simp
         refine ⟨fun j => v j + a * w j, hrel, ?_⟩
         intro j hj
