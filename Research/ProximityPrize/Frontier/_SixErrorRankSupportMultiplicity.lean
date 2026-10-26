@@ -23,6 +23,66 @@ attribute [local instance] Classical.propDecidable
 
 namespace ProximityGap.SixErrorRankSupportMultiplicity
 
+/-- A rank-`r` family of `r + 1` vectors whose every deletion is independent has a dependence
+with every coefficient nonzero. This is the circuit relation needed to pass from rank information
+to full-support error relations. -/
+theorem full_support_relation_of_rank
+    {F V : Type*} [Field F] [AddCommGroup V] [Module F V] [FiniteDimensional F V]
+    {r : ℕ} (e : Fin (r + 1) → V)
+    (hLI : ∀ i : Fin (r + 1),
+      LinearIndependent F (fun j : Fin r => e (i.succAbove j)))
+    (hrank : Module.finrank F (Submodule.span F (Set.range e)) ≤ r) :
+    ∃ c : Fin (r + 1) → F,
+      (∑ i, c i • e i = 0) ∧ ∀ i, c i ≠ 0 := by
+  classical
+  have hnot : ¬ LinearIndependent F e := by
+    intro hlin
+    have hcard := hlin.fintype_card_le_finrank
+    simp only [Fintype.card_fin] at hcard
+    omega
+  obtain ⟨c, hsum, hc⟩ := Fintype.not_linearIndependent_iff.mp hnot
+  refine ⟨c, hsum, ?_⟩
+  intro i
+  by_contra hci_ne
+  have hci : c i = 0 := by simpa using hci_ne
+  let b : Fin r → Fin (r + 1) := i.succAbove
+  have hb : Function.Injective b := Fin.succAbove_right_injective
+  have hImage : Finset.univ.image b = Finset.univ.erase i := by
+    apply Finset.eq_of_subset_of_card_le
+    · intro j hj
+      rcases Finset.mem_image.mp hj with ⟨k, _hk, rfl⟩
+      exact Finset.mem_erase.mpr ⟨Fin.succAbove_ne i k, Finset.mem_univ _⟩
+    · calc
+        (Finset.univ.erase i).card = r := by simp
+        _ = (Finset.univ.image b).card := by
+          rw [Finset.card_image_of_injective _ hb]
+          simp
+  have hsumErase :
+      (∑ j ∈ Finset.univ.erase i, c j • e j) = 0 := by
+    have hsplit := Finset.sum_erase_add Finset.univ (fun j => c j • e j)
+      (Finset.mem_univ i)
+    rw [hsum] at hsplit
+    simpa [hci] using hsplit
+  have hsumImage :
+      (∑ j ∈ Finset.univ.image b, c j • e j) =
+        ∑ j : Fin r, c (b j) • e (b j) := by
+    rw [Finset.sum_image (fun j _ k _ hjk => hb hjk)]
+  have hsumB : (∑ j : Fin r, c (b j) • e (b j)) = 0 := by
+    rw [← hsumImage, hImage]
+    exact hsumErase
+  have hcoeff : ∀ j : Fin r, c (b j) = 0 := by
+    have hz := Fintype.linearIndependent_iff.mp (hLI i) (fun j => c (b j)) hsumB
+    intro j
+    simpa using congrFun hz j
+  have hcAll : ∀ j : Fin (r + 1), c j = 0 := by
+    intro j
+    by_cases hji : j = i
+    · simpa [hji] using hci
+    · obtain ⟨k, hk⟩ := Fin.exists_succAbove_eq hji
+      rw [hk]
+      exact hcoeff k
+  exact hc (funext hcAll)
+
 /-- If every `r` vectors are independent and the whole family has rank at
 most `r`, an active coordinate occurs in at least `n - r + 1` vectors. -/
 theorem rank_coordinate_multiplicity
@@ -122,3 +182,4 @@ end ProximityGap.SixErrorRankSupportMultiplicity
 
 #print axioms ProximityGap.SixErrorRankSupportMultiplicity.rank_coordinate_multiplicity
 #print axioms ProximityGap.SixErrorRankSupportMultiplicity.rank_support_mass
+#print axioms ProximityGap.SixErrorRankSupportMultiplicity.full_support_relation_of_rank
