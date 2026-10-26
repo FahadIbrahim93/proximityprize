@@ -84,10 +84,36 @@ CAMPAIGN_ADDENDUM_PREFIX = "> **Campaign addendum"
 
 
 def strip_comments(text: str) -> str:
-    """Blank out line comments, block comments, and docstrings (newlines kept)."""
+    """Blank out line comments, block comments, and docstrings (newlines kept).
+
+    String literals in live code are not comments: a ``"/-"`` or ``"--"``
+    inside a double-quoted string must not open a phantom block/line
+    comment and hide the declarations that follow it from the census.
+    Inside a block comment, comment scanning wins (Lean lexes the comment
+    first), so string markers there are not treated as string starts.
+    """
     out = list(text)
     i, n, depth = 0, len(text), 0
     while i < n:
+        if depth == 0 and text[i] == "'":
+            # Char literal: 'x' or an escaped char such as '\n'. Skip it
+            # whole so a '"' char literal is not mistaken for a string.
+            if i + 2 < n and text[i + 2] == "'":
+                i += 3
+                continue
+            if i + 3 < n and text[i + 1] == "\\" and text[i + 3] == "'":
+                i += 4
+                continue
+        if depth == 0 and text[i] == '"':
+            i += 1
+            while i < n and text[i] != '"':
+                if text[i] == "\\" and i + 1 < n:
+                    i += 2
+                else:
+                    i += 1
+            if i < n:
+                i += 1
+            continue
         if depth == 0 and text.startswith("--", i):
             j = text.find("\n", i)
             j = n if j == -1 else j
