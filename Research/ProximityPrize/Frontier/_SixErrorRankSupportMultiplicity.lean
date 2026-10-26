@@ -143,8 +143,13 @@ theorem full_support_relation_of_active_coordinates
               _ = a • (∑ j, w j • e j) := by rw [Finset.smul_sum]
           calc
             (∑ j, (v j + a * w j) • e j) =
-                (∑ j, v j • e j) + a • (∑ j, w j • e j) := by
-                  rw [Finset.sum_add_distrib, add_smul, hmul]
+                ∑ j, (v j • e j + (a * w j) • e j) := by
+                  apply Finset.sum_congr rfl
+                  intro j hj
+                  rw [add_smul]
+            _ = (∑ j, v j • e j) + ∑ j, (a * w j) • e j := by
+              rw [Finset.sum_add_distrib]
+            _ = (∑ j, v j • e j) + a • (∑ j, w j • e j) := by rw [hmul]
             _ = 0 := by rw [hv, hw]; simp
         refine ⟨fun j => v j + a * w j, hrel, ?_⟩
         intro j hj
