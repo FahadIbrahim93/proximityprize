@@ -7,6 +7,12 @@ provided, scans only those Lean files/directories. Fails if live
   - `native_decide` / `bv_decide` (kernel-bypassing decision procedures), or
   - a custom `axiom` declaration whose name is not an allowlisted, documented
     residual (see scripts/residual_axioms.txt), or
+  - a second declaration of an allowlisted residual name. The allowlist stores
+    simple names, so an entry matches an `axiom` declared inside any namespace;
+    without this rule a clone such as
+    `namespace Sneaky … axiom foldOracleVerifier_rbrKnowledgeSoundness : False … end`
+    inherits a documented entry and launders a new axiom under a trusted name.
+    One entry documents exactly one declaration, or
   - a `theorem`/`lemma` whose statement type is exactly `True` (a vacuous
     placebo that discharges no real obligation, e.g.
     `theorem foo_residual : True := by trivial`). This is the axiom-laundering
@@ -26,6 +32,12 @@ provided, scans only those Lean files/directories. Fails if live
 Comment and docstring occurrences are ignored. `sorry`/`admit` are handled
 separately by scripts/sorry_census.py --fail-on-holes; this precheck runs
 before any Lean toolchain is set up, so CI fails fast on laundering attempts.
+
+The one-declaration rule needs both declarations in the scanned set, so it is
+enforced by the full-tree scan that CI (`.github/workflows/ci.yml`) and
+`scripts/validate.sh` run. A file-scoped invocation still enforces every other
+check and still rejects two declarations of an allowlisted name inside the file
+it was given.
 """
 
 from __future__ import annotations
@@ -282,6 +294,7 @@ def main() -> int:
     failures: list[str] = []
     allowed_hits: list[str] = []
     seen_allowed: set[str] = set()
+    allow_sites: dict[str, list[str]] = {}
     for path in files:
         text = path.read_text(encoding="utf-8", errors="replace")
         mask = comment_mask(text)
@@ -332,7 +345,9 @@ def main() -> int:
             if am:
                 name = am.group(1)
                 if is_allowlisted(name, allowlist):
-                    seen_allowed.add(simple_name(name))
+                    final = simple_name(name)
+                    seen_allowed.add(final)
+                    allow_sites.setdefault(final, []).append(f"{path}:{idx}")
                     allowed_hits.append(f"{path}:{idx}: allowed documented residual axiom {name}")
                 else:
                     failures.append(
@@ -348,6 +363,18 @@ def main() -> int:
                 f"`theorem/lemma {name} : True` proves nothing about the named "
                 f"obligation (axiom-laundering pattern, #169/#171). Prove the real "
                 f"statement or track it by its GitHub issue, not a `True` theorem."
+            )
+
+    for name, sites in sorted(allow_sites.items()):
+        unique_sites = sorted(set(sites))
+        if len(unique_sites) > 1:
+            failures.append(
+                f"{name}: allowlisted residual axiom declared {len(unique_sites)} times "
+                f"({', '.join(unique_sites)}); one residual_axioms.txt entry documents "
+                f"exactly one declaration, so a second declaration of the same simple name "
+                f"(for example a clone inside a fresh namespace) re-uses the entry to launder "
+                f"a new axiom. Remove the clone, or drop the entry if the documented axiom "
+                f"itself is gone"
             )
 
     stale = sorted(allowlist - seen_allowed)
