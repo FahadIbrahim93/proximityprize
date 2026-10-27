@@ -475,6 +475,7 @@ import Research.ProximityPrize.Frontier._ANT46RungTwoAccidentOrbit
 import Research.ProximityPrize.Frontier._AR_HypercontractiveWickEquivalence
 import Research.ProximityPrize.Frontier._AR_MomentOptimizedSupNorm
 import Research.ProximityPrize.Frontier._AR_MomentRatioPeak
+import Research.ProximityPrize.Frontier._ActiveErrorAffineCollapse
 import Research.ProximityPrize.Frontier._AdditiveDomainDissolution
 import Research.ProximityPrize.Frontier._AdditiveDomainDissolutionDual
 import Research.ProximityPrize.Frontier._AffineRichPointPacking
