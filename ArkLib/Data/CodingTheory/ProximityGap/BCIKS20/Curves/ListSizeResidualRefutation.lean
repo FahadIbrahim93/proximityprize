@@ -10,7 +10,7 @@ import Mathlib.Algebra.Field.ZMod
 /-!
 # Counterexample to the unconditional RS curve list-size residual
 
-`CurveListSizeResidual.RSCurveListSizeResidual` is documented as the single remaining
+`ProximityGap.RSCurveListSizeResidual` is documented as the single remaining
 research input for the strict-Johnson Reed–Solomon proximity gap.  Its statement, however,
 carries none of the strict-Johnson hypotheses of the sibling coefficient-polynomial residuals:
 there is no regime hypothesis `δ < 1 - √ρ`, no probability hypothesis
