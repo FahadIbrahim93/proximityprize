@@ -328,5 +328,34 @@ class SorryCensusEscapedIdentifiers(unittest.TestCase):
         self.assertEqual(kinds(source), [("sorry", "hole", "theorem t")])
 
 
+class SorryCensusRawSorryAx(unittest.TestCase):
+    """`sorry`/`admit` elaborate to the kernel axiom `sorryAx`; naming it
+    directly is a hole the plain `sorry|admit` word match would miss."""
+
+    def test_sorryAx_matches_the_hole_token(self):
+        match = sorry_census.TOKEN_RE.search("example : False := sorryAx False false")
+        self.assertIsNotNone(match)
+        assert match is not None
+        self.assertEqual(match.group(1), "sorryAx")
+
+    def test_sorryAx_in_live_code_is_a_hole(self):
+        self.assertEqual(
+            kinds("theorem t : False := sorryAx False false\n"),
+            [("sorryAx", "hole", "theorem t")])
+
+    def test_sorryAx_in_comment_or_string_is_doc(self):
+        source = (
+            "-- prose mentioning sorryAx is not a hole\n"
+            "/-- nor is sorryAx in a docstring -/\n"
+            'def msg := "sorryAx"\n'
+        )
+        self.assertEqual(
+            [(t, k) for t, k, _ in kinds(source)],
+            [("sorryAx", "doc"), ("sorryAx", "doc"), ("sorryAx", "doc")])
+
+    def test_cli_fail_on_holes_rejects_raw_sorryAx(self):
+        self.assertEqual(cli_holes("theorem t : False := sorryAx False false\n"), (1, True))
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -204,6 +204,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BGKEnergyCharacterSum
 import ArkLib.Data.CodingTheory.ProximityGap.BGKExponentReduction
 import ArkLib.Data.CodingTheory.ProximityGap.BGKLimitConditional
 import ArkLib.Data.CodingTheory.ProximityGap.BGKNearRamanujan
+import ArkLib.Data.CodingTheory.ProximityGap.BGKS20SeparationRegime
 import ArkLib.Data.CodingTheory.ProximityGap.BGKSolSetSymmetry
 import ArkLib.Data.CodingTheory.ProximityGap.BadFamilyCensus
 import ArkLib.Data.CodingTheory.ProximityGap.BadGammaAffineCount
@@ -330,6 +331,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentReduction
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentShell
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentUpper
 import ArkLib.Data.CodingTheory.ProximityGap.CS25TailSupport
+import ArkLib.Data.CodingTheory.ProximityGap.CZ25FRSAdmissibilityRegime
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityFailureBandwidth
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityVacuity
 import ArkLib.Data.CodingTheory.ProximityGap.CappedSupplyMassIdentity
