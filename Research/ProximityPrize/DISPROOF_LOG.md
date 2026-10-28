@@ -1,10 +1,70 @@
 # Disproof Log — ABF26 Proximity Prize Grand Challenge 1 (Issue #232)
 
+## [164-expanded-common-factor-incidence-cores] 2026-10-11
+
+Author: Mikhail Izhutkin (@mashingaan)
+
+Exact computation and algebraic derivation, not a new Lean theorem:
+`scripts/probes/probe_incidence_expanded_cores.py` expands the equal-size
+groups around 31 common coset labels. At the first sponsor field, three groups
+of 11 labels give 1107296256 distinct bad-scalar slots at radius
+369098751/1073741824, exceeding the budget by 33554432. At the second field,
+five groups of six labels give 2264924160 slots at radius
+452984831/1073741824, exceeding the budget by 117440512.
+
+The production modular-power certificates exclude coefficient collisions.
+Direct Lagrange interpolation independently verifies every witness on a
+128-point smooth domain over F_1409. The production support/nonjointness
+derivation is recorded in
+`docs/kb/deltastar-expanded-incidence-cores-2026-10-11.md`.
+The expanded-core canonical Lean and threshold transfers are not implemented.
+These are stronger exact no-go certificates for the associated all-stack caps,
+not a determination of the prize threshold or a closure claim.
+
+Coordinate-scale extension: `probe_incidence_full_scale_cores.py` uses k-2
+common coordinates and equal groups of size floor((n-k+2)/s). For s = 3 in
+the first field it gives n+5 slots at radius 178956971/536870912. For s = 5
+in the second field it gives 2n+12 slots at radius 429496731/1073741824.
+All production coefficient powers are separated exactly, with an independent
+repeated-squaring check. Direct finite-field interpolation verifies the
+construction separately. These expanded-coordinate results have the same
+non-Lean evidence class and do not establish an exact production threshold.
+
 Goal: keep trying to **disprove** the ABF26 Grand-Challenge-1 conjecture, then
 **disprove the disproof**. Record every attempt so we don't repeat ourselves and
 so we zero in. Keep lemmas that *constrain* even if they don't fully disprove.
 Default assumption: my disproof is wrong — find the precise reason it fails and
 make that reason a sorry-free Lean lemma.
+
+## [SYZ3-five-core-predecessor] Five-core rate-half construction refutes both canonical predecessor caps (2026-10-11)
+
+Author: Mikhail Izhutkin (@mashingaan)
+
+The exact probe `scripts/probes/probe_syz3_five_core_predecessor.py` constructs
+five rate-half cores at `N=2^30`, `d=2^24`, and `K=2^29`. Each core has
+`33d` coordinates and the predecessor witness has `33d+1` coordinates. The
+155 eligible core-label slots have distinct `(label,multiplier)` pairs. The
+canonical first and second prime fields have pairwise distinct values of
+`a^N` for `a=1,...,9`, so all `155d = 2,600,468,480` pencil scalars are
+distinct.
+
+The lower bound exceeds the first predecessor budget `N` by `1,526,726,656`
+and the second budget `2N` by `452,984,832`. This refutes both all-stack
+predecessor count hypotheses used by the conditional rate-half reduction.
+The finite independent check at `N=128`, `K=64`, `P=1409` verifies all `310`
+constructed MCA witnesses and exceeds `2N` by `54`.
+
+The five-core probe is exact integer and modular arithmetic only. It does not
+formalize that five-core construction, transfer it to the second field, or
+close the prize. Separately, the existing three-core SYZ3 certificate now has
+the axiom-clean declarations
+`firstPrime_predecessor_worstCaseIncidence_refuted` and
+`firstPrime_predecessor_mcaDeltaStar_le` in
+`Frontier/_SYZ3OverBudgetStackWitness.lean`. They directly connect the
+first-field predecessor no-go to the canonical incidence predicate and
+threshold ledger. The five-core rate-half construction remains separate from
+the existing rate-quarter five-core barrier, which has different dimension
+and agreement parameters.
 
 ## [466-G310-k2-interior-ceiling-prize-scale] A07 r=3 / k=2 interior-ceiling counts survive at a prize-scale Proth prime: the ceiling #bad is 40 and the below-ceiling monomial-pencil maximum is 9, q-independent at q ≈ 21·2^128 (2026-08-14)
 
