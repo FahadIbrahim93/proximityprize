@@ -8,6 +8,9 @@
 ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves ProximityGap.correlatedAgreement_affine_curves
 ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.Main ProximityGap.RS_correlatedAgreement_affineLines
 
+# ── Refutation of the unconditional curve list-size residual ───────────
+ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.ListSizeResidualRefutation ProximityGap.RSCurveListSizeRefutation.not_rsCurveListSizeResidual
+
 # ── Proximity gap for RS codes ─────────────────────────────────────────
 ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ReedSolomonGap ProximityGap.proximity_gap_RSCodes
 

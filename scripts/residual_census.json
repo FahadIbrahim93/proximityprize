@@ -1,9 +1,9 @@
 {
  "summary": {
   "total": 89,
-  "open": 48,
+  "open": 47,
   "discharged": 35,
-  "refuted": 6,
+  "refuted": 7,
   "by_top_dir": {
    "(root)": {
     "total": 1,
@@ -13,9 +13,9 @@
    },
    "Data": {
     "total": 24,
-    "open": 16,
+    "open": 15,
     "discharged": 3,
-    "refuted": 5
+    "refuted": 6
    },
    "OracleReduction": {
     "total": 39,
@@ -1385,9 +1385,20 @@
    "name": "RSCurveListSizeResidual",
    "fq_name": "ProximityGap.RSCurveListSizeResidual",
    "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/ListSizeResidual.lean",
-   "line": 45,
+   "line": 50,
    "providers": [],
-   "status": "open"
+   "refutations": [
+    {
+     "name": "ProximityGap.RSCurveListSizeRefutation.not_rsCurveListSizeResidual",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/ListSizeResidualRefutation.lean",
+     "line": 154,
+     "conditional_on_residuals": [],
+     "extra_explicit_binders": [],
+     "ambiguous_name_match": false
+    }
+   ],
+   "status": "refuted"
   },
   {
    "name": "βHenselSuccTermWeightResidual",

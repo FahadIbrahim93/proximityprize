@@ -95,6 +95,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.GoodSetAggregate
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.HeavyCodeword
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.JointAgreement
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.ListSizeResidual
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.ListSizeResidualRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.PairSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.Pigeonhole
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.SudanY2
