@@ -65,6 +65,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -78,6 +79,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -100,6 +102,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -114,6 +117,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -129,6 +133,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -144,6 +149,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -160,6 +166,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -183,6 +190,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -200,6 +208,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -213,6 +222,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -228,6 +238,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -246,6 +257,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -261,6 +273,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -280,6 +293,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -298,6 +312,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -324,6 +339,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -341,6 +357,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -361,6 +378,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -372,6 +390,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -383,6 +402,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -403,6 +423,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -416,6 +437,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -431,6 +453,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -444,6 +467,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -466,6 +490,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -479,6 +504,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -503,6 +529,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -518,6 +545,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -531,6 +559,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -546,6 +575,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -559,6 +589,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -572,6 +603,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -587,6 +619,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -598,6 +631,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": true,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -613,6 +647,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -626,6 +661,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -639,6 +675,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -652,6 +689,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -665,6 +703,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -678,6 +717,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -691,6 +731,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -704,6 +745,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -717,6 +759,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -730,6 +773,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -741,6 +785,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": [
       "k := 0"
      ]
@@ -756,6 +801,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -769,6 +815,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -800,6 +847,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -816,6 +864,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -829,6 +878,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -843,6 +893,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -860,6 +911,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -878,6 +930,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -894,6 +947,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -910,6 +964,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -923,6 +978,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -936,6 +992,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -950,6 +1007,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -966,6 +1024,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -977,6 +1036,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": [
       "k := 0"
      ]
@@ -1033,6 +1093,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1048,6 +1109,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1065,6 +1127,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1080,6 +1143,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1094,6 +1158,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1112,6 +1177,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1131,6 +1197,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1148,6 +1215,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1165,6 +1233,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1179,6 +1248,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1194,6 +1264,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1211,6 +1282,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1222,6 +1294,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": [
       "k := 0"
      ]
@@ -1237,6 +1310,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -1270,6 +1344,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1285,6 +1360,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1299,6 +1375,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -1332,6 +1409,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -1357,6 +1435,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -1379,6 +1458,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1392,6 +1472,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1405,6 +1486,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1418,6 +1500,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1431,6 +1514,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1444,6 +1528,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": true,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1458,6 +1543,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1472,6 +1558,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1483,6 +1570,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": true,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1496,6 +1584,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1509,6 +1598,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1522,6 +1612,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -1605,6 +1696,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1618,6 +1710,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1633,6 +1726,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1646,6 +1740,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1659,6 +1754,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -1683,6 +1779,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1699,6 +1796,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -1721,6 +1819,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1732,6 +1831,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": [
       "k := 0"
      ]
@@ -1747,6 +1847,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1760,6 +1861,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1773,6 +1875,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1786,6 +1889,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -1819,6 +1923,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1832,6 +1937,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1845,6 +1951,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -1867,6 +1974,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1881,6 +1989,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1892,6 +2001,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": true,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1903,6 +2013,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": true,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1914,6 +2025,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -1947,6 +2059,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1965,6 +2078,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -1982,6 +2096,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -2008,6 +2123,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -2025,6 +2141,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -2043,6 +2160,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -2060,6 +2178,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -2076,6 +2195,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -2103,6 +2223,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -2121,6 +2242,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -2137,6 +2259,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -2172,6 +2295,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -2191,6 +2315,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -2219,6 +2344,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -2239,6 +2365,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -2259,6 +2386,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -2277,6 +2405,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -2291,6 +2420,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -2316,6 +2446,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -2334,6 +2465,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -2359,6 +2491,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -2376,6 +2509,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -2403,6 +2537,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -2421,6 +2556,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -2437,6 +2573,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -2450,6 +2587,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -2463,6 +2601,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -2487,6 +2626,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -2515,6 +2655,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -2544,6 +2685,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -2568,6 +2710,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -2581,6 +2724,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -2592,6 +2736,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": true,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -2603,6 +2748,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -2623,6 +2769,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -2634,6 +2781,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": true,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -2660,6 +2808,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -2689,6 +2838,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -2707,6 +2857,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -2735,6 +2886,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -2754,6 +2906,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -2778,6 +2931,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -2793,6 +2947,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -2804,6 +2959,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -2826,6 +2982,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -2837,6 +2994,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -2850,6 +3008,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -2861,6 +3020,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -2872,6 +3032,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -2892,6 +3053,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -2912,6 +3074,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -2937,6 +3100,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -2952,6 +3116,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -2967,6 +3132,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -2978,6 +3144,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -2993,6 +3160,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -3017,6 +3185,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -3028,6 +3197,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": true,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -3039,6 +3209,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -3052,6 +3223,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -3065,6 +3237,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -3078,6 +3251,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -3093,6 +3267,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -3104,6 +3279,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": true,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -3126,6 +3302,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -3137,6 +3314,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -3148,6 +3326,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -3168,6 +3347,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -3179,6 +3359,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -3199,6 +3380,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -3219,6 +3401,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -3247,6 +3430,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -3267,6 +3451,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -3287,6 +3472,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -3317,6 +3503,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -3339,6 +3526,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -3364,6 +3552,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -3384,6 +3573,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -3404,6 +3594,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -3452,6 +3643,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -3495,6 +3687,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -3518,6 +3711,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -3529,6 +3723,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": true,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -3543,6 +3738,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -3563,6 +3759,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -3574,6 +3771,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": true,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -3594,6 +3792,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -3621,6 +3820,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -3632,6 +3832,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": true,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -3658,6 +3859,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -3684,6 +3886,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -3700,6 +3903,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -3716,6 +3920,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -3732,6 +3937,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -3747,6 +3953,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -3763,6 +3970,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -3780,6 +3988,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -3798,6 +4007,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -3825,6 +4035,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -3852,6 +4063,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -3863,6 +4075,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": true,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -3885,6 +4098,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -3898,6 +4112,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -3922,6 +4137,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -3937,6 +4153,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -3951,6 +4168,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -3965,6 +4183,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -3978,6 +4197,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -4004,6 +4224,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": true,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -4023,6 +4244,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -4043,6 +4265,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -4059,6 +4282,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -4080,6 +4304,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -4107,6 +4332,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -4118,6 +4344,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": true,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -4144,6 +4371,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -4159,6 +4387,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -4173,6 +4402,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -4189,6 +4419,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -4202,6 +4433,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -4217,6 +4449,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -4233,6 +4466,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -4246,6 +4480,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -4257,6 +4492,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -4282,6 +4518,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -4295,6 +4532,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -4306,6 +4544,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -4326,6 +4565,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -4349,6 +4589,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -4363,6 +4604,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -4394,6 +4636,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -4414,6 +4657,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -4434,6 +4678,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -4454,6 +4699,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -4469,6 +4715,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -4489,6 +4736,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -4504,6 +4752,7 @@
      ],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -4515,6 +4764,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": true,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -4535,6 +4785,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -4555,6 +4806,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -4575,6 +4827,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -4595,6 +4848,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -4606,6 +4860,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],
@@ -4626,6 +4881,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     },
     {
@@ -4637,6 +4893,7 @@
      "extra_explicit_binders": [],
      "ambiguous_name_match": false,
      "equivalence": false,
+     "reduction_only": false,
      "specialised_arguments": []
     }
    ],

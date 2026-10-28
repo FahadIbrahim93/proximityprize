@@ -29,6 +29,11 @@ so quoted arrows cannot split the result and literal brackets cannot hide a prem
 Run its regression and independent Lean-output fixture with
 `python3 -m unittest discover -s scripts/tests -p 'test_cleanroom_conclusion.py'`.
 
+`forbidden_tokens.py` also enforces one declaration per `scripts/residual_axioms.txt` entry: the
+allowlist stores simple names, so an entry would otherwise transfer to a second `axiom` declared
+under the same name in a fresh namespace. That check needs the full-tree scan (what CI and
+`validate.sh` run); a file-scoped run only sees duplicates inside the file it was given.
+
 ## Current shortcut snapshot (2026-06-11)
 
 A comment/string-stripped scan of `ArkLib/**/*.lean` found:
@@ -122,5 +127,6 @@ front door without a proof of the predicate.
 - [ ] Full hypothesis list read; every nontrivial hypothesis is a *named*, tracked residual.
 - [ ] Non-vacuity: a satisfiable nontrivial parameter regime exists (or the vacuity is flagged).
 - [ ] Fresh focused rebuild + `#print axioms` shows exactly `[propext, Classical.choice, Quot.sound]`.
-- [ ] No new `axiom`, `native_decide`, `unsafe`, `unsafeCast`, `implemented_by` in the diff (CI gate 1 now rejects the last three in live source; still re-check the diff).
+- [ ] No new `axiom`, `native_decide`, `unsafe`, `unsafeCast`, `implemented_by` in the diff (CI gate 1 now rejects the last three in live source; still re-check the diff);
+      no second declaration of an allowlisted residual axiom name.
 - [ ] Issue comment matches what was actually proven (regime, budget, verifier variant).
