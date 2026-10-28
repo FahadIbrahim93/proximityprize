@@ -6,8 +6,11 @@ The strict census counts declarations under `ArkLib/` of the form
 `def ...Residual ... : Prop`. A residual is **discharged** only when a concrete
 provider has no residual dependencies, no extra proof-like explicit binders, and no
 ambiguous namespace match. Conditional reductions are useful proof plumbing, but they
-remain **open** until their side conditions are proved. A residual is **refuted** when
-the tree contains a concrete theorem of a negated residual instance.
+remain **open** until their side conditions are proved. An equivalence (`R ↔ Q`), a
+result whose first top-level connective after the residual is `→`, `∨` or `=`, or an
+instance with a parameter fixed to a numeral (`R (k := 0)`) is not a provider. A residual
+is **refuted** when the tree contains a concrete theorem of a negated residual instance,
+and a proved negation outranks any apparent provider.
 
 The named-residual convention is a modularity pattern, not an incompleteness marker:
 always check this census before treating a `*Residual` name as open proof debt.
@@ -50,12 +53,11 @@ always check this census before treating a `*Residual` name as open proof debt.
 > `StrictCanonicalCoeffPolysResidual`; `not_strictCoeffPolysResidual` refutes the broad
 > coefficient-interpolation statement; and `not_strictCoeffPolysLargeResidual` refutes the
 > large-good-set sector, which by `strictCoeffPolysResidual_iff_large` carries its whole content.
-> The last two appear in the JSON `refutations` list, and `StrictCoeffPolysLargeResidual` is
-> classified `refuted` below. `StrictCoeffPolysResidual` still shows as `discharged` because the
-> census lets any concrete provider outrank a refutation, and
-> `ArkLib.KeystoneStrictResidual.strictCoeffPolysResidual_zero` "provides" it vacuously at
-> `k = 0` from the unsatisfiable hypothesis `0 < 0`. Until that precedence is revisited, read the
-> JSON `refutations` list rather than the status label for this name. Every conditional adapter
+> All three names are classified `refuted` below: since the census precedence fix, a proved
+> negation outranks the vacuous `k = 0` provider
+> `ArkLib.KeystoneStrictResidual.strictCoeffPolysResidual_zero` (whose hypothesis `0 < 0` is
+> unsatisfiable), so `StrictCoeffPolysResidual` is no longer labelled `discharged`. Every
+> conditional adapter
 > that consumes these surfaces — notably
 > `strictCoeffPolysResidual_of_strictCanonicalCoeffPolysResidual` and
 > `correlatedAgreement_affine_curves_of_largeResidual` — is therefore vacuous, and the §5
@@ -78,23 +80,23 @@ always check this census before treating a `*Residual` name as open proof debt.
 > (`BCIKS20/Curves/CoeffExtractionResidual.lean`), the geometric form from which the broad algebraic
 > form follows by `strictCoeffPolysResidual_of_commonAgreement`, is refuted at the same witness:
 > `not_curveCommonAgreementResidual`. It is classified `refuted` below, and its three
-> `curveCommonAgreementResidual_of_*` providers are conditional/vacuous adapters. Totals at this
-> commit: 89 strict residuals, 40 open, 44 discharged, 5 refuted.
+> `curveCommonAgreementResidual_of_*` providers are conditional/vacuous adapters. Totals at
+> merge (2026-10-28): 89 strict residuals, 44 open, 35 discharged, 10 refuted.
 
 ## Summary
 
 - **Total strict residuals:** 89
-- **Open:** 40
-- **Discharged:** 44
-- **Refuted:** 5
+- **Open:** 44
+- **Discharged:** 35
+- **Refuted:** 10
 - **Residual-like near misses:** 33 (listed below and in `scripts/residual_census.json`)
 
 | top-level directory | total | open | discharged | refuted |
 |---|---:|---:|---:|---:|
 | `(root)` | 1 | 0 | 1 | 0 |
-| `Data` | 24 | 12 | 8 | 4 |
+| `Data` | 24 | 12 | 3 | 9 |
 | `OracleReduction` | 39 | 22 | 17 | 0 |
-| `ProofSystem` | 14 | 6 | 8 | 0 |
+| `ProofSystem` | 14 | 10 | 4 | 0 |
 | `ToMathlib` | 11 | 0 | 10 | 1 |
 
 ## Open Residuals
@@ -133,12 +135,16 @@ always check this census before treating a `*Residual` name as open proof debt.
 - `DuplexSpongeFS.KeyLemmaHybrids.Hyb23StepResidual` — `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaHybrids.lean:754`
 - `DuplexSpongeFS.KeyLemmaHybrids.Hyb34StepResidual` — `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaHybrids.lean:773` — conditional providers only (extra assumptions: `hA`, `hB`, `hsum`)
 - `DuplexSpongeFS.KeyLemmaSalted.KeyLemmaEagerSaltedResidual` — `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaSalted.lean:714` — conditional providers only (extra assumptions: `h01`, `h12`, `h23`, `h34`)
+- `Logup.SubPhaseCompletenessResidual` — `ArkLib/ProofSystem/Logup/Security/Completeness.lean:237` — conditional providers only (extra assumptions: `hImplSupp`, `hInit`, `hSum`)
+- `Logup.SubPhaseSoundnessResidual` — `ArkLib/ProofSystem/Logup/Security/Soundness.lean:118` — conditional providers only (extra assumptions: `himplNF`, `himplSP`, `himplVB`, `hn`, `hnK`, `hpole`)
 - `Logup.OuterSoundnessResidual` — `ArkLib/ProofSystem/Logup/Security/SubPhaseSplit.lean:70` — conditional providers only (extra assumptions: `himplNF`, `himplSP`, `himplVB`, `hnK`, `hpole`)
 - `Logup.SumcheckSoundnessResidual` — `ArkLib/ProofSystem/Logup/Security/SubPhaseSplit.lean:78` — conditional providers only (extra assumptions: `hError`, `hInnerRbr`, `hMarginal`, `hProj`, `hRbrToSound`, `himplNF`, `himplSP`, `himplVB`, `hn`)
 - `Logup.AppendSoundnessResidual` — `ArkLib/ProofSystem/Logup/Security/SubPhaseSplit.lean:108` — conditional providers only (extra assumptions: `himplNF`, `himplSP`, `himplVB`, `hn`, `hnK`, `hpole`)
+- `Logup.LogupSoundnessBrickResidual` — `ArkLib/ProofSystem/Logup/Security/SubPhaseSplit.lean:115` — conditional providers only (extra assumptions: `himplNF`, `himplSP`, `himplVB`, `hn`, `hnK`, `hpole`)
 - `Logup.OuterCompletenessResidual` — `ArkLib/ProofSystem/Logup/Security/SubPhaseSplit.lean:163` — conditional providers only (extra assumptions: `hInit`)
 - `Logup.SumcheckCompletenessResidual` — `ArkLib/ProofSystem/Logup/Security/SubPhaseSplit.lean:169` — conditional providers only (extra assumptions: `hImplSupp`, `hInit`, `hInner`, `hPerRound`, `hProj`)
 - `Logup.AppendCompletenessResidual` — `ArkLib/ProofSystem/Logup/Security/SubPhaseSplit.lean:183` — conditional providers only (residual deps: `OuterCompletenessResidual`, `SumcheckCompletenessResidual`, `appendToReductionResidual`; extra assumptions: `hBridge`, `hDir`, `hDir₂`, `hImplSupp`, `hInit`, `himplNF`, `himplSP`, `himplVB`, `hn`)
+- `Logup.LogupCompletenessBrickResidual` — `ArkLib/ProofSystem/Logup/Security/SubPhaseSplit.lean:206` — conditional providers only (extra assumptions: `hImplSupp`, `hInit`, `himplNF`, `himplSP`, `himplVB`, `hn`)
 
 ## Residual-Like Near Misses
 
@@ -183,21 +189,21 @@ proof debt and naming drift.
 
 ## Refuted Residuals
 
+- `ProximityGap.StrictCoeffPolysResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean:2514` — refuted by `ProximityGap.StrictCanonicalCoeffPolysRefutation.not_strictCoeffPolysResidual` (ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CanonicalCoeffExtractionRefutation.lean:473)
 - `ProximityGap.StrictCanonicalCoeffPolysResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean:2549` — refuted by `ProximityGap.StrictCanonicalCoeffPolysRefutation.not_strictCanonicalCoeffPolysResidual` (ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CanonicalCoeffExtractionRefutation.lean:350)
+- `ProximityGap.BoundaryCardResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean:2599` — refuted by `ArkLib.BoundaryCardResidualAffineLineRefutation.not_boundaryCardResidual_affineLine` (ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidualAffineLineRefutation.lean:118), `ArkLib.BoundaryCardResidualRefutation.not_boundaryCardResidual` (ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidualRefutation.lean:246), `ArkLib.BoundaryCardStrictInteriorRefutation.not_boundaryCardResidual_nonSquareEndpoint` (ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardStrictInteriorRefutation.lean:311)
+- `ProximityGap.BoundaryProbabilityResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean:2618` — refuted by `ArkLib.BoundaryCardResidualRefutation.not_boundaryProbabilityResidual` (ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidualRefutation.lean:274)
 - `ProximityGap.CurveCommonAgreementResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CoeffExtractionResidual.lean:43` — refuted by `ProximityGap.StrictCanonicalCoeffPolysRefutation.not_curveCommonAgreementResidual` (ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CanonicalCoeffExtractionRefutation.lean:530)
+- `BCIKS20.HenselNumerator.FaaDiBrunoSuccSumZeroResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean:2510` — refuted by `BCIKS20.HenselNumerator.Witness.faaDiBrunoSuccSumZeroResidual_false` (ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P2OrderZeroRefutationWitness.lean:168)
 - `ProximityGap.StrictCoeffPolysLargeResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffLargeReduction.lean:103` — refuted by `ProximityGap.StrictCanonicalCoeffPolysRefutation.not_strictCoeffPolysLargeResidual` (ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CanonicalCoeffExtractionRefutation.lean:511)
 - `ProximityGap.StrictCoeffPolysExcResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysExceptional.lean:180` — refuted by `ProximityGap.StrictCanonicalCoeffPolysRefutation.not_strictCoeffPolysExcResidual_one` (ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CanonicalCoeffExtractionRefutation.lean:611)
+- `ArkLib.BoundaryCardResidual.BoundaryCardLatticeResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidual.lean:271` — refuted by `ArkLib.BoundaryCardResidualRefutation.not_boundaryCardLatticeResidual` (ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidualRefutation.lean:252)
 - `CodingTheory.CS25.DeepHole.DeepHoleProbResidual` — `ArkLib/ToMathlib/CS25DeepHoleFinish.lean:265` — refuted by `CodingTheory.CS25.DeepHole.not_deepHoleProbResidual_negativeEpsilon_zmod2` (ArkLib/ToMathlib/CS25DeepHoleFinish.lean:286)
 
 ## Discharged Residuals
 
 - `ProximityGap.GKL24FirstMomentResidual` — `ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean:1046`
 - `ProximityGap.GKL24FirstMomentWitnessCoverResidual` — `ArkLib/Data/CodingTheory/Connections/GKL24FirstMoment.lean:1107`
-- `ProximityGap.StrictCoeffPolysResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean:2514`
-- `ProximityGap.BoundaryCardResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean:2599`
-- `ProximityGap.BoundaryProbabilityResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean:2618`
-- `BCIKS20.HenselNumerator.FaaDiBrunoSuccSumZeroResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean:2510`
-- `ArkLib.BoundaryCardResidual.BoundaryCardLatticeResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidual.lean:271`
 - `ProximityGap.Ownership.SubJohnsonSupplyResidual` — `ArkLib/Data/CodingTheory/ProximityGap/JohnsonSplitSupply.lean:258`
 - `Prover.appendRunRightResidual` — `ArkLib/OracleReduction/Composition/Sequential/Append.lean:3933`
 - `OracleReduction.appendToReductionResidual` — `ArkLib/OracleReduction/Composition/Sequential/AppendPerfectCompletenessOracle.lean:67`
@@ -216,12 +222,8 @@ proof debt and naming drift.
 - `DuplexSpongeFS.KeyLemmaFoundations.SimulatedProverSharedBudgetResidual` — `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean:951`
 - `DuplexSpongeFS.KeyLemmaFoundations.D2sQueryStepGSpecBudgetResidual` — `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean:1011`
 - `DuplexSpongeFS.KeyLemmaFoundations.D2fOuterImplSharedBudgetResidual` — `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean:1027`
-- `Logup.SubPhaseCompletenessResidual` — `ArkLib/ProofSystem/Logup/Security/Completeness.lean:237`
 - `Logup.OuterCompletenessRunResidual` — `ArkLib/ProofSystem/Logup/Security/OuterCompleteness.lean:139`
 - `Logup.OuterCompletenessRunFactsResidual` — `ArkLib/ProofSystem/Logup/Security/OuterCompleteness.lean:149`
-- `Logup.SubPhaseSoundnessResidual` — `ArkLib/ProofSystem/Logup/Security/Soundness.lean:118`
-- `Logup.LogupSoundnessBrickResidual` — `ArkLib/ProofSystem/Logup/Security/SubPhaseSplit.lean:115`
-- `Logup.LogupCompletenessBrickResidual` — `ArkLib/ProofSystem/Logup/Security/SubPhaseSplit.lean:206`
 - `StirIOP.MultiRound.stirCheckingRbrSoundnessResidual` — `ArkLib/ProofSystem/Stir/CheckingVerifier.lean:964`
 - `StirIOP.MultiRound.stirMultiRoundRbrSoundnessResidual` — `ArkLib/ProofSystem/Stir/MultiRoundAssembly.lean:224`
 - `RingSwitchingKStateResidual` — `ArkLib/ResidualAxioms.lean:27`
