@@ -1392,7 +1392,7 @@
      "name": "ProximityGap.RSCurveListSizeRefutation.not_rsCurveListSizeResidual",
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/ListSizeResidualRefutation.lean",
-     "line": 153,
+     "line": 154,
      "conditional_on_residuals": [],
      "extra_explicit_binders": [],
      "ambiguous_name_match": false
