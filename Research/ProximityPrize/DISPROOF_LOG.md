@@ -54110,11 +54110,13 @@ hosted gates must be reported separately.
 Hardyzyt. Exact arithmetic certificates and an explicit family argument;
 no new Lean theorem.
 
-The all-finite-fields quantifier in
-`ArkLib.ProximityGap.R389WickBudgetSupBound.UniformSubgroupWickBudget`
-cannot hold with one absolute inflation constant, by the written family argument
-below; that argument is not kernel-checked, and the probe certifies only the finite
-anchors. The new
+Certified result: the finite proper-subfield anchors below, each an exact
+executable counterexample to the inflation constants it rejects for
+`ArkLib.ProximityGap.R389WickBudgetSupBound.UniformSubgroupWickBudget`.
+This entry does not record that predicate as refuted. The written family
+argument below suggests that no single absolute inflation constant covers all
+finite fields, but it is not kernel-checked, and the probe certifies only the
+finite anchors. The new
 [probe](../../scripts/probes/probe_r389_subfield_wick_budget.py) targets that
 named input and its DC-subtracted normalization, rather than the original
 sponsor prime-field problem.
