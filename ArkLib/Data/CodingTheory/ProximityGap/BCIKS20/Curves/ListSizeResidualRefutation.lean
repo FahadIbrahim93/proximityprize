@@ -36,7 +36,8 @@ strict-Johnson input: a surviving form has to restrict `δ` to the strict sub-Jo
 the codeword choice, exactly as the coefficient-polynomial residuals do.
 
 ## Verification
-`./scripts/pg-iterate.sh ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/ListSizeResidualRefutation.lean`
+`./scripts/lake-locked.sh build
+  ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.ListSizeResidualRefutation`
 
 ## References
 * [BCIKS20] Ben-Sasson, Carmon, Ishai, Kopparty, Saraf, *Proximity Gaps for Reed–Solomon
@@ -136,7 +137,7 @@ theorem flat_agreement (z : F) :
 
 theorem cw_mem (z : F) :
     cw z ∈ (ReedSolomon.code domain 1 : Set (I → F)) := by
-  simpa [cw] using (ReedSolomon.constantCode_mem_code (α := domain) (n := 1) (x := z))
+  simp [cw]
 
 theorem cw_injective : Function.Injective cw := by
   intro z1 z2 h
