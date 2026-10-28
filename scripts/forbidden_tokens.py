@@ -4,7 +4,8 @@
 By default, scans every .lean file under ArkLib/ and Research/. If one or more paths are
 provided, scans only those Lean files/directories. Fails if live
 (non-comment) code contains (`axiom` text inside a string literal is data):
-  - `native_decide` / `bv_decide` (kernel-bypassing decision procedures), or
+  - `native_decide` / `bv_decide` (kernel-bypassing decision procedures), the
+    equivalent `decide +native` / `decide (native := true)` forms and `bv_check`, or
   - an `unsafe` declaration modifier, live `unsafeCast`, or `implemented_by`
     attribute (repository policy: block unsafe decls, unsafeCast, and
     evaluator-diverging `implemented_by`; this is a fast precheck, not a claim
@@ -63,6 +64,16 @@ import sys
 from pathlib import Path
 
 TOKEN_RE = re.compile(r"\b(native_decide|bv_decide|unsafeCast|implemented_by)\b")
+# `native_decide` is a synonym for `decide +native`; both forms, the config form
+# `decide (native := true)` / `(config := { native := true })` and `bv_check`
+# prove the goal by native evaluation and add a compiler-trust axiom. Matched
+# against comment/string-blanked code, so a comment between the parts does not
+# hide the form.
+NATIVE_FORM_RE = re.compile(
+    r"\bdecide(?:\s*(?:[+-]\w+|\([^)]*\)))*?\s*"
+    r"(?:\+native\b|\([^)]*\bnative\s*:=\s*true\b[^)]*\))"
+    r"|\bbv_check\b"
+)
 # Lean declaration-modifier `unsafe` (not aesop's `(add unsafe …)` tactic hint).
 # Allow the same modifiers before or after `unsafe` (Lean accepts e.g.
 # `unsafe nonrec def`), then require a declaration keyword so
@@ -771,6 +782,12 @@ def main() -> int:
             if not mask[m.start()]:
                 line = text.count("\n", 0, m.start()) + 1
                 failures.append(f"{path}:{line}: forbidden token {m.group(1)}")
+        for m in NATIVE_FORM_RE.finditer(live_text):
+            if not outside_quoted(m.start(), lexed.quoted):
+                continue
+            line = text.count("\n", 0, m.start()) + 1
+            form = " ".join(m.group(0).split())
+            failures.append(f"{path}:{line}: forbidden native evaluation `{form}`")
         scopes = TrueScopes(live_text, lexed.quoted)
         for m in UNSAFE_DECL_RE.finditer(live_text):
             if not outside_quoted(m.start(), lexed.quoted):
