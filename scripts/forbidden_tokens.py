@@ -5,6 +5,10 @@ By default, scans every .lean file under ArkLib/ and Research/. If one or more p
 provided, scans only those Lean files/directories. Fails if live
 (non-comment) code contains (`axiom` text inside a string literal is data):
   - `native_decide` / `bv_decide` (kernel-bypassing decision procedures), or
+  - an `unsafe` declaration modifier, live `unsafeCast`, or `implemented_by`
+    attribute (repository policy: block unsafe decls, unsafeCast, and
+    evaluator-diverging `implemented_by`; this is a fast precheck, not a claim
+    that Lean accepts unsafe theorems as axiom-clean proofs), or
   - a custom `axiom` declaration whose name is not an allowlisted, documented
     residual (see scripts/residual_axioms.txt), with any modifiers (including
     `public`/`meta` in `module` files) and with the name on a later line or
@@ -46,7 +50,19 @@ import re
 import sys
 from pathlib import Path
 
-TOKEN_RE = re.compile(r"\b(native_decide|bv_decide)\b")
+TOKEN_RE = re.compile(r"\b(native_decide|bv_decide|unsafeCast|implemented_by)\b")
+# Lean declaration-modifier `unsafe` (not aesop's `(add unsafe …)` tactic hint).
+# Allow the same modifiers before or after `unsafe` (Lean accepts e.g.
+# `unsafe nonrec def`), then require a declaration keyword so
+# `aesop (add unsafe …)` and `attribute [aesop unsafe 50%]` stay allowed.
+UNSAFE_DECL_RE = re.compile(
+    r"(?m)^[ \t]*(?:@\[[^\]]*\]\s*)*"
+    r"(?:(?:public|protected|private|scoped|noncomputable|partial|nonrec|meta|local)\s+)*"
+    r"unsafe\s+"
+    r"(?:(?:public|protected|private|scoped|noncomputable|partial|nonrec|meta|local)\s+)*"
+    r"(?:theorem|lemma|def|abbrev|opaque|constant|axiom|instance|structure|inductive|class|example)\b"
+)
+
 
 # --- Lean identifier characters ---------------------------------------------
 # Mirrors `isLetterLike`, `isSubScriptAlnum`, `isIdFirst` and `isIdRest` in
@@ -738,6 +754,15 @@ def main() -> int:
                 line = text.count("\n", 0, m.start()) + 1
                 failures.append(f"{path}:{line}: forbidden token {m.group(1)}")
         scopes = TrueScopes(live_text, lexed.quoted)
+        for m in UNSAFE_DECL_RE.finditer(live_text):
+            if not outside_quoted(m.start(), lexed.quoted):
+                continue
+            line = text.count("\n", 0, m.start()) + 1
+            failures.append(
+                f"{path}:{line}: forbidden unsafe declaration "
+                f"(repository policy rejects live `unsafe` decls; prove in safe "
+                f"Lean or track a residual — this precheck is not a kernel-escape claim)"
+            )
         decls = declaration_heads(live_text, lexed)
         for decl_index, dm in enumerate(decls):
             kind, name = dm.group(1), dm.group(2)
@@ -805,6 +830,7 @@ def main() -> int:
         print("\n".join(allowed_hits))
     print(
         "forbidden-token precheck: clean (no native_decide / bv_decide / "
+        "unsafe declaration / unsafeCast / implemented_by / "
         "undocumented custom axiom / vacuous `: True` placebo; "
         f"{len(allowed_hits)} allowlisted residual axiom(s))"
     )
