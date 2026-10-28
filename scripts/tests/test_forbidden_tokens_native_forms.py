@@ -14,6 +14,7 @@ NATIVE = {
     "config": "theorem b : 3 * 7 = 21 := by decide (config := { native := true })\n",
     "named": "theorem c : 3 * 7 = 21 := by decide (native := true)\n",
     "split": "theorem d : 3 * 7 = 21 := by\n  decide\n    +native\n",
+    "comment_between": "theorem e : 3 * 7 = 21 := by decide /- kernel? -/ +native\n",
     "bv_check": 'theorem f (x : BitVec 8) : x + 0 = x := by bv_check "f.lrat"\n',
 }
 
@@ -26,6 +27,7 @@ theorem k4 : 3 * 7 = 21 := by decide (native := false)
 /-- Proved by kernel `decide`, not `decide +native` or `bv_check`. -/
 theorem k5 : 2 = 2 := rfl
 -- no decide (native := true) here
+def s : String := "decide +native"
 """
 
 
