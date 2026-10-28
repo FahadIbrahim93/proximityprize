@@ -4,7 +4,8 @@
 By default, scans every .lean file under ArkLib/ and Research/. If one or more paths are
 provided, scans only those Lean files/directories. Fails if live
 (non-comment) code contains:
-  - `native_decide` / `bv_decide` (kernel-bypassing decision procedures), or
+  - `native_decide` / `bv_decide` (kernel-bypassing decision procedures), the
+    equivalent `decide +native` / `decide (native := true)` forms and `bv_check`, or
   - a custom `axiom` declaration whose name is not an allowlisted, documented
     residual (see scripts/residual_axioms.txt), or
   - a `theorem`/`lemma` whose statement type is exactly `True` (a vacuous
@@ -35,6 +36,14 @@ import sys
 from pathlib import Path
 
 TOKEN_RE = re.compile(r"\b(native_decide|bv_decide)\b")
+# `native_decide` is a synonym for `decide +native`; both forms, the config form
+# `decide (native := true)` / `(config := { native := true })` and `bv_check`
+# prove the goal by native evaluation and add a compiler-trust axiom.
+NATIVE_FORM_RE = re.compile(
+    r"\bdecide(?:\s*(?:[+-]\w+|\([^)]*\)))*?\s*"
+    r"(?:\+native\b|\([^)]*\bnative\s*:=\s*true\b[^)]*\))"
+    r"|\bbv_check\b"
+)
 # Capture the declared axiom name so it can be checked against the residual
 # allowlist. The name may be namespaced/contain primes; we keep the simple
 # token as written at the declaration site.
@@ -293,6 +302,11 @@ def main() -> int:
             if not mask[m.start()]:
                 line = text.count("\n", 0, m.start()) + 1
                 failures.append(f"{path}:{line}: forbidden token {m.group(1)}")
+        for m in NATIVE_FORM_RE.finditer(text):
+            if not mask[m.start()]:
+                line = text.count("\n", 0, m.start()) + 1
+                form = " ".join(m.group(0).split())
+                failures.append(f"{path}:{line}: forbidden native evaluation `{form}`")
         decls = list(DECL_RE.finditer(live_text))
         for decl_index, dm in enumerate(decls):
             kind, name = dm.group(1), dm.group(2)
