@@ -40,8 +40,13 @@ along the good-coefficient curve, choosing for each good parameter `z` a code-co
 the curve agrees with on `≥ |ι| - e` coordinates, the number of *distinct* such codewords
 (`(G.image cw).card`, the curve list size `L`) times `k·|ι|` stays below `|G|`. Equivalently
 `L ≤ |G| / (k·|ι|)`; together with `|G| > k·errorBound·|F|` this is the BCIKS bound
-`L ≤ deg²/((2·min(1-√ρ-δ, √ρ/20))⁷·|ι|)`. Establishing it is the trivariate Guruswami–Sudan
-construction (BCIKS20 §5). -/
+`L ≤ deg²/((2·min(1-√ρ-δ, √ρ/20))⁷·|ι|)`. The trivariate Guruswami–Sudan construction
+(BCIKS20 §5) is what establishes the bound. The statement as written, however, carries no
+strict-Johnson regime hypothesis `δ < 1 - √ρ`, no probability hypothesis, and no restriction on
+the choice of `cw`; it is therefore **false at the closed boundary** `δ = 1 - √ρ`
+(`ProximityGap.RSCurveListSizeRefutation.not_rsCurveListSizeResidual`, a kernel-checked
+`ZMod 7`, `|ι| = 4`, `deg = 1` counterexample). The surviving input is the regime-restricted
+statement used in the BCIKS20 §5 construction, not this `Prop` as stated. -/
 def RSCurveListSizeResidual {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} (e : ℕ) : Prop :=
   ∀ (u : Fin (k + 1) → ι → F) (cw : F → ι → F),
     (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,

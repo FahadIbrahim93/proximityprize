@@ -23,7 +23,9 @@ exact cyclotomic difference-class sum), so the in-tree C = 1 chain
 DC-subtracted correction `DCEnergyCorrection.DCEnergyBound` → `eta_pow_le_of_dcEnergyBound`)
 cannot be the carrier.  The 2026-07-09 excess-theory round showed the non-Wick excess is
 **bounded-ratio, not a blow-up**: a constant `C`-inflation of the Wick budget absorbs every
-measured cell.  This brick installs that `C`-inflated budget as the named hypothesis and
+measured prime-field cell. This does not support a uniform budget over all finite fields:
+`probe_r389_subfield_wick_budget.py` gives exact proper-subfield obstructions to that quantifier.
+This brick installs the `C`-inflated budget as the named hypothesis and
 proves, axiom-clean, the full real-arithmetic consumer chain down to the corrected
 `√(m log q)` CAZAC/PAPR constant of the r341 dictionary.
 
@@ -59,10 +61,15 @@ proves, axiom-clean, the full real-arithmetic consumer chain down to the correct
   `charZeroEnergy_two_d8_le_wick : 168 ≤ 3·8² = 192` — a concrete machine-checked instance
   of char-0 Wick domination (`V_k(d) ≤ (2k−1)‼·d^k`, proven on paper for all `d = 2^j`).
 
-## NAMED OPEN (do not discharge — this is the wall in energy coordinates)
+## The recorded uniform input (overstrong across finite fields)
 
 * `UniformSubgroupWickBudget C` — `DCEnergyBudget (μ_d) (wickDepth q) C` for every finite
-  field `F` and every `d`, at one absolute `C`.  Census evidence (2026-07-09,
+  field `F` and every `d`, at one absolute `C`. Proper subfields obstruct it (written family
+  argument, not kernel-checked): `probe_r389_subfield_wick_budget.py` certifies only the
+  finite anchors' exact DC budgets and their required inflation.
+  The existing `FFModelW4.ffThin_prizeLaw_countermodel` already supplies the underlying
+  no-cancellation mechanism. A suitably restricted prime-field budget remains open.
+  Census evidence (2026-07-09,
   verifier-audited): over 14,693 dense-census primes (`d ∈ {12,…,64}`, `k ≤ 12`), a
   513-cell 2-adically-rich ladder, and the complete chain-family scan `p ≤ 1.2·10⁶`, the
   observed `C_needed = (moment/Wick)^{1/k}` is `≤ 3.47` globally; in the route-relevant
@@ -72,7 +79,7 @@ proves, axiom-clean, the full real-arithmetic consumer chain down to the correct
   numerics live at `k* ≤ 7`, `β ∈ [1.5, 5.3]`, `p ≤ 2.15·10⁷`; the deep-window `k* ≥ 8`
   regime is beyond FFT reach and is supported only by the exact structure theory (support
   cutoff `N_k = V_k` for `p > (2k)^{φ(d)}`, peak-and-decay, per-vector bounds).  The
-  hypothesis is OPEN in both directions throughout the honest window; already its `k = 2`
+  prime-field target is OPEN in both directions throughout the honest window; already its `k = 2`
   instance gives `E₊(H) ≤ 3C²d² + d⁴/p` uniformly in `p` (note the mandatory `+ d⁴/p` DC
   main term), beyond the Heath-Brown–Konyagin `d^{5/2}` and Shkredov-school `~d^{32/13}`
   additive-energy bounds.  Numerics are evidence, not proof.
@@ -384,12 +391,19 @@ domain; self-contained here so this lane stays frontier-import-free). -/
 def torsionSet (F : Type*) [Fintype F] [DecidableEq F] [Monoid F] (d : ℕ) : Finset F :=
   Finset.univ.filter (fun y => y ^ d = 1)
 
-/-- **NAMED OPEN (do not discharge) — the wall in energy coordinates.**  One absolute
+/-- **Recorded uniform input — obstructed by proper subfields (paper argument).** One absolute
 inflation constant `C` such that the DC-subtracted Wick budget holds for every finite
-field and every torsion subgroup at the calibrated depth `k* = ⌈(log q)/2⌉₊`.  Census
+field and every torsion subgroup at the calibrated depth `k* = ⌈(log q)/2⌉₊`.
+For `F = GF(s²)` and `μ_(s-1) = GF(s)ˣ`, exact energy gives DC numerator
+`(s-1)^(2k*+1) + s(s-1)`. Any nonnegative budget constant must satisfy
+`C ≥ (s-1)/(16k*)`, unbounded as primes `s` grow (written argument, not kernel-checked).
+The reproducible probe
+`probe_r389_subfield_wick_budget.py` certifies the finite cases and the two sponsor
+subgroups in quadratic extensions; it does not refute the original prime-field target.
+The definition and its conditional consumer are retained as recorded interfaces. Census
 evidence (2026-07-09, verifier-corrected): observed `C_needed ≤ 3.47` globally, `≤ 2.61`
 in the route regime `β ≥ 2.3` (worst cell `(279073, d = 108)`, `C(k*) = 2.07` there);
-open in both directions in the honest window — its `k = 2` instance already implies
+the prime-field target is open in both directions in the honest window; its `k = 2` instance implies
 `E₊(H) ≤ 3C²d² + d⁴/p`, beyond Heath-Brown–Konyagin.  Numerics are evidence, not proof. -/
 def UniformSubgroupWickBudget (C : ℝ) : Prop :=
   ∀ (F : Type) [Field F] [Fintype F] [DecidableEq F] (d : ℕ),

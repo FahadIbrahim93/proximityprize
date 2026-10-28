@@ -477,6 +477,7 @@ import Research.ProximityPrize.Frontier._ANT46RungTwoAccidentOrbit
 import Research.ProximityPrize.Frontier._AR_HypercontractiveWickEquivalence
 import Research.ProximityPrize.Frontier._AR_MomentOptimizedSupNorm
 import Research.ProximityPrize.Frontier._AR_MomentRatioPeak
+import Research.ProximityPrize.Frontier._ActiveErrorAffineCollapse
 import Research.ProximityPrize.Frontier._AdditiveDomainDissolution
 import Research.ProximityPrize.Frontier._AdditiveDomainDissolutionDual
 import Research.ProximityPrize.Frontier._AffineRichPointPacking
@@ -1312,6 +1313,7 @@ import Research.ProximityPrize.Frontier._FallingFactorialDecay
 import Research.ProximityPrize.Frontier._FarLineProxyTowerN32Corrected
 import Research.ProximityPrize.Frontier._FiniteFreeConvRotationAverageNoGo
 import Research.ProximityPrize.Frontier._FiniteFunctionalRatioAvoidance
+import Research.ProximityPrize.Frontier._FirstSponsorUDRFloor
 import Research.ProximityPrize.Frontier._FixedParameterLimitTransferGate
 import Research.ProximityPrize.Frontier._FloorBadDefectTowerInvariant
 import Research.ProximityPrize.Frontier._FloorBadRamificationDisjoint
@@ -2822,6 +2824,7 @@ import Research.ProximityPrize.Frontier._ShawValueSaturationBddCapstone
 import Research.ProximityPrize.Frontier._ShawValueScalarEquivalence
 import Research.ProximityPrize.Frontier._ShawValueSharpenedBGKCorridorFamily
 import Research.ProximityPrize.Frontier._ShawVanishingCoefficient
+import Research.ProximityPrize.Frontier._SixErrorRankSupportMultiplicity
 import Research.ProximityPrize.Frontier._SparseCoeffZeros
 import Research.ProximityPrize.Frontier._SparseRootCheck
 import Research.ProximityPrize.Frontier._SpecF7_GoodPrimeCollisionCount

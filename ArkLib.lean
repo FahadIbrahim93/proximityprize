@@ -86,6 +86,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ClearingProduct
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.AgreementCount
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.Assembly
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.CanonicalCoeffExtractionRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.CoeffExtraction
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.CoeffExtractionResidual
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.CoeffExtractionVacuous
@@ -95,6 +96,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.GoodSetAggregate
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.HeavyCodeword
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.JointAgreement
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.ListSizeResidual
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.ListSizeResidualRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.PairSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.Pigeonhole
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.SudanY2
@@ -241,6 +243,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BoundaryExactEpsF31
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryExactEpsF37
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryGenericFarExact
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryLatticeThresholdLeaf
+import ArkLib.Data.CodingTheory.ProximityGap.BoundaryLatticeThresholdRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryListJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.BoundarySliceEveryLine
 import ArkLib.Data.CodingTheory.ProximityGap.BoundarySliceExact
