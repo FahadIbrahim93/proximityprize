@@ -1,9 +1,9 @@
 {
  "summary": {
   "total": 89,
-  "open": 48,
+  "open": 47,
   "discharged": 35,
-  "refuted": 6,
+  "refuted": 7,
   "by_top_dir": {
    "(root)": {
     "total": 1,
@@ -13,9 +13,9 @@
    },
    "Data": {
     "total": 24,
-    "open": 16,
+    "open": 15,
     "discharged": 3,
-    "refuted": 5
+    "refuted": 6
    },
    "OracleReduction": {
     "total": 39,

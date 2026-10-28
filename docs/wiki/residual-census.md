@@ -48,15 +48,15 @@ always check this census before treating a `*Residual` name as open proof debt.
 ## Summary
 
 - **Total strict residuals:** 89
-- **Open:** 48
+- **Open:** 47
 - **Discharged:** 35
-- **Refuted:** 6
+- **Refuted:** 7
 - **Residual-like near misses:** 33 (listed below and in `scripts/residual_census.json`)
 
 | top-level directory | total | open | discharged | refuted |
 |---|---:|---:|---:|---:|
 | `(root)` | 1 | 0 | 1 | 0 |
-| `Data` | 24 | 16 | 3 | 5 |
+| `Data` | 24 | 15 | 3 | 6 |
 | `OracleReduction` | 39 | 22 | 17 | 0 |
 | `ProofSystem` | 14 | 10 | 4 | 0 |
 | `ToMathlib` | 11 | 0 | 10 | 1 |
