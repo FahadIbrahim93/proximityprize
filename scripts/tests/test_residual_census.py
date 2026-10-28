@@ -40,6 +40,38 @@ class ResidualCensusTests(unittest.TestCase):
             "    FooResidual (k := k) ↔ BarResidual (k := k) := Iff.rfl\n")
         self.assertEqual(got["FooResidual"], "open")
 
+    def test_top_level_connective_shape(self):
+        conn = self.census.top_level_connective
+        self.assertEqual(conn("FooResidual (k := k) → False"), "→")
+        self.assertEqual(conn("∀ k, FooResidual (k := k) ∨ BarResidual"), "∨")
+        self.assertEqual(conn("FooResidual = True"), "=")
+        self.assertEqual(conn("FooResidual ∧ (A → B)"), "∧")
+        self.assertIsNone(conn("FooResidual (f := fun x => x = x)"))
+        self.assertIsNone(conn("FooResidual (k := k)"))
+
+    def test_implication_from_residual_is_not_a_provider(self):
+        got = self.statuses(
+            "def FooResidual {k : Nat} : Prop := True\n\n"
+            "theorem fooResidual_imp {k : Nat} : FooResidual (k := k) → True :=\n"
+            "  fun _ => trivial\n")
+        self.assertEqual(got["FooResidual"], "open")
+
+    def test_disjunction_and_equation_are_not_providers(self):
+        got = self.statuses(
+            "def FooResidual {k : Nat} : Prop := True\n"
+            "def BarResidual {k : Nat} : Prop := True\n\n"
+            "theorem fooResidual_or {k : Nat} : FooResidual (k := k) ∨ True := Or.inr trivial\n"
+            "theorem barResidual_eq {k : Nat} : BarResidual (k := k) = True := rfl\n")
+        self.assertEqual(got["FooResidual"], "open")
+        self.assertEqual(got["BarResidual"], "open")
+
+    def test_left_conjunct_still_discharges(self):
+        got = self.statuses(
+            "def FooResidual {k : Nat} : Prop := True\n\n"
+            "theorem fooResidual_and {k : Nat} : FooResidual (k := k) ∧ (True → True) :=\n"
+            "  ⟨trivial, id⟩\n")
+        self.assertEqual(got["FooResidual"], "discharged")
+
     def test_numeral_specialisation_is_not_a_provider(self):
         got = self.statuses(
             "def FooResidual {k : Nat} : Prop := 0 < k → False\n\n"

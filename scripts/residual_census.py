@@ -20,8 +20,11 @@ each as:
                whose explicit non-instance binders are extra assumptions not
                appearing in the provided residual instance, are recorded but do
                NOT count as a discharge (a conditional reduction is not a
-               proof).  When several census residuals share a last name across
-               namespaces, a provider is narrowed via its qualified result head
+               proof).  A result that is an equivalence (`R ↔ Q`), whose first
+               top-level connective after the head is `→`, `∨` or `=`, or that
+               fixes a named argument to a numeral (`R (k := 0)`) is likewise
+               recorded but does not discharge.  When several census residuals
+               share a last name across namespaces, a provider is narrowed via its qualified result head
                or namespace affinity; if it stays ambiguous it is recorded but
                does not discharge.
   refuted    — a concrete declaration proves a negated instance of the residual
@@ -84,10 +87,36 @@ CAMPAIGN_ADDENDUM_PREFIX = "> **Campaign addendum"
 
 
 def strip_comments(text: str) -> str:
-    """Blank out line comments, block comments, and docstrings (newlines kept)."""
+    """Blank out line comments, block comments, and docstrings (newlines kept).
+
+    String literals in live code are not comments: a ``"/-"`` or ``"--"``
+    inside a double-quoted string must not open a phantom block/line
+    comment and hide the declarations that follow it from the census.
+    Inside a block comment, comment scanning wins (Lean lexes the comment
+    first), so string markers there are not treated as string starts.
+    """
     out = list(text)
     i, n, depth = 0, len(text), 0
     while i < n:
+        if depth == 0 and text[i] == "'":
+            # Char literal: 'x' or an escaped char such as '\n'. Skip it
+            # whole so a '"' char literal is not mistaken for a string.
+            if i + 2 < n and text[i + 2] == "'":
+                i += 3
+                continue
+            if i + 3 < n and text[i + 1] == "\\" and text[i + 3] == "'":
+                i += 4
+                continue
+        if depth == 0 and text[i] == '"':
+            i += 1
+            while i < n and text[i] != '"':
+                if text[i] == "\\" and i + 1 < n:
+                    i += 2
+                else:
+                    i += 1
+            if i < n:
+                i += 1
+            continue
         if depth == 0 and text.startswith("--", i):
             j = text.find("\n", i)
             j = n if j == -1 else j
@@ -358,6 +387,37 @@ def has_top_level(text: str, token: str) -> bool:
     return False
 
 
+TOP_LEVEL_CONNECTIVES = ("↔", "→", "∧", "∨", "=")
+REDUCTION_CONNECTIVES = frozenset({"→", "∨", "="})
+
+
+def top_level_connective(result: str) -> str | None:
+    """First depth-0 connective after the result head application, if any.
+
+    A top-level `∧` still proves the residual when it is the left conjunct,
+    while `→`, `∨` and `=` only relate the residual to another proposition
+    (`R → Q` assumes `R`; `R ∨ Q` and `R = Q` prove neither side).
+    """
+    s = strip_forall_prefix(result)
+    m = HEAD_IDENT_RE.match(s)
+    if not m:
+        return None
+    depth = 0
+    i = m.end()
+    while i < len(s):
+        c = s[i]
+        if c in OPEN_BRACKETS:
+            depth += 1
+        elif c in CLOSE_BRACKETS:
+            depth = max(0, depth - 1)
+        elif depth == 0:
+            for conn in TOP_LEVEL_CONNECTIVES:
+                if s.startswith(conn, i):
+                    return conn
+        i += 1
+    return None
+
+
 NUMERAL_RE = re.compile(r"^(?:\d+|0x[0-9a-fA-F]+|∅|\[\])$")
 
 
@@ -581,6 +641,8 @@ def find_providers(all_decls: list[dict], residuals: list[dict]) -> None:
         consumed = [n for n in census_names if mentions_word(d["binders"], n)]
         # `P ↔ Q` states an equivalence; it proves nothing about `P` itself.
         is_equivalence = has_top_level(result_no_forall, "↔")
+        # `R → Q`, `R ∨ Q`, `R = Q` relate `R` to something else; not a proof of `R`.
+        reduction_only = top_level_connective(d["result"]) in REDUCTION_CONNECTIVES
         specialised = {rname: specialised_arguments(d["result"], rname) for rname in targets}
         provider_ns = _ns_of(d["fq_name"])
         for rname in targets:
@@ -597,6 +659,7 @@ def find_providers(all_decls: list[dict], residuals: list[dict]) -> None:
                         "extra_explicit_binders": extra_binders,
                         "ambiguous_name_match": ambiguous,
                         "equivalence": is_equivalence,
+                        "reduction_only": reduction_only,
                         "specialised_arguments": specialised.get(rname, []),
                     }
                 )
@@ -639,6 +702,7 @@ def find_providers(all_decls: list[dict], residuals: list[dict]) -> None:
                 tuple(p["extra_explicit_binders"]),
                 p["ambiguous_name_match"],
                 p.get("equivalence", False),
+                p.get("reduction_only", False),
                 tuple(p.get("specialised_arguments", [])),
             )
             if key in seen:
@@ -657,6 +721,7 @@ def find_providers(all_decls: list[dict], residuals: list[dict]) -> None:
             and not p["extra_explicit_binders"]
             and not p["ambiguous_name_match"]
             and not p["equivalence"]
+            and not p.get("reduction_only", False)
             and not p["specialised_arguments"]
         ]
         concrete_refutations = [
@@ -802,7 +867,8 @@ def write_wiki_markdown(path: Path, summary: dict, residuals: list[dict], near_m
         "`def ...Residual ... : Prop`. A residual is **discharged** only when a concrete",
         "provider has no residual dependencies, no extra proof-like explicit binders, and no",
         "ambiguous namespace match. Conditional reductions are useful proof plumbing, but they",
-        "remain **open** until their side conditions are proved. An equivalence (`R ↔ Q`) or an",
+        "remain **open** until their side conditions are proved. An equivalence (`R ↔ Q`), a",
+        "result whose first top-level connective after the residual is `→`, `∨` or `=`, or an",
         "instance with a parameter fixed to a numeral (`R (k := 0)`) is not a provider. A residual",
         "is **refuted** when the tree contains a concrete theorem of a negated residual instance,",
         "and a proved negation outranks any apparent provider.",
