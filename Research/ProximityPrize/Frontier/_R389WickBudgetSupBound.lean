@@ -64,8 +64,9 @@ proves, axiom-clean, the full real-arithmetic consumer chain down to the correct
 ## The recorded uniform input (overstrong across finite fields)
 
 * `UniformSubgroupWickBudget C` — `DCEnergyBudget (μ_d) (wickDepth q) C` for every finite
-  field `F` and every `d`, at one absolute `C`. That universal input fails on proper subfields:
-  `probe_r389_subfield_wick_budget.py` certifies the exact DC budget and its required inflation.
+  field `F` and every `d`, at one absolute `C`. Proper subfields obstruct it (written family
+  argument, not kernel-checked): `probe_r389_subfield_wick_budget.py` certifies only the
+  finite anchors' exact DC budgets and their required inflation.
   The existing `FFModelW4.ffThin_prizeLaw_countermodel` already supplies the underlying
   no-cancellation mechanism. A suitably restricted prime-field budget remains open.
   Census evidence (2026-07-09,
@@ -390,12 +391,13 @@ domain; self-contained here so this lane stays frontier-import-free). -/
 def torsionSet (F : Type*) [Fintype F] [DecidableEq F] [Monoid F] (d : ℕ) : Finset F :=
   Finset.univ.filter (fun y => y ^ d = 1)
 
-/-- **Recorded uniform input — false across proper-subfield families.** One absolute
+/-- **Recorded uniform input — obstructed by proper subfields (paper argument).** One absolute
 inflation constant `C` such that the DC-subtracted Wick budget holds for every finite
 field and every torsion subgroup at the calibrated depth `k* = ⌈(log q)/2⌉₊`.
 For `F = GF(s²)` and `μ_(s-1) = GF(s)ˣ`, exact energy gives DC numerator
 `(s-1)^(2k*+1) + s(s-1)`. Any nonnegative budget constant must satisfy
-`C ≥ (s-1)/(16k*)`, which is unbounded as primes `s` grow. The reproducible probe
+`C ≥ (s-1)/(16k*)`, unbounded as primes `s` grow (written argument, not kernel-checked).
+The reproducible probe
 `probe_r389_subfield_wick_budget.py` certifies the finite cases and the two sponsor
 subgroups in quadratic extensions; it does not refute the original prime-field target.
 The definition and its conditional consumer are retained as recorded interfaces. Census

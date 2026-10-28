@@ -54052,7 +54052,9 @@ no new Lean theorem.
 
 The all-finite-fields quantifier in
 `ArkLib.ProximityGap.R389WickBudgetSupBound.UniformSubgroupWickBudget`
-cannot hold with one absolute inflation constant. The new
+cannot hold with one absolute inflation constant, by the written family argument
+below; that argument is not kernel-checked, and the probe certifies only the finite
+anchors. The new
 [probe](../../scripts/probes/probe_r389_subfield_wick_budget.py) targets that
 named input and its DC-subtracted normalization, rather than the original
 sponsor prime-field problem.
