@@ -10,6 +10,9 @@ provided, scans only those Lean files/directories. Fails if live
     attribute (repository policy: block unsafe decls, unsafeCast, and
     evaluator-diverging `implemented_by`; this is a fast precheck, not a claim
     that Lean accepts unsafe theorems as axiom-clean proofs), or
+  - a metaprogram that adds kernel declarations (`run_cmd` / `run_elab` /
+    `run_meta`, `addDecl`, `addAndCompile`, `axiomDecl`), which can declare an
+    axiom without the `axiom` keyword, or
   - a custom `axiom` declaration whose name is not an allowlisted, documented
     residual (see scripts/residual_axioms.txt), with any modifiers (including
     `public`/`meta` in `module` files) and with the name on a later line or
@@ -64,6 +67,13 @@ import sys
 from pathlib import Path
 
 TOKEN_RE = re.compile(r"\b(native_decide|bv_decide|unsafeCast|implemented_by)\b")
+# Meta code can add a kernel declaration without the `axiom` keyword, e.g.
+# `run_cmd liftCoreM <| addDecl (.axiomDecl { name := `w, type := mkConst ``False, .. })`.
+# ArkLib/Research proofs never need to add declarations from metaprograms.
+META_DECL_RE = re.compile(
+    r"(?<![\w.'])(run_cmd|run_elab|run_meta)\b"
+    r"|\b(add(?:Decl\w*|AndCompile)|axiomDecl)\b"
+)
 # `native_decide` is a synonym for `decide +native`; both forms, the config form
 # `decide (native := true)` / `(config := { native := true })` and `bv_check`
 # prove the goal by native evaluation and add a compiler-trust axiom. Matched
@@ -788,6 +798,14 @@ def main() -> int:
             line = text.count("\n", 0, m.start()) + 1
             form = " ".join(m.group(0).split())
             failures.append(f"{path}:{line}: forbidden native evaluation `{form}`")
+        for m in META_DECL_RE.finditer(text):
+            if not mask[m.start()]:
+                line = text.count("\n", 0, m.start()) + 1
+                failures.append(
+                    f"{path}:{line}: forbidden metaprogram declaration `{m.group(0)}` "
+                    f"(adds a kernel declaration, e.g. an axiom, without an `axiom` "
+                    f"keyword; state residuals as `def ...Residual : Prop`)"
+                )
         scopes = TrueScopes(live_text, lexed.quoted)
         for m in UNSAFE_DECL_RE.finditer(live_text):
             if not outside_quoted(m.start(), lexed.quoted):
