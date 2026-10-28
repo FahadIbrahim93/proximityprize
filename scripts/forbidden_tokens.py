@@ -4,15 +4,25 @@
 By default, scans every .lean file under ArkLib/ and Research/. If one or more paths are
 provided, scans only those Lean files/directories. Fails if live
 (non-comment) code contains (`axiom` text inside a string literal is data):
-  - `native_decide` / `bv_decide` (kernel-bypassing decision procedures), or
+  - `native_decide` / `bv_decide` (kernel-bypassing decision procedures), the
+    equivalent `decide +native` / `decide (native := true)` forms and `bv_check`, or
   - an `unsafe` declaration modifier, live `unsafeCast`, or `implemented_by`
     attribute (repository policy: block unsafe decls, unsafeCast, and
     evaluator-diverging `implemented_by`; this is a fast precheck, not a claim
     that Lean accepts unsafe theorems as axiom-clean proofs), or
+  - a metaprogram that adds kernel declarations (`run_cmd` / `run_elab` /
+    `run_meta`, `addDecl`, `addAndCompile`, `axiomDecl`), which can declare an
+    axiom without the `axiom` keyword, or
   - a custom `axiom` declaration whose name is not an allowlisted, documented
     residual (see scripts/residual_axioms.txt), with any modifiers (including
     `public`/`meta` in `module` files) and with the name on a later line or
     after a comment, or
+  - a second declaration of an allowlisted residual name. The allowlist stores
+    simple names, so an entry matches an `axiom` declared inside any namespace;
+    without this rule a clone such as
+    `namespace Sneaky … axiom foldOracleVerifier_rbrKnowledgeSoundness : False … end`
+    inherits a documented entry and launders a new axiom under a trusted name.
+    One entry documents exactly one declaration, or
   - a `theorem`/`lemma` whose statement type is `True`, or any bracketing /
     `∧` `∨` `→` `↔` combination built only from `True` (e.g. `(True)`,
     `True ∧ (True)`), which is equally vacuous, unless `True` is rebound by a
@@ -42,6 +52,12 @@ and identifier boundaries use Lean's own identifier characters (`αbad`, `ébad`
 disagree about what is a comment fails the check rather than being guessed. `sorry`/`admit` are handled
 separately by scripts/sorry_census.py --fail-on-holes; this precheck runs
 before any Lean toolchain is set up, so CI fails fast on laundering attempts.
+
+The one-declaration rule needs both declarations in the scanned set, so it is
+enforced by the full-tree scan that CI (`.github/workflows/ci.yml`) and
+`scripts/validate.sh` run. A file-scoped invocation still enforces every other
+check and still rejects two declarations of an allowlisted name inside the file
+it was given.
 """
 
 from __future__ import annotations
@@ -51,6 +67,23 @@ import sys
 from pathlib import Path
 
 TOKEN_RE = re.compile(r"\b(native_decide|bv_decide|unsafeCast|implemented_by)\b")
+# Meta code can add a kernel declaration without the `axiom` keyword, e.g.
+# `run_cmd liftCoreM <| addDecl (.axiomDecl { name := `w, type := mkConst ``False, .. })`.
+# ArkLib/Research proofs never need to add declarations from metaprograms.
+META_DECL_RE = re.compile(
+    r"(?<![\w.'])(run_cmd|run_elab|run_meta)\b"
+    r"|\b(add(?:Decl\w*|AndCompile)|axiomDecl)\b"
+)
+# `native_decide` is a synonym for `decide +native`; both forms, the config form
+# `decide (native := true)` / `(config := { native := true })` and `bv_check`
+# prove the goal by native evaluation and add a compiler-trust axiom. Matched
+# against comment/string-blanked code, so a comment between the parts does not
+# hide the form.
+NATIVE_FORM_RE = re.compile(
+    r"\bdecide(?:\s*(?:[+-]\w+|\([^)]*\)))*?\s*"
+    r"(?:\+native\b|\([^)]*\bnative\s*:=\s*true\b[^)]*\))"
+    r"|\bbv_check\b"
+)
 # Lean declaration-modifier `unsafe` (not aesop's `(add unsafe …)` tactic hint).
 # Allow the same modifiers before or after `unsafe` (Lean accepts e.g.
 # `unsafe nonrec def`), then require a declaration keyword so
@@ -742,6 +775,7 @@ def main() -> int:
     failures: list[str] = []
     allowed_hits: list[str] = []
     seen_allowed: set[str] = set()
+    allow_sites: dict[str, list[str]] = {}
     for path in files:
         text = path.read_text(encoding="utf-8", errors="replace")
         lexed = lex_lean(text)
@@ -758,6 +792,20 @@ def main() -> int:
             if not mask[m.start()]:
                 line = text.count("\n", 0, m.start()) + 1
                 failures.append(f"{path}:{line}: forbidden token {m.group(1)}")
+        for m in NATIVE_FORM_RE.finditer(live_text):
+            if not outside_quoted(m.start(), lexed.quoted):
+                continue
+            line = text.count("\n", 0, m.start()) + 1
+            form = " ".join(m.group(0).split())
+            failures.append(f"{path}:{line}: forbidden native evaluation `{form}`")
+        for m in META_DECL_RE.finditer(text):
+            if not mask[m.start()]:
+                line = text.count("\n", 0, m.start()) + 1
+                failures.append(
+                    f"{path}:{line}: forbidden metaprogram declaration `{m.group(0)}` "
+                    f"(adds a kernel declaration, e.g. an axiom, without an `axiom` "
+                    f"keyword; state residuals as `def ...Residual : Prop`)"
+                )
         scopes = TrueScopes(live_text, lexed.quoted)
         for m in UNSAFE_DECL_RE.finditer(live_text):
             if not outside_quoted(m.start(), lexed.quoted):
@@ -802,7 +850,9 @@ def main() -> int:
         for am_start, name in axiom_hits(live_text, lexed):
             idx = live_text.count("\n", 0, am_start) + 1
             if is_allowlisted(name, allowlist):
-                seen_allowed.add(simple_name(name))
+                final = simple_name(name)
+                seen_allowed.add(final)
+                allow_sites.setdefault(final, []).append(f"{path}:{idx}")
                 allowed_hits.append(f"{path}:{idx}: allowed documented residual axiom {name}")
             else:
                 failures.append(
@@ -817,6 +867,18 @@ def main() -> int:
                 f"`theorem/lemma {name} : True` proves nothing about the named "
                 f"obligation (axiom-laundering pattern, #169/#171). Prove the real "
                 f"statement or track it by its GitHub issue, not a `True` theorem."
+            )
+
+    for name, sites in sorted(allow_sites.items()):
+        unique_sites = sorted(set(sites))
+        if len(unique_sites) > 1:
+            failures.append(
+                f"{name}: allowlisted residual axiom declared {len(unique_sites)} times "
+                f"({', '.join(unique_sites)}); one residual_axioms.txt entry documents "
+                f"exactly one declaration, so a second declaration of the same simple name "
+                f"(for example a clone inside a fresh namespace) re-uses the entry to launder "
+                f"a new axiom. Remove the clone, or drop the entry if the documented axiom "
+                f"itself is gone"
             )
 
     stale = sorted(allowlist - seen_allowed)
