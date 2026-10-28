@@ -54056,3 +54056,91 @@ The probe checks the interpolation roots over moduli `17`, `257`, `65537`, `2^31
 `2^61-1` and `2^127-1`, and exhaustively checks the finite-field isolated root set.
 The field sweep does not assert production subgroup or decoded-family realizability.
 Production Delta Star remains open.
+
+### [164-decoded-head-residual-refuted] A decoded two-monomial head still exceeds the cap
+
+2026-10-08, Mikhail (mashingaan). Kernel-checked finite-field result.
+
+`Frontier/_DecodedHeadResidualRefuted.lean` strengthens the unrestricted second-descent
+refutation with an explicit decoded head. Over `ZMod 17`, on all 16 nonzero elements,
+`X^12 + 3*X^10` is within distance `7/16` of `ReedSolomon.code domain 8`.
+The tail coefficients, in ascending order, are `[9,8,8,15,14,6,6,6]`.
+Its degree is less than 8 and there are nine agreement coordinates.
+
+The antipodal split has even-part degree less than 8 and odd-part degree less than 4.
+Seven square nodes `{1,2,4,8,9,15,16}` satisfy `A^2 - X*O^2 = 0`, with `O` nonzero.
+This exceeds the recorded residual's `k+1 = 5` at `k = 4`.
+`not_residual_four` proves the contradiction, while `decoded_distance_le`,
+`tailWord_mem`, and `isolated_spec` verify the decoded and isolated-root structure.
+
+This rules out a universal repair using only decodedness and a two-monomial head.
+It does not assert that every production restriction holds or transfer this witness
+to the production field and length. The prize threshold and issue #164 remain open.
+
+Reproduce with `scripts/pg-iterate.sh Research/ProximityPrize/Frontier/_DecodedHeadResidualRefuted.lean`.
+All exported declarations use only `propext`, `Classical.choice`, and `Quot.sound`.
+
+## [164-mca-good-radius-no-interior-maximum] 2026-10-08
+
+The attained-maximum formulation must be separated from the supremum in the
+production-completion contract. `_MCAGoodRadiusMaximum.lean` proves that every
+radius below one has a strictly larger radius below one with the same MCA error.
+This follows from a right plateau of the agreement ceiling and the existing
+`MCAStepFunction.epsMCA_eq_of_ceil_eq` law.
+
+`greatest_good_radius_eq_one` therefore forces any greatest element of the
+repository `mcaGoodRadii` set to equal one. `exists_greatest_good_radius_iff`
+characterizes existence exactly by goodness at radius one, for arbitrary codes
+on a nonempty finite coordinate set over the finite-field setup of `epsMCA`.
+This is a general result, not a small-field counterexample.
+
+Scope: this does not compute the production supremum, establish badness at radius
+one, or certify equivalence to the sponsor paper. It is not prize closure. The
+source-paper PDF was unavailable during the initial source check. The result is
+stated for the repository definitions, addressing the explicit mismatch in #164.
+
+Reproduction: `scripts/pg-iterate.sh Research/ProximityPrize/Frontier/_MCAGoodRadiusMaximum.lean`
+and `scripts/lake-locked.sh build Research.ProximityPrize.Frontier._MCAGoodRadiusMaximum`.
+The four printed declarations use only `propext`, `Classical.choice`, and
+`Quot.sound`. The initial tracked build passed 3502 jobs. Full repository and
+hosted gates must be reported separately.
+
+---
+
+### [164-isolated-count-residual-refuted] Unbounded `E` refutes the isolated-root cap
+
+Date: 2026-10-12. Target:
+`ProximityGap.Frontier.AntipodalEvenOddDescent.IsolatedCountResidual`, declared in
+`Frontier/_AntipodalEvenOddDescent.lean`. This is a statement-level refutation of a named
+root-count input, not a production Delta Star counterexample.
+
+The declaration quantifies over every `E O : F[X]` with only `O.natDegree < k`. `E` has no
+degree bound, no subgroup restriction and no decodedness restriction, yet the claim caps the
+isolated roots of `E(X^2) - X * O(X^2)` at `k + 1`. At `k = 1` over `ℚ`, with `O = 1` and
+`E = -X^2/6 + 7X/6`, one has `E(0) = 0`, `E(1) = 1` and `E(4) = 2`, so `x = 0, 1, 2` are
+three isolated roots against the cap `2`. The theorem `three_isolated_roots` records the
+roots and `not_isolatedCountResidual_rat_one` the contradiction.
+
+Family: the failure is not a single sporadic instance and does not need a large `E`. For every
+`k ≥ 1`, Lagrange interpolation of `(i+1)^2 ↦ i+1` on `i < k + 2` gives `Efam k` with
+`degree < k + 2` and `Efam k (x^2) = x` at `x = 1, …, k + 2`. With `O = 1` these are `k + 2`
+isolated roots against the cap `k + 1` (`Efam_eval`, `Efam_degree_lt`,
+`not_isolatedCountResidual_rat`). So any degree bound on `E` of the form `deg E < k + 2` still
+fails over `ℚ`; only a bound tied to `k` that makes `deg(E(X^2) - X * O(X^2)) < k + 2`, or a
+finite-subgroup domain restriction, can repair the statement. Same technique as the merged
+`SecondDescentStuckResidual` refutation.
+
+Scope: this refutes the recorded statement only. The intended restrictions (halved
+`2`-power subgroup domain, degree bound on `E`) are not discharged here, and the Kelley
+general-position count and the production Delta Star problem remain open. It does not
+close #164.
+
+Reproduction at the final PR commit:
+
+```
+scripts/pg-iterate.sh Research/ProximityPrize/Frontier/_IsolatedCountResidualRefuted.lean
+scripts/lake-locked.sh build Research.ProximityPrize.Frontier._IsolatedCountResidualRefuted
+```
+
+Evidence class: Lean proof certificate; all declarations of the file use only `propext`,
+`Classical.choice` and `Quot.sound`.

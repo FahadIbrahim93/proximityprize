@@ -19,6 +19,7 @@ import Research.ProximityPrize.CS25SecondMomentIsolation
 import Research.ProximityPrize.CS25SecondMomentListSizeRS
 import Research.ProximityPrize.CapacityBounds
 import Research.ProximityPrize.CapacityBoundsAdmissible
+import Research.ProximityPrize.CapacityBoundsItem2Regime
 import Research.ProximityPrize.CapacityBoundsProofs
 import Research.ProximityPrize.CellPackageSupplyShrink
 import Research.ProximityPrize.Collapse
@@ -1060,6 +1061,7 @@ import Research.ProximityPrize.Frontier._DStarOneIsPDependentBindingIsNot
 import Research.ProximityPrize.Frontier._DYN09DyadicTransferRightInverseNoGo
 import Research.ProximityPrize.Frontier._DeFinettiPeriodCovariance
 import Research.ProximityPrize.Frontier._DecayLawPIndep
+import Research.ProximityPrize.Frontier._DecodedHeadResidualRefuted
 import Research.ProximityPrize.Frontier._DecouplingTowerNoSaving
 import Research.ProximityPrize.Frontier._DedupSlackStrictButVanishing
 import Research.ProximityPrize.Frontier._DedupSurvivalCeiling
@@ -1772,12 +1774,14 @@ import Research.ProximityPrize.Frontier._IdealLatticeMinkowskiCorrected
 import Research.ProximityPrize.Frontier._IdealSVPGirthVerdict
 import Research.ProximityPrize.Frontier._ImprimitiveBadSetDecomp
 import Research.ProximityPrize.Frontier._ImprimitiveRatioLevelSet
+import Research.ProximityPrize.Frontier._IncidenceDependencyArithmetic
 import Research.ProximityPrize.Frontier._IncidenceOffsetMomentRatioSandwich
 import Research.ProximityPrize.Frontier._IncidenceSmoothingDeconvolutionBarrier
 import Research.ProximityPrize.Frontier._InvEnergyLargeSupportBSG
 import Research.ProximityPrize.Frontier._IrreducibilityCapstone
 import Research.ProximityPrize.Frontier._IsoSparsityMasonStothers
 import Research.ProximityPrize.Frontier._IsolatedCountKelley
+import Research.ProximityPrize.Frontier._IsolatedCountResidualRefuted
 import Research.ProximityPrize.Frontier._JacAutocorrL2SupGap
 import Research.ProximityPrize.Frontier._JacAutocorrWeilDescentToCurveSum
 import Research.ProximityPrize.Frontier._JacKatzBoundedConductorFamily
@@ -1844,6 +1848,7 @@ import Research.ProximityPrize.Frontier._LowProfileFiberCoupled
 import Research.ProximityPrize.Frontier._LowerBoundPaleyZygmundReach
 import Research.ProximityPrize.Frontier._LowerBoundPermMatchingFloor
 import Research.ProximityPrize.Frontier._MCAAdjacentFloorExactPin
+import Research.ProximityPrize.Frontier._MCAGoodRadiusMaximum
 import Research.ProximityPrize.Frontier._MCAHyperplaneVertex
 import Research.ProximityPrize.Frontier._MCANormalKernelOneDimensional
 import Research.ProximityPrize.Frontier._MCAReindexEquiv
@@ -1983,6 +1988,7 @@ import Research.ProximityPrize.Frontier._P1RateQuarterInterleavedCollapseNoGo
 import Research.ProximityPrize.Frontier._P1RateQuarterJointWitnessCharge
 import Research.ProximityPrize.Frontier._P1RateQuarterJunkSliceLedger
 import Research.ProximityPrize.Frontier._P1RateQuarterLayerCakeBudget
+import Research.ProximityPrize.Frontier._P1RateQuarterLinearOwnerBudget
 import Research.ProximityPrize.Frontier._P1RateQuarterMDSPoolSecondCharge
 import Research.ProximityPrize.Frontier._P1RateQuarterMu32MinorNormBudget
 import Research.ProximityPrize.Frontier._P1RateQuarterNonCollinearTriple
