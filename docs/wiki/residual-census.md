@@ -48,15 +48,15 @@ always check this census before treating a `*Residual` name as open proof debt.
 ## Summary
 
 - **Total strict residuals:** 89
-- **Open:** 49
+- **Open:** 48
 - **Discharged:** 35
-- **Refuted:** 5
+- **Refuted:** 6
 - **Residual-like near misses:** 33 (listed below and in `scripts/residual_census.json`)
 
 | top-level directory | total | open | discharged | refuted |
 |---|---:|---:|---:|---:|
 | `(root)` | 1 | 0 | 1 | 0 |
-| `Data` | 24 | 17 | 3 | 4 |
+| `Data` | 24 | 16 | 3 | 5 |
 | `OracleReduction` | 39 | 22 | 17 | 0 |
 | `ProofSystem` | 14 | 10 | 4 | 0 |
 | `ToMathlib` | 11 | 0 | 10 | 1 |
@@ -78,7 +78,6 @@ always check this census before treating a `*Residual` name as open proof debt.
 - `BCIKS20.HenselNumerator.RestrictedFaaDiBrunoMatchResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P2MatchProof.lean:42`
 - `ProximityGap.StrictCoeffPolysLargeResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffLargeReduction.lean:96` — conditional providers only (residual deps: `StrictCoeffPolysResidual`; extra assumptions: `hInput`, `hRes`, `hprod`)
 - `ProximityGap.StrictCoeffPolysExcResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysExceptional.lean:157` — conditional providers only (residual deps: `StrictCoeffPolysExcResidual`, `StrictCoeffPolysResidual`; extra assumptions: `h`, `hbb`)
-- `ArkLib.BoundaryLatticeThresholdLeaf.BoundaryCardLatticeThresholdResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BoundaryLatticeThresholdLeaf.lean:196` — conditional providers only (extra assumptions: `hCanon`, `hExt`, `hProd`)
 - `ProximityGap.Ownership.SubJohnsonListResidual` — `ArkLib/Data/CodingTheory/ProximityGap/SubJohnsonListSupply.lean:76`
 - `Reduction.reductionAppendCompletenessResidual` — `ArkLib/OracleReduction/Composition/Sequential/Append.lean:844` — conditional providers only (extra assumptions: `hDir`, `hDir₂`, `hInit`, `himplNF`, `himplSP`, `himplVB`, `hn`)
 - `Reduction.reductionAppendPerfectCompletenessResidual` — `ArkLib/OracleReduction/Composition/Sequential/Append.lean:863` — conditional providers only (extra assumptions: `hDir`, `hDir₂`, `hImplSupp`, `hInit`, `himplNF`, `himplSP`, `hn`)
@@ -160,6 +159,7 @@ proof debt and naming drift.
 - `ProximityGap.BoundaryProbabilityResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean:2597` — refuted by `ArkLib.BoundaryCardResidualRefutation.not_boundaryProbabilityResidual` (ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidualRefutation.lean:274)
 - `BCIKS20.HenselNumerator.FaaDiBrunoSuccSumZeroResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean:2510` — refuted by `BCIKS20.HenselNumerator.Witness.faaDiBrunoSuccSumZeroResidual_false` (ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P2OrderZeroRefutationWitness.lean:168)
 - `ArkLib.BoundaryCardResidual.BoundaryCardLatticeResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidual.lean:271` — refuted by `ArkLib.BoundaryCardResidualRefutation.not_boundaryCardLatticeResidual` (ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidualRefutation.lean:252)
+- `ArkLib.BoundaryLatticeThresholdLeaf.BoundaryCardLatticeThresholdResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BoundaryLatticeThresholdLeaf.lean:201` — refuted by `ArkLib.BoundaryLatticeThresholdRefutation.not_boundaryCardLatticeThresholdResidual` (ArkLib/Data/CodingTheory/ProximityGap/BoundaryLatticeThresholdRefutation.lean:254)
 - `CodingTheory.CS25.DeepHole.DeepHoleProbResidual` — `ArkLib/ToMathlib/CS25DeepHoleFinish.lean:265` — refuted by `CodingTheory.CS25.DeepHole.not_deepHoleProbResidual_negativeEpsilon_zmod2` (ArkLib/ToMathlib/CS25DeepHoleFinish.lean:286)
 
 ## Discharged Residuals

@@ -11,6 +11,11 @@ ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.Main ProximityGap.RS_c
 # ── Proximity gap for RS codes ─────────────────────────────────────────
 ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ReedSolomonGap ProximityGap.proximity_gap_RSCodes
 
+# ── Boundary lattice residual: threshold-alone refutation ──────────────
+ArkLib.Data.CodingTheory.ProximityGap.BoundaryLatticeThresholdRefutation ArkLib.BoundaryLatticeThresholdRefutation.not_boundaryCardLatticeThresholdResidual
+ArkLib.Data.CodingTheory.ProximityGap.BoundaryLatticeThresholdRefutation ArkLib.BoundaryLatticeThresholdRefutation.not_latticeCoeffPolyExtraction
+ArkLib.Data.CodingTheory.ProximityGap.BoundaryLatticeThresholdRefutation ArkLib.BoundaryLatticeThresholdRefutation.not_latticeCanonicalCoeffPolyExtraction
+
 # ── Grand-challenge collapse (kernel-proven refutation + collapse) ─────
 Research.ProximityPrize.Collapse ProximityGap.not_listDecodingPrize
 Research.ProximityPrize.Collapse ProximityGap.grandMCAChallenge_iff_epsMCA_one
