@@ -1,8 +1,8 @@
 {
   "counts": {
-    "files_with_citations": 452,
+    "files_with_citations": 453,
     "keys_cited": 35,
-    "total_citation_edges": 512
+    "total_citation_edges": 513
   },
   "files": {
     "ArkLib/AGM/Basic.lean": [
@@ -319,6 +319,9 @@
       "BCIKS20"
     ],
     "ArkLib/Data/CodingTheory/ProximityGap/BoundaryLatticeThresholdLeaf.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/Data/CodingTheory/ProximityGap/BoundaryLatticeThresholdRefutation.lean": [
       "BCIKS20"
     ],
     "ArkLib/Data/CodingTheory/ProximityGap/BoundaryThresholdFloorCell.lean": [
@@ -1585,6 +1588,7 @@
       "ArkLib/Data/CodingTheory/ProximityGap/Basic.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidual.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BoundaryLatticeThresholdLeaf.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/BoundaryLatticeThresholdRefutation.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BoundaryThresholdFloorCell.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/DeepQuotientTransfer.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/Errors.lean",
