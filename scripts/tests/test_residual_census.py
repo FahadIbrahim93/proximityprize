@@ -1,100 +1,67 @@
-"""Census provider classification: reductions and vacuous instances are not proofs."""
-import sys
-import tempfile
-import textwrap
-import unittest
+"""Regression coverage for residual_census status classification."""
+import importlib.util
 from pathlib import Path
+import tempfile
+import unittest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import residual_census as rc
-
-
-class ProviderShape(unittest.TestCase):
-    def test_top_level_iff_is_a_reduction(self):
-        self.assertEqual(
-            rc.top_level_connective(
-                "SubPhaseResidual oSpec F n ↔ "
-                "OuterResidual oSpec F n ∧ SumcheckResidual oSpec F n"
-            ),
-            "↔",
-        )
-
-    def test_top_level_conjunction_proves_the_left_conjunct(self):
-        self.assertEqual(
-            rc.top_level_connective(
-                "SupplyResidual dom k m B ∧ "
-                "∀ B', SupplyResidual dom k m B' → B ≤ B'"
-            ),
-            "∧",
-        )
-
-    def test_arrow_result_is_a_reduction(self):
-        self.assertEqual(rc.top_level_connective("FooResidual x → True"), "→")
-
-    def test_pinned_numerals_reads_only_the_head_application(self):
-        self.assertEqual(
-            rc.pinned_numerals("StrictResidual (k := 0) (deg := deg) (δ := δ)"),
-            {"k": 0},
-        )
-
-    def test_pinned_numerals_ignores_non_literal_arguments(self):
-        self.assertEqual(
-            rc.pinned_numerals("SupplyResidual dom k m (n.choose k)"), {}
-        )
-
-    def test_vacuous_parameters_finds_positivity_hypotheses(self):
-        body = " := ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι), True"
-        self.assertEqual(rc.vacuous_parameters(body), {"k"})
+HEADER = "namespace T\n\n"
+FOOTER = "\nend T\n"
 
 
-class CensusStatus(unittest.TestCase):
+class ResidualCensusTests(unittest.TestCase):
     def setUp(self):
-        self._tmp = tempfile.TemporaryDirectory()
-        self.root = Path(self._tmp.name)
-        (self.root / "ArkLib").mkdir()
-        (self.root / "ArkLib" / "Shapes.lean").write_text(
-            textwrap.dedent(
-                """
-                namespace Shapes
+        spec = importlib.util.spec_from_file_location(
+            "residual_census", Path(__file__).resolve().parents[1] / "residual_census.py")
+        self.census = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(self.census)
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
 
-                def PinResidual {k : ℕ} : Prop :=
-                  ∀ (_hk : 0 < k), True
-
-                theorem pinResidual_zero : PinResidual (k := 0) := by
-                  intro hk
-                  omega
-
-                def IffResidual : Prop := True
-
-                theorem iffResidual_iff : IffResidual ↔ True := Iff.rfl
-
-                def ConjResidual {k : ℕ} : Prop := True
-
-                theorem conjResidual_and : ConjResidual (k := k) ∧ True :=
-                  ⟨trivial, trivial⟩
-
-                end Shapes
-                """
-            ).lstrip(),
-            encoding="utf-8",
-        )
-
-    def tearDown(self):
-        self._tmp.cleanup()
-
-    def statuses(self):
-        decls, residuals, _ = rc.collect(self.root)
-        rc.find_providers(decls, residuals)
+    def statuses(self, body):
+        folder = self.root / "ArkLib" / "Data"
+        folder.mkdir(parents=True, exist_ok=True)
+        (folder / "A.lean").write_text(HEADER + body + FOOTER)
+        decls, residuals, _ = self.census.collect(self.root)
+        self.census.find_providers(decls, residuals)
         return {r["name"]: r["status"] for r in residuals}
 
-    def test_a_vacuous_instance_does_not_discharge(self):
-        self.assertEqual(self.statuses()["PinResidual"], "open")
+    def test_general_provider_discharges(self):
+        got = self.statuses(
+            "def FooResidual {k : Nat} : Prop := True\n\n"
+            "theorem fooResidual_holds {k : Nat} : FooResidual (k := k) := trivial\n")
+        self.assertEqual(got["FooResidual"], "discharged")
 
-    def test_an_equivalence_does_not_discharge(self):
-        self.assertEqual(self.statuses()["IffResidual"], "open")
+    def test_equivalence_is_not_a_provider(self):
+        got = self.statuses(
+            "def FooResidual {k : Nat} : Prop := True\n"
+            "def BarResidual {k : Nat} : Prop := True\n\n"
+            "theorem fooResidual_iff_bar {k : Nat} :\n"
+            "    FooResidual (k := k) ↔ BarResidual (k := k) := Iff.rfl\n")
+        self.assertEqual(got["FooResidual"], "open")
 
-    def test_a_conjunction_provider_discharges(self):
-        self.assertEqual(self.statuses()["ConjResidual"], "discharged")
+    def test_numeral_specialisation_is_not_a_provider(self):
+        got = self.statuses(
+            "def FooResidual {k : Nat} : Prop := 0 < k → False\n\n"
+            "theorem fooResidual_zero : FooResidual (k := 0) := by\n"
+            "  intro h; omega\n")
+        self.assertEqual(got["FooResidual"], "open")
+
+    def test_refutation_outranks_specialised_provider(self):
+        got = self.statuses(
+            "def FooResidual {k : Nat} : Prop := 0 < k → False\n\n"
+            "theorem fooResidual_zero : FooResidual (k := 0) := by\n"
+            "  intro h; omega\n\n"
+            "theorem not_fooResidual : ¬ FooResidual (k := 1) := by\n"
+            "  intro h; exact h (by omega)\n")
+        self.assertEqual(got["FooResidual"], "refuted")
+
+    def test_refutation_outranks_general_looking_provider(self):
+        got = self.statuses(
+            "def FooResidual {k : Nat} : Prop := True\n\n"
+            "theorem fooResidual_holds {k : Nat} : FooResidual (k := k) := trivial\n\n"
+            "theorem not_fooResidual : ¬ FooResidual (k := 1) := sorry\n")
+        self.assertEqual(got["FooResidual"], "refuted")
 
 
 if __name__ == "__main__":

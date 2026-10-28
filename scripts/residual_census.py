@@ -20,14 +20,10 @@ each as:
                whose explicit non-instance binders are extra assumptions not
                appearing in the provided residual instance, are recorded but do
                NOT count as a discharge (a conditional reduction is not a
-               proof).  A result whose first top-level connective after the
-               head is `↔`, `→`, `∨` or `=` is a reduction, not a proof of
-               either side, and a provider that pins a positivity-constrained
-               parameter to `0` proves only a vacuous instance; both are
-               recorded but do not discharge.  When several census residuals
-               share a last name across namespaces, a provider is narrowed via
-               its qualified result head or namespace affinity; if it stays
-               ambiguous it is recorded but does not discharge.
+               proof).  When several census residuals share a last name across
+               namespaces, a provider is narrowed via its qualified result head
+               or namespace affinity; if it stays ambiguous it is recorded but
+               does not discharge.
   refuted    — a concrete declaration proves a negated instance of the residual
                (for example `theorem ..._false : ¬ FooResidual ...`).  This is
                not a discharge; it means the statement surface is known false
@@ -117,14 +113,13 @@ def strip_comments(text: str) -> str:
     return "".join(out)
 
 
-def split_signature(window: str) -> tuple[str, str, str]:
-    """Split a declaration tail (after the name) into (binders, result type, body).
+def split_signature(window: str) -> tuple[str, str]:
+    """Split a declaration tail (after the name) into (binders, result type).
 
     The signature colon is the first `:` at bracket depth 0 that is not part
     of `:=`; the signature ends at the first depth-0 `:=`.  Bracket depth
     tracks (), [], {}, ⟨⟩, ⦃⦄ so binder-internal colons and named arguments
-    `(k := k)` are skipped.  The body (including the `:=`) is returned so that
-    residual definitions can expose hypotheses such as `0 < k`.
+    `(k := k)` are skipped.
     """
     depth = 0
     sig_colon = None
@@ -144,8 +139,8 @@ def split_signature(window: str) -> tuple[str, str, str]:
                 sig_colon = i
         i += 1
     if sig_colon is None:
-        return window[:end], "", window[end:]
-    return window[:sig_colon], window[sig_colon + 1 : end], window[end:]
+        return window[:end], ""
+    return window[:sig_colon], window[sig_colon + 1 : end]
 
 
 def strip_forall_prefix(result: str) -> str:
@@ -173,58 +168,6 @@ def result_head(result: str) -> str:
     s = strip_forall_prefix(result)
     m = HEAD_IDENT_RE.match(s)
     return m.group(0) if m else ""
-
-
-TOP_LEVEL_CONNECTIVES = ("↔", "→", "∧", "∨", "=")
-REDUCTION_CONNECTIVES = frozenset({"↔", "→", "∨", "="})
-
-PINNED_ARG_RE = re.compile(r"\(\s*([^\s({\[⦃⟨:,=]+)\s*:=\s*(\d+)\s*\)")
-POSITIVITY_HYP_RE = re.compile(
-    r"\(\s*[^\s({\[⦃⟨:,=]+\s*:\s*0\s*<\s*([^\s({\[⦃⟨:,=]+)\s*\)"
-)
-
-
-def head_application_tail(result: str) -> tuple[str, str | None]:
-    """Return (text after the result head, first depth-0 connective or None).
-
-    Only the head application is inspected.  A top-level `∧` still proves the
-    residual when the residual is its left conjunct, while `↔`, `→`, `∨` and
-    `=` relate the residual to another proposition without proving it.
-    """
-    s = strip_forall_prefix(result)
-    m = HEAD_IDENT_RE.match(s)
-    if not m:
-        return "", None
-    depth = 0
-    i = m.end()
-    while i < len(s):
-        c = s[i]
-        if c in OPEN_BRACKETS:
-            depth += 1
-        elif c in CLOSE_BRACKETS:
-            depth = max(0, depth - 1)
-        elif depth == 0:
-            for conn in TOP_LEVEL_CONNECTIVES:
-                if s.startswith(conn, i):
-                    return s[m.end() : i], conn
-        i += 1
-    return s[m.end() :], None
-
-
-def top_level_connective(result: str) -> str | None:
-    """First depth-0 connective after the result head, if any."""
-    return head_application_tail(result)[1]
-
-
-def pinned_numerals(result: str) -> dict[str, int]:
-    """Named arguments of the head application pinned to a numeral literal."""
-    tail, _ = head_application_tail(result)
-    return {name: int(value) for name, value in PINNED_ARG_RE.findall(tail)}
-
-
-def vacuous_parameters(body: str) -> set[str]:
-    """Parameters that a residual body requires to be positive (`0 < p`)."""
-    return set(POSITIVITY_HYP_RE.findall(body))
 
 
 def split_top_level_once(text: str, sep: str) -> tuple[str, str] | None:
@@ -324,12 +267,45 @@ def binder_names_and_type(content: str) -> tuple[list[str], str] | None:
     return out, typ.strip()
 
 
+# Surface syntax that can only spell a proposition.  `=` is matched only when
+# it is neither part of a `:=` / `=>` named argument nor `==`; comparisons must
+# be whitespace-delimited so the mathlib data types `ℝ≥0`, `ℝ≥0∞`, and `ℚ≥0`
+# do not match.
+BARE_EQUAL_RE = re.compile(r"(?<![=:])=(?![=>])")
+COMPARISON_RE = re.compile(r"(?<=\s)[<>≤≥](?=\s)")
+PROPOSITION_MARKERS = ("≠", "∈", "∉", "↔", "∨", "∧")
+
+
+def is_proposition_shaped(typ: str) -> bool:
+    """True when a flattened binder type can only be a proposition.
+
+    Subtypes (`{x // p x}`) are excluded: such a binder carries an element,
+    and its membership proof is part of the data type, not an extra
+    hypothesis.  Type families (`ι → Type`) carry no propositional syntax and
+    are excluded by the marker set itself.
+    """
+    if "//" in typ:
+        return False
+    return bool(
+        BARE_EQUAL_RE.search(typ)
+        or COMPARISON_RE.search(typ)
+        or any(marker in typ for marker in PROPOSITION_MARKERS)
+    )
+
+
 def looks_like_proof_assumption(names: list[str], typ: str) -> bool:
     """Heuristic for explicit binders that are hypotheses rather than data.
 
     We intentionally do not classify every explicit binder absent from a result
     as conditional: Lean result heads often omit inferred type/data parameters.
     Instead, we flag binders whose names or types look proof-like.
+
+    Proposition-shaped types join the `h`-prefix and literal `Prop`/`¬` tests:
+    hypotheses are not always named `h…`.  The motivating case is the
+    `coupling` binder of `fiatShamir_hvzkTransfer_of_coupling`
+    (ArkLib/OracleReduction/FiatShamir/HVZKTransferReduction.lean), whose
+    docstring calls it "an explicit hypothesis" — it was previously recorded
+    as an unconditional provider.
     """
     typ_flat = " ".join(typ.split())
     if any(name.startswith("h") or name.startswith("H") for name in names):
@@ -338,8 +314,9 @@ def looks_like_proof_assumption(names: list[str], typ: str) -> bool:
     # `∀`, `→`, or even bounded polynomial notation.  Residual dependencies are
     # tracked separately by exact name, so this field is just for obvious
     # hypothesis binders whose names do not appear in the residual instance.
-    proof_markers = ["Prop", "¬"]
-    return any(marker in typ_flat for marker in proof_markers)
+    if "Prop" in typ_flat or "¬" in typ_flat:
+        return True
+    return is_proposition_shaped(typ_flat)
 
 
 def extra_explicit_binders(binders: str, result: str) -> list[str]:
@@ -363,6 +340,58 @@ def extra_explicit_binders(binders: str, result: str) -> list[str]:
             if not mentions_word(result, name):
                 extras.append(name)
     return sorted(set(extras))
+
+
+def has_top_level(text: str, token: str) -> bool:
+    """True when `token` occurs at bracket depth 0 of `text`."""
+    depth = 0
+    i = 0
+    while i < len(text):
+        c = text[i]
+        if c in OPEN_BRACKETS:
+            depth += 1
+        elif c in CLOSE_BRACKETS:
+            depth = max(0, depth - 1)
+        elif depth == 0 and text.startswith(token, i):
+            return True
+        i += 1
+    return False
+
+
+NUMERAL_RE = re.compile(r"^(?:\d+|0x[0-9a-fA-F]+|∅|\[\])$")
+
+
+def specialised_arguments(result: str, rname: str) -> list[str]:
+    """Named arguments of the residual head fixed to a literal, e.g. `(k := 0)`.
+
+    A provider that fixes a parameter of the residual to a numeral (or `∅`)
+    proves one instance, not the residual: `Foo (k := 0)` is typically vacuous.
+    """
+    s = strip_forall_prefix(result)
+    m = re.search(r"(?<![\w.'])(?:[\w.']*\.)?" + re.escape(rname) + r"(?![\w'])", s)
+    if not m:
+        return []
+    rest = s[m.end():]
+    out: list[str] = []
+    depth = 0
+    start = None
+    for i, c in enumerate(rest):
+        if c in OPEN_BRACKETS:
+            if depth == 0:
+                start = i
+            depth += 1
+        elif c in CLOSE_BRACKETS:
+            depth = max(0, depth - 1)
+            if depth == 0 and start is not None:
+                group = rest[start + 1 : i]
+                nm = re.match(r"\s*([^\s:()]+)\s*:=\s*(.+?)\s*$", group, re.S)
+                if nm and NUMERAL_RE.match(nm.group(2).strip()):
+                    out.append(f"{nm.group(1)} := {nm.group(2).strip()}")
+                start = None
+        elif depth == 0 and not c.isspace() and c not in "@":
+            if not (c.isalnum() or c in "_'.⁻"):
+                break
+    return out
 
 
 def lower_first(name: str) -> str:
@@ -414,7 +443,7 @@ def parse_file(path: Path, root: Path) -> list[dict]:
     rel = path.relative_to(root).as_posix()
     for i, h in enumerate(headers):
         window_end = headers[i + 1]["start"] if i + 1 < len(headers) else len(code)
-        binders, result, body = split_signature(code[h["sig_from"] : window_end])
+        binders, result = split_signature(code[h["sig_from"] : window_end])
         name = h["name"]
         fq = f"{h['namespace']}.{name}" if h["namespace"] else name
         decls.append(
@@ -426,7 +455,6 @@ def parse_file(path: Path, root: Path) -> list[dict]:
                 "line": h["line"],
                 "binders": binders,
                 "result": result,
-                "body": body,
             }
         )
     return decls
@@ -455,7 +483,6 @@ def collect(root: Path) -> tuple[list[dict], list[dict], list[dict]]:
                     "fq_name": d["fq_name"],
                     "file": d["file"],
                     "line": d["line"],
-                    "vacuous_parameters": sorted(vacuous_parameters(d["body"])),
                 }
             )
         elif d["kind"] in {"def", "abbrev"}:
@@ -540,8 +567,6 @@ def find_providers(all_decls: list[dict], residuals: list[dict]) -> None:
         head_last = head_full.rsplit(".", 1)[-1]
         result_no_forall = strip_forall_prefix(d["result"])
         extra_binders = extra_explicit_binders(d["binders"], d["result"])
-        reduction_only = top_level_connective(d["result"]) in REDUCTION_CONNECTIVES
-        pinned = pinned_numerals(d["result"])
 
         targets: set[str] = set()
         if head_last in by_name:
@@ -554,16 +579,14 @@ def find_providers(all_decls: list[dict], residuals: list[dict]) -> None:
                     if mentions_word(d["result"], rname):
                         targets.add(rname)
         consumed = [n for n in census_names if mentions_word(d["binders"], n)]
+        # `P ↔ Q` states an equivalence; it proves nothing about `P` itself.
+        is_equivalence = has_top_level(result_no_forall, "↔")
+        specialised = {rname: specialised_arguments(d["result"], rname) for rname in targets}
         provider_ns = _ns_of(d["fq_name"])
         for rname in targets:
             head_for_resolution = head_full if head_last == rname else ""
             rows, ambiguous = _resolve(by_name[rname], head_for_resolution, provider_ns)
             for row in rows:
-                vacuous_pins = sorted(
-                    name
-                    for name, value in pinned.items()
-                    if value == 0 and name in row["vacuous_parameters"]
-                )
                 row["providers"].append(
                     {
                         "name": d["fq_name"],
@@ -573,9 +596,8 @@ def find_providers(all_decls: list[dict], residuals: list[dict]) -> None:
                         "conditional_on_residuals": consumed,
                         "extra_explicit_binders": extra_binders,
                         "ambiguous_name_match": ambiguous,
-                        "reduction_only": reduction_only,
-                        "vacuous_instance": bool(vacuous_pins),
-                        "vacuous_parameters": vacuous_pins,
+                        "equivalence": is_equivalence,
+                        "specialised_arguments": specialised.get(rname, []),
                     }
                 )
 
@@ -616,9 +638,8 @@ def find_providers(all_decls: list[dict], residuals: list[dict]) -> None:
                 tuple(p["conditional_on_residuals"]),
                 tuple(p["extra_explicit_binders"]),
                 p["ambiguous_name_match"],
-                p.get("reduction_only", False),
-                p.get("vacuous_instance", False),
-                tuple(p.get("vacuous_parameters", ())),
+                p.get("equivalence", False),
+                tuple(p.get("specialised_arguments", [])),
             )
             if key in seen:
                 continue
@@ -635,8 +656,8 @@ def find_providers(all_decls: list[dict], residuals: list[dict]) -> None:
             if not p["conditional_on_residuals"]
             and not p["extra_explicit_binders"]
             and not p["ambiguous_name_match"]
-            and not p.get("reduction_only")
-            and not p.get("vacuous_instance")
+            and not p["equivalence"]
+            and not p["specialised_arguments"]
         ]
         concrete_refutations = [
             p
@@ -645,10 +666,13 @@ def find_providers(all_decls: list[dict], residuals: list[dict]) -> None:
             and not p["extra_explicit_binders"]
             and not p["ambiguous_name_match"]
         ]
-        if concrete:
-            r["status"] = "discharged"
-        elif concrete_refutations:
+        # A proved negation outranks any apparent provider: a statement
+        # cannot be both discharged and refuted, so the "provider" is a
+        # vacuous or specialised instance the census failed to recognise.
+        if concrete_refutations:
             r["status"] = "refuted"
+        elif concrete:
+            r["status"] = "discharged"
         else:
             r["status"] = "open"
 
@@ -676,26 +700,16 @@ def summarize(residuals: list[dict]) -> dict:
     }
 
 
-def provider_notes(r: dict) -> list[str]:
-    """Human-readable summary of why available providers are not proofs."""
+def conditional_notes(r: dict) -> str:
+    """Human-readable summary of why available providers are conditional."""
     conds = sorted({c for p in r["providers"] for c in p["conditional_on_residuals"]})
     binders = sorted({b for p in r["providers"] for b in p.get("extra_explicit_binders", [])})
-    reductions = sorted({p["name"] for p in r["providers"] if p.get("reduction_only")})
-    vacuous = sorted({p["name"] for p in r["providers"] if p.get("vacuous_instance")})
     notes = []
     if conds:
         notes.append(f"residual deps: {', '.join(f'`{c}`' for c in conds)}")
     if binders:
         notes.append(f"extra assumptions: {', '.join(f'`{b}`' for b in binders)}")
-    if reductions:
-        notes.append(f"reduction-only: {', '.join(f'`{n}`' for n in reductions)}")
-    if vacuous:
-        notes.append(f"vacuous instances: {', '.join(f'`{n}`' for n in vacuous)}")
-    return notes
-
-
-def conditional_notes(r: dict) -> str:
-    return "; ".join(provider_notes(r))
+    return "; ".join(notes)
 
 
 def concrete_refutation_labels(r: dict) -> list[str]:
@@ -718,7 +732,7 @@ def markdown_for_status(residuals: list[dict], status: str) -> list[str]:
         if status == "open":
             notes = conditional_notes(r)
             if notes:
-                suffix = f" — no concrete provider ({notes})"
+                suffix = f" — conditional providers only ({notes})"
         elif status == "refuted":
             refs = concrete_refutation_labels(r)
             if refs:
@@ -786,12 +800,12 @@ def write_wiki_markdown(path: Path, summary: dict, residuals: list[dict], near_m
         "",
         "The strict census counts declarations under `ArkLib/` of the form",
         "`def ...Residual ... : Prop`. A residual is **discharged** only when a concrete",
-        "provider has no residual dependencies, no extra proof-like explicit binders, no",
-        "ambiguous namespace match, is not merely a top-level equivalence or reduction",
-        "(`↔`, `→`, `∨`, `=`), and does not pin a positivity-constrained parameter to `0`",
-        "(a vacuous instance). Conditional reductions are useful proof plumbing, but they",
-        "remain **open** until their side conditions are proved. A residual is **refuted** when",
-        "the tree contains a concrete theorem of a negated residual instance.",
+        "provider has no residual dependencies, no extra proof-like explicit binders, and no",
+        "ambiguous namespace match. Conditional reductions are useful proof plumbing, but they",
+        "remain **open** until their side conditions are proved. An equivalence (`R ↔ Q`) or an",
+        "instance with a parameter fixed to a numeral (`R (k := 0)`) is not a provider. A residual",
+        "is **refuted** when the tree contains a concrete theorem of a negated residual instance,",
+        "and a proved negation outranks any apparent provider.",
         "",
         "The named-residual convention is a modularity pattern, not an incompleteness marker:",
         "always check this census before treating a `*Residual` name as open proof debt.",
@@ -892,8 +906,18 @@ def main() -> int:
     if open_rows:
         print(f"\n{len(open_rows)} open residual(s):")
         for r in open_rows:
-            notes = provider_notes(r)
-            extra = f"  [no concrete provider, {'; '.join(notes)}]" if notes else ""
+            conds = sorted(
+                {c for p in r["providers"] for c in p["conditional_on_residuals"]}
+            )
+            binders = sorted(
+                {b for p in r["providers"] for b in p.get("extra_explicit_binders", [])}
+            )
+            notes = []
+            if conds:
+                notes.append(f"residual deps: {', '.join(conds)}")
+            if binders:
+                notes.append(f"extra assumptions: {', '.join(binders)}")
+            extra = f"  [only conditional providers, {'; '.join(notes)}]" if notes else ""
             print(f"  {r['fq_name']}  ({r['file']}:{r['line']}){extra}")
     refuted_rows = [r for r in residuals if r["status"] == "refuted"]
     if refuted_rows:
