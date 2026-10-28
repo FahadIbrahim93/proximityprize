@@ -1312,6 +1312,7 @@ import Research.ProximityPrize.Frontier._FallingFactorialDecay
 import Research.ProximityPrize.Frontier._FarLineProxyTowerN32Corrected
 import Research.ProximityPrize.Frontier._FiniteFreeConvRotationAverageNoGo
 import Research.ProximityPrize.Frontier._FiniteFunctionalRatioAvoidance
+import Research.ProximityPrize.Frontier._FirstSponsorUDRFloor
 import Research.ProximityPrize.Frontier._FixedParameterLimitTransferGate
 import Research.ProximityPrize.Frontier._FloorBadDefectTowerInvariant
 import Research.ProximityPrize.Frontier._FloorBadRamificationDisjoint
