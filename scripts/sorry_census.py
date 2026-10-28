@@ -11,7 +11,8 @@ Usage:
   python3 scripts/sorry_census.py --out census.json
 
 A token is classified as:
-  hole — `sorry`/`admit` in live code (a tactic body or term position)
+  hole — `sorry`/`admit` in live code (a tactic body or term position), or
+         the core `stop` tactic (`repeat sorry`) in tactic position
   doc  — inside a docstring `/-- ... -/`, block comment `/- ... -/`, or
          line comment `-- ...` (includes prose words containing 'admit')
 The containing declaration is the nearest preceding `theorem|lemma|def|
@@ -31,6 +32,15 @@ DECL_RE = re.compile(
     r"(theorem|lemma|def|instance|example|abbrev|opaque)\s+([^\s({\[:]+)"
 )
 TOKEN_RE = re.compile(r"\b(sorry|admit)\b")
+# Lean core `stop` is `macro "stop" tacticSeq : tactic => `(tactic| repeat sorry)`:
+# it closes every remaining goal with `sorryAx` without a `sorry` token. `stop` is
+# also an ordinary identifier, so only match it where a tactic can start and it
+# is not followed by an operator, binder colon or closing delimiter.
+STOP_RE = re.compile(
+    r"(?:^[ \t]*(?:[·.][ \t]*)?|\bby[ \t]+|;[ \t]*|<;>[ \t]*|=>[ \t]*|\([ \t]*)"
+    r"(stop)\b(?![ \t]*(?:[≤<≥>=:),\]⟧+*/|-]))",
+    re.M,
+)
 
 
 def strip_comments_map(text: str) -> list[bool]:
@@ -71,9 +81,12 @@ def census(root: Path) -> list[dict]:
             m = DECL_RE.match(ln)
             if m:
                 decls.append((idx, m.group(1), m.group(2)))
-        for m in TOKEN_RE.finditer(text):
-            line_no = text.count("\n", 0, m.start())
-            in_comment = mask[m.start()]
+        matches = [(m.start(1), m.group(1)) for m in TOKEN_RE.finditer(text)]
+        matches += [(m.start(1), m.group(1)) for m in STOP_RE.finditer(text)
+                    if not mask[m.start(1)]]
+        for start, token in sorted(matches):
+            line_no = text.count("\n", 0, start)
+            in_comment = mask[start]
             decl = None
             for dline, kind, name in reversed(decls):
                 if dline <= line_no:
@@ -83,7 +96,7 @@ def census(root: Path) -> list[dict]:
                 {
                     "file": str(f.relative_to(root)),
                     "line": line_no + 1,
-                    "token": m.group(1),
+                    "token": token,
                     "kind": "doc" if in_comment else "hole",
                     "decl": decl or "<file-level>",
                 }
