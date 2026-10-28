@@ -13,7 +13,8 @@ Usage:
 A token is classified as:
   hole — `sorry`/`admit`/`sorryAx` in live code (a tactic body or term position),
          including code spliced into an interpolated string (`s!"{sorry}"`)
-         or inside a `{...}` splice of ANY non-raw `"..."` string (see below).
+         or inside a `{...}` splice of ANY non-raw `"..."` string (see below),
+         or a live use of the core API that builds `sorryAx` (`mkSorry`, ...).
          `sorryAx` is the kernel axiom both `sorry` and `admit` elaborate to
          (Lean `Init/Prelude.lean`); writing it directly is a hole and must not
          slip past the `sorry` word-boundary match.
@@ -56,6 +57,12 @@ STOP_RE = re.compile(
     r"(?:^[ \t]*(?:[·.][ \t]*)?|\bby[ \t]+|;[ \t]*|<;>[ \t]*|=>[ \t]*|\([ \t]*)"
     r"(stop)\b(?![ \t]*(?:[≤<≥>=:),\]⟧+*/|-]))",
     re.M,
+)
+# A metaprogram can close a goal with `sorryAx` through the core API without a
+# `sorry` token, e.g. `elab "t" : tactic => do (← getMainGoal).assign (← mkSorry ..)`.
+# (`sorryAx` itself is already in TOKEN_RE.)
+SORRY_API_RE = re.compile(
+    r"\b(mkSorry|mkLabeledSorry|mkSyntheticSorry\w*|admitGoal|elabSorry|evalSorry)\b"
 )
 
 
@@ -332,6 +339,8 @@ def census(root: Path) -> list[dict]:
                 decls.append((idx, m.group(1), m.group(2)))
         matches = [(m.start(1), m.group(1)) for m in TOKEN_RE.finditer(text)]
         matches += [(m.start(1), m.group(1)) for m in STOP_RE.finditer(text)
+                    if not mask[m.start(1)]]
+        matches += [(m.start(1), m.group(1)) for m in SORRY_API_RE.finditer(text)
                     if not mask[m.start(1)]]
         for start, token in sorted(matches):
             line_no = text.count("\n", 0, start)
