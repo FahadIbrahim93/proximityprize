@@ -10,7 +10,8 @@ listed in scripts/proximity_prize_cleanroom_targets.txt, runs `#check` and
     {propext, Classical.choice, Quot.sound},
   * the signature contains residual-style hypotheses before the final
     conclusion, or
-  * the expected conclusion token occurs only in a binder or arrow premise, or
+  * the expected conclusion token occurs only in a binder or arrow premise
+    (including one nested inside the result type), or
   * the final conclusion token appears earlier in the signature, which catches
     goal-equivalent assumptions such as `(h : mcaPrize domain) -> mcaPrize domain`.
 
@@ -239,6 +240,46 @@ def conclusion_boundary(signature: str) -> int | None:
         start += arrows[-1] + 1
 
 
+def in_conclusion_position(live: str, position: int) -> bool:
+    """Reject an occurrence nested in an arrow premise or binder type of the result.
+
+    `live` is the quote-masked result text. Walking outward from `position`
+    through each enclosing bracket group, the occurrence is a premise if an arrow
+    follows it at that level, and a binder type if a `:` precedes it at that
+    level with no `,`, `=>` or `↦` in between. For example `True ∧ (P → True)`
+    and `∀ (h : P), True` do not certify `P`.
+    """
+    brackets = {"(": ")", "{": "}", "[": "]", "⦃": "⦄", "⟨": "⟩"}
+    owner: list[int] = []
+    parent: dict[int, int] = {}
+    stack: list[tuple[int, str]] = [(-1, "")]
+    for index, char in enumerate(live):
+        current = stack[-1][0]
+        if char in brackets:
+            owner.append(current)
+            parent[index] = current
+            stack.append((index, brackets[char]))
+        elif len(stack) > 1 and char == stack[-1][1]:
+            stack.pop()
+            owner.append(stack[-1][0])
+        else:
+            owner.append(current)
+
+    group, anchor = owner[position], position
+    while True:
+        direct = [index for index, gid in enumerate(owner) if gid == group]
+        if any(index > anchor and live.startswith("→", index) for index in direct):
+            return False
+        for index in reversed([index for index in direct if index < anchor]):
+            if live[index] == "," or live.startswith("=>", index) or live[index] == "↦":
+                break
+            if live[index] == ":" and not live.startswith(":=", index):
+                return False
+        if group == -1:
+            return True
+        group, anchor = parent[group], group
+
+
 def token_pattern(token: str) -> re.Pattern[str]:
     """Match a conclusion identifier without accepting a longer lookalike."""
     return re.compile(rf"(?<![\w']){re.escape(token)}(?![\w'])")
@@ -258,9 +299,20 @@ def check_signature(entry: Entry, output: str) -> list[str]:
     if boundary is None:
         return [f"{entry.decl}: no declaration result type found in #check signature"]
     live_signature = quoted_text_mask(signature)
-    conclusion_match = token_pattern(entry.conclusion).search(live_signature, boundary)
+    live_result = live_signature[boundary:]
+    conclusion_match = next(
+        (
+            found
+            for found in token_pattern(entry.conclusion).finditer(live_signature, boundary)
+            if in_conclusion_position(live_result, found.start() - boundary)
+        ),
+        None,
+    )
     if conclusion_match is None:
-        return [f"{entry.decl}: conclusion token {entry.conclusion!r} not found in result type"]
+        return [
+            f"{entry.decl}: conclusion token {entry.conclusion!r} not found in a "
+            "conclusion position of the result type"
+        ]
 
     prefix = live_signature[:boundary]
     before_predicate = live_signature[:conclusion_match.start()]

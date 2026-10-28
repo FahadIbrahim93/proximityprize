@@ -16,7 +16,9 @@ It locates the declaration's result after binders and top-level arrow premises
 before looking for the expected predicate. A signature such as
 `(h : mcaPrize domain) : True` or `mcaPrize domain → True` fails even when its
 axiom report is empty. Predicate occurrences solely in those premises cannot
-certify a prize conclusion. This remains a syntactic audit; it does not establish
+certify a prize conclusion, and neither can occurrences nested inside the result
+in an arrow premise or binder type, such as `True ∧ (mcaPrize domain → True)`.
+This remains a syntactic audit; it does not establish
 that a predicate's definition captures the intended mathematical statement.
 The manifest uses `Research.ProximityPrize.Resolution` for the retained resolution
 declarations. A dry run also rejects active `ArkLib`/`Research` modules whose

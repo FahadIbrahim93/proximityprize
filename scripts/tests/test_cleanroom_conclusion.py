@@ -85,6 +85,33 @@ class ConclusionBoundaryTests(unittest.TestCase):
         self.assertEqual(audit.check_signature(entry(), output(": mcaPrize (fun _ => '\"')")), [])
         self.assertEqual(audit.quoted_text_mask("x'"), "x'")
 
+    def test_nested_premise_or_binder_in_result_is_rejected(self):
+        for result in ("True ∧ (mcaPrize 1 → True)", "True ∧ (Nat → mcaPrize 1 → True)",
+                       "∀ (h : mcaPrize 1), True", "∃ h : mcaPrize 1, True",
+                       "True ∧ (∀ (h : mcaPrize 1), True)", "(fun h : mcaPrize 1 => True) trivial"):
+            with self.subTest(result=result):
+                self.assertTrue(audit.check_signature(entry(), output(": " + result)))
+
+    def test_nested_conclusion_positions_are_accepted(self):
+        for result in ("True ∧ (Nat → mcaPrize 0)", "True ∧ ∀ (n : Nat), mcaPrize n",
+                       "(mcaPrize 1 → True) ∧ mcaPrize 0", "∃ n : Nat, mcaPrize n",
+                       "¬ Namespace.mcaPrize d m ∧ (∀ k ≤ n, (A k ↔ B k)) ∧ IsEmpty X",
+                       "mcaPrize (fun x : Nat => x) ∧ ∀ (j : Fin 4), Nonempty (R j)"):
+            with self.subTest(result=result):
+                self.assertEqual(audit.check_signature(entry(), output(": " + result)), [])
+
+    def test_review_nested_premise_lean_output_fails_the_cli(self):
+        printed = ("candidate : True ∧ (mcaPrize 1 → True)\n"
+                   "'candidate' does not depend on any axioms\n")
+        with tempfile.TemporaryDirectory() as directory:
+            manifest = Path(directory) / "targets.txt"
+            manifest.write_text("active Init candidate mcaPrize\n", encoding="utf-8")
+            with patch.object(sys, "argv", ["audit", "--manifest", str(manifest)]), \
+                    patch.object(audit, "run_lean", return_value=(0, printed)), \
+                    contextlib.redirect_stdout(io.StringIO()), \
+                    contextlib.redirect_stderr(io.StringIO()):
+                self.assertEqual(audit.main(), 1)
+
     def test_parenthesis_unwrapping_ignores_quoted_delimiters(self):
         self.assertTrue(audit.check_signature(entry(), output(': ("(" = "(" → mcaPrize 0 → True)')))
         self.assertEqual(audit.check_signature(entry(), output(': (mcaPrize ("("))')), [])
@@ -102,6 +129,8 @@ class LeanReproductionTests(unittest.TestCase):
              'theorem candidate : "(" = "(" → mcaPrize 0 → True := fun _ _ => trivial\n', 1),
             ('def mcaPrize (n : Nat) : Prop := n = 0\n'
              "theorem candidate : '(' = '(' → mcaPrize 0 → True := fun _ _ => trivial\n", 1),
+            ('def mcaPrize (n : Nat) : Prop := n = 0\n'
+             'theorem candidate : True ∧ (mcaPrize 1 → True) := ⟨trivial, fun _ => trivial⟩\n', 1),
         ]
         for source_text, expected in fixtures:
             with self.subTest(expected=expected), tempfile.TemporaryDirectory() as directory:
