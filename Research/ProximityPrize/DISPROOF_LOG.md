@@ -54105,6 +54105,35 @@ The four printed declarations use only `propext`, `Classical.choice`, and
 `Quot.sound`. The initial tracked build passed 3502 jobs. Full repository and
 hosted gates must be reported separately.
 
+---
+
+### [164-isolated-noncoset-positive-characteristic] Large finite characteristic does not repair the unrestricted residual
+
+Date: 2026-10-13. Target: `IsolatedNonCosetCountResidual` in
+`Frontier/_IsoSparsityMasonStothers.lean`. This extends the rational witness
+discussed in PR #227 to general fields; it does not claim production closure.
+
+`Frontier/_IsolatedNonCosetPositiveCharacteristic.lean` verifies the integer identity
+`A² - X·O² = -(X-1)(X-4)(X-9)(X-16)(X-25)` for
+`A = 15X² + 225X + 120`, `O = X² + 85X + 274` over every field. When the field
+elements `2`, `3`, `5`, and `7` are nonzero, the five roots are distinct and the
+five `O`-values `360`, `630`, `1120`, `1890`, `3024` are nonzero. The proof
+checks these conditions through explicit products of those four primes.
+Both polynomial degrees are below three, contradicting the claimed cap four.
+
+The theorem `not_isolatedNonCosetCountResidual_of_char_gt_seven` specializes the
+certificate to every field with characteristic greater than seven, including
+finite fields. Therefore merely restricting the unrestricted formal residual
+to large prime characteristic cannot repair it. The intended subgroup-membership
+and sub-coset exclusions remain outside this statement and are not refuted.
+Small-characteristic instances and production Delta Star remain unresolved here.
+
+Reproduction:
+`scripts/pg-iterate.sh Research/ProximityPrize/Frontier/_IsolatedNonCosetPositiveCharacteristic.lean`
+and
+`scripts/lake-locked.sh build Research.ProximityPrize.Frontier._IsolatedNonCosetPositiveCharacteristic`.
+The three printed declarations use only `propext`, `Classical.choice`, and
+`Quot.sound`. Full repository and hosted gates must be reported separately.
 ## [164-r389-subfield-wick-budget] 2026-10-14
 
 Hardyzyt. Exact arithmetic certificates and an explicit family argument;
