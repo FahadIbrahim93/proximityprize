@@ -17,6 +17,8 @@ A token is classified as:
          `sorryAx` is the kernel axiom both `sorry` and `admit` elaborate to
          (Lean `Init/Prelude.lean`); writing it directly is a hole and must not
          slip past the `sorry` word-boundary match.
+         The core `stop` tactic (`macro "stop" tacticSeq => repeat sorry`)
+         in tactic position is also a hole: it yields `sorryAx` with no token.
   doc  — inside a docstring `/-- ... -/`, block comment `/- ... -/`,
          line comment `-- ...`, raw-string literal, or the literal
          (non-splice) text of a string (includes prose words containing 'admit')
@@ -46,6 +48,15 @@ DECL_RE = re.compile(
     r"(theorem|lemma|def|instance|example|abbrev|opaque)\s+([^\s({\[:]+)"
 )
 TOKEN_RE = re.compile(r"\b(sorry|admit|sorryAx)\b")
+# Lean core `stop` is `macro "stop" tacticSeq : tactic => `(tactic| repeat sorry)`:
+# it closes every remaining goal with `sorryAx` without a `sorry` token. `stop` is
+# also an ordinary identifier, so only match it where a tactic can start and it
+# is not followed by an operator, binder colon or closing delimiter.
+STOP_RE = re.compile(
+    r"(?:^[ \t]*(?:[·.][ \t]*)?|\bby[ \t]+|;[ \t]*|<;>[ \t]*|=>[ \t]*|\([ \t]*)"
+    r"(stop)\b(?![ \t]*(?:[≤<≥>=:),\]⟧+*/|-]))",
+    re.M,
+)
 
 
 _HEX = "0123456789abcdefABCDEF"
@@ -319,9 +330,12 @@ def census(root: Path) -> list[dict]:
             m = DECL_RE.match(ln)
             if m:
                 decls.append((idx, m.group(1), m.group(2)))
-        for m in TOKEN_RE.finditer(text):
-            line_no = text.count("\n", 0, m.start())
-            in_comment = mask[m.start()]
+        matches = [(m.start(1), m.group(1)) for m in TOKEN_RE.finditer(text)]
+        matches += [(m.start(1), m.group(1)) for m in STOP_RE.finditer(text)
+                    if not mask[m.start(1)]]
+        for start, token in sorted(matches):
+            line_no = text.count("\n", 0, start)
+            in_comment = mask[start]
             decl = None
             for dline, kind, name in reversed(decls):
                 if dline <= line_no:
@@ -331,7 +345,7 @@ def census(root: Path) -> list[dict]:
                 {
                     "file": str(f.relative_to(root)),
                     "line": line_no + 1,
-                    "token": m.group(1),
+                    "token": token,
                     "kind": "doc" if in_comment else "hole",
                     "decl": decl or "<file-level>",
                 }
