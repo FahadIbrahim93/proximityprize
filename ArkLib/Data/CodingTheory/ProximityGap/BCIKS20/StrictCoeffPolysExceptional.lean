@@ -23,6 +23,21 @@ This file builds the honest **exceptional-set residual** and its consumer chain:
 * `StrictCoeffPolysExcResidual b` — verbatim `StrictCoeffPolysResidual`, except the
   conclusion allows an exceptional set `E` with `E.card ≤ b`: the coefficient-polynomial
   identity is only required at good `z ∉ E`.
+
+> **Status (2026-10-22): the repair does not survive either.**  `StrictCoeffPolysExcResidual b`
+> is **refuted** at every budget `2b + 2 < |F|` by
+> `not_strictCoeffPolysExcResidual_of_two_mul_add_two_lt_card` in the namespace
+> `ProximityGap.StrictCanonicalCoeffPolysRefutation` (see
+> `BCIKS20/Curves/CanonicalCoeffExtractionRefutation.lean`, axiom-clean): an adversarial
+> block decoder whose `coeff 1` is the indicator of a `(b + 1)`-point parameter block cannot be
+> interpolated by any degree `< k + 1` witness off fewer than half the field's worth of
+> exceptions.  Only budgets `b ≥ (|F| - 2)/2` are untouched by that refutation, which is far
+> outside the regime where the `ε = errorBound + b/|F|` consumer chain below is meaningful.  The
+> residual therefore survives as a documented-false assumption surface only; the statements in
+> this file are conditional reductions *from a refuted hypothesis*, not progress on the prize
+> claim unless the hypothesis is restated (existence-only extraction, a fixed canonical decoder,
+> or the unique-decoding regime).
+
 * `strictCoeffPolysExcResidual_of_strictCoeffPolysResidual` /
   `strictCoeffPolysResidual_of_strictCoeffPolysExcResidual_zero` — the `b = 0` case is
   exactly the original residual, so the new surface is a strict weakening for `b > 0`.
@@ -151,9 +166,17 @@ theorem subset_single_decoded_family_coeff_polys_implies_jointAgreement_of_pos
 /-- **Exceptional-set strict Johnson extraction residual.**  Verbatim
 `StrictCoeffPolysResidual`, except the §5 side may discard an exceptional set `E` of at
 most `b` curve parameters: the coefficient-polynomial identity is required only at good
-`z ∉ E`.  This matches the actual conclusion shape of BCIKS20 §5 and the BCHKS25
-exceptional-parameter phenomenon above the unique-decoding radius; `b = 0` recovers
-`StrictCoeffPolysResidual` exactly. -/
+`z ∉ E`.  `b = 0` recovers `StrictCoeffPolysResidual` exactly.
+
+REFUTED for every budget `2b + 2 < |F|` by
+`not_strictCoeffPolysExcResidual_of_two_mul_add_two_lt_card` in the namespace
+`ProximityGap.StrictCanonicalCoeffPolysRefutation` (file
+`BCIKS20/Curves/CanonicalCoeffExtractionRefutation.lean`), via the adversarial block
+decoder whose `coeff 1` is the indicator function of a `(b + 1)`-point parameter block: no
+degree `< k + 1` witness can match a `0/1` function off fewer than half the field's worth of
+exceptions.  The definition is retained only as a documented-false assumption surface; it is
+consumed by `correlatedAgreement_affine_curves_of_strict_coeff_polys_exc` at proximity error
+`errorBound + b/|F|`, a regime the refutation covers. -/
 def StrictCoeffPolysExcResidual {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} (b : ℕ) : Prop :=
   ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
     Pr_{
