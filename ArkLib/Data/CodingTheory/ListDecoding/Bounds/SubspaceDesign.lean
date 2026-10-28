@@ -52,7 +52,9 @@ surfaced as explicit hypotheses (never faked):
 
 * `hT218` — ABF26 T2.18 [GK16] (`frs_is_subspaceDesign_gk16`): FRS is τ-subspace-design.
 * `hT34` — ABF26 T3.4 [CZ25 B.5] (`subspaceDesign_list_decoding_cz25`), in its *general*
-  in-tree shape (quantified over every τ-subspace-design code).
+  in-tree shape (quantified over every τ-subspace-design code and every slack `0 < η' ≤ 1`;
+  for `η' > 1` the floor reads the unconstrained `τ 0` and the general form is false, see
+  `ProximityGap.CZ25T34TauZeroRegime`).
 * `hηnat` — the documented floor/real reconciliation `1/η = ⌊1/η⌋` (provable whenever
   `η = 1/m`), reconciling the real-`1/η` C3.5 statement with the floor-faithful T3.4
   instance T3.4 actually evaluates τ at.
@@ -73,7 +75,7 @@ theorem frs_list_decoding_capacity_cz25_of_residuals
             (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - r + 1) else 1)
         (ReedSolomon.Folded.frsCode domain k s ω))
     (hT34 : ∀ (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F)),
-        IsSubspaceDesign s τ C → ∀ η' : ℝ, 0 < η' →
+        IsSubspaceDesign s τ C → ∀ η' : ℝ, 0 < η' → η' ≤ 1 →
         (Lambda ((C : Set (ι → Fin s → F)))
             (1 - τ (Nat.floor (1 / η')) - η') : ENNReal) ≤
           ENNReal.ofReal ((1 - τ (Nat.floor (1 / η'))) / η'))
@@ -161,7 +163,7 @@ theorem frs_list_decoding_capacity_cz25_of_residuals_prop
             (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - r + 1) else 1)
         (ReedSolomon.Folded.frsCode domain k s ω))
     (hT34 : ∀ (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F)),
-        IsSubspaceDesign s τ C → ∀ η' : ℝ, 0 < η' →
+        IsSubspaceDesign s τ C → ∀ η' : ℝ, 0 < η' → η' ≤ 1 →
         (Lambda ((C : Set (ι → Fin s → F)))
             (1 - τ (Nat.floor (1 / η')) - η') : ENNReal) ≤
           ENNReal.ofReal ((1 - τ (Nat.floor (1 / η'))) / η'))
@@ -244,7 +246,7 @@ theorem frs_list_decoding_capacity_cz25_of_coordFiberCap_T218_prop
         (ReedSolomon.Folded.frsCode domain k s ω))
     (hCap : ∀ (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
         (h : IsSubspaceDesign s τ C) (η' : ℝ) (hη' : 0 < η'),
-        CZ25CoordFiberCap s τ C h η' hη')
+        η' ≤ 1 → CZ25CoordFiberCap s τ C h η' hη')
     (hηnat : (1 : ℝ) / η = (Nat.floor (1 / η) : ℕ)) :
     frs_list_decoding_capacity_cz25 domain k s ω hs_pos η hη_pos hη_lt_s := fun _ _ =>
   frs_list_decoding_capacity_cz25_of_coordFiberCap_T218
@@ -263,7 +265,7 @@ theorem frs_list_decoding_capacity_cz25_of_coordFiberCap_injective_prop
         Function.Injective (fun j => ω ^ (Q j).natDegree))
     (hCap : ∀ (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
         (h : IsSubspaceDesign s τ C) (η' : ℝ) (hη' : 0 < η'),
-        CZ25CoordFiberCap s τ C h η' hη')
+        η' ≤ 1 → CZ25CoordFiberCap s τ C h η' hη')
     (hηnat : (1 : ℝ) / η = (Nat.floor (1 / η) : ℕ)) :
     frs_list_decoding_capacity_cz25 domain k s ω hs_pos η hη_pos hη_lt_s := fun _ _ =>
   frs_list_decoding_capacity_cz25_of_coordFiberCap_injective
@@ -281,7 +283,7 @@ theorem frs_list_decoding_capacity_cz25_of_coordFiberCap_admissible_prop
     (hkLs : k ≤ s * Fintype.card ι) (hkord : k ≤ orderOf ω)
     (hCap : ∀ (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
         (h : IsSubspaceDesign s τ C) (η' : ℝ) (hη' : 0 < η'),
-        CZ25CoordFiberCap s τ C h η' hη')
+        η' ≤ 1 → CZ25CoordFiberCap s τ C h η' hη')
     (hηnat : (1 : ℝ) / η = (Nat.floor (1 / η) : ℕ)) :
     frs_list_decoding_capacity_cz25 domain k s ω hs_pos η hη_pos hη_lt_s := fun _ _ =>
   frs_list_decoding_capacity_cz25_of_coordFiberCap_admissible
@@ -302,7 +304,7 @@ theorem frs_list_decoding_capacity_cz25_of_coordFiberCap_T218_eta_eq_one_div_nat
         (ReedSolomon.Folded.frsCode domain k s ω))
     (hCap : ∀ (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
         (h : IsSubspaceDesign s τ C) (η' : ℝ) (hη' : 0 < η'),
-        CZ25CoordFiberCap s τ C h η' hη') :
+        η' ≤ 1 → CZ25CoordFiberCap s τ C h η' hη') :
     frs_list_decoding_capacity_cz25 domain k s ω hs_pos η hη_pos hη_lt_s := by
   intro _ _
   have hm_ne : (m : ℝ) ≠ 0 := by exact_mod_cast (ne_of_gt hm)
@@ -331,7 +333,7 @@ theorem frs_list_decoding_capacity_cz25_of_coordFiberCap_injective_eta_eq_one_di
         Function.Injective (fun j => ω ^ (Q j).natDegree))
     (hCap : ∀ (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
         (h : IsSubspaceDesign s τ C) (η' : ℝ) (hη' : 0 < η'),
-        CZ25CoordFiberCap s τ C h η' hη') :
+        η' ≤ 1 → CZ25CoordFiberCap s τ C h η' hη') :
     frs_list_decoding_capacity_cz25 domain k s ω hs_pos η hη_pos hη_lt_s := by
   intro _ _
   have hm_ne : (m : ℝ) ≠ 0 := by exact_mod_cast (ne_of_gt hm)
@@ -359,7 +361,7 @@ theorem frs_list_decoding_capacity_cz25_of_coordFiberCap_admissible_eta_eq_one_d
     (hkLs : k ≤ s * Fintype.card ι) (hkord : k ≤ orderOf ω)
     (hCap : ∀ (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
         (h : IsSubspaceDesign s τ C) (η' : ℝ) (hη' : 0 < η'),
-        CZ25CoordFiberCap s τ C h η' hη') :
+        η' ≤ 1 → CZ25CoordFiberCap s τ C h η' hη') :
     frs_list_decoding_capacity_cz25 domain k s ω hs_pos η hη_pos hη_lt_s := by
   intro _ _
   have hm_ne : (m : ℝ) ≠ 0 := by exact_mod_cast (ne_of_gt hm)
@@ -388,7 +390,7 @@ theorem frs_list_decoding_capacity_cz25_of_coordFiberCap_orderOf_ge_of_inter_pro
     (hkLs : k ≤ s * Fintype.card ι) (hkord : k ≤ orderOf ω)
     (hCap : ∀ (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
         (h : IsSubspaceDesign s τ C) (η' : ℝ) (hη' : 0 < η'),
-        CZ25CoordFiberCap s τ C h η' hη')
+        η' ≤ 1 → CZ25CoordFiberCap s τ C h η' hη')
     (hηnat : (1 : ℝ) / η = (Nat.floor (1 / η) : ℕ)) :
     frs_list_decoding_capacity_cz25 domain k s ω hs_pos η hη_pos hη_lt_s := fun _ _ =>
   frs_list_decoding_capacity_cz25_of_coordFiberCap_orderOf_ge_of_inter
@@ -410,7 +412,7 @@ theorem frs_list_decoding_capacity_cz25_of_coordFiberCap_orderOf_ge_of_inter_eta
     (hkLs : k ≤ s * Fintype.card ι) (hkord : k ≤ orderOf ω)
     (hCap : ∀ (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
         (h : IsSubspaceDesign s τ C) (η' : ℝ) (hη' : 0 < η'),
-        CZ25CoordFiberCap s τ C h η' hη') :
+        η' ≤ 1 → CZ25CoordFiberCap s τ C h η' hη') :
     frs_list_decoding_capacity_cz25 domain k s ω hs_pos η hη_pos hη_lt_s := by
   intro _ _
   have hm_ne : (m : ℝ) ≠ 0 := by exact_mod_cast (ne_of_gt hm)
@@ -439,7 +441,7 @@ theorem frs_list_decoding_capacity_cz25_of_coordFiberCap_orderOf_ge_of_cosetSep_
     (hkLs : k ≤ s * Fintype.card ι) (hkord : k ≤ orderOf ω)
     (hCap : ∀ (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
         (h : IsSubspaceDesign s τ C) (η' : ℝ) (hη' : 0 < η'),
-        CZ25CoordFiberCap s τ C h η' hη')
+        η' ≤ 1 → CZ25CoordFiberCap s τ C h η' hη')
     (hηnat : (1 : ℝ) / η = (Nat.floor (1 / η) : ℕ)) :
     frs_list_decoding_capacity_cz25 domain k s ω hs_pos η hη_pos hη_lt_s := fun _ _ =>
   frs_list_decoding_capacity_cz25_of_coordFiberCap_orderOf_ge_of_cosetSep
@@ -462,7 +464,7 @@ theorem frs_list_decoding_capacity_cz25_of_coordFiberCap_orderOf_ge_of_cosetSep_
     (hkLs : k ≤ s * Fintype.card ι) (hkord : k ≤ orderOf ω)
     (hCap : ∀ (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
         (h : IsSubspaceDesign s τ C) (η' : ℝ) (hη' : 0 < η'),
-        CZ25CoordFiberCap s τ C h η' hη') :
+        η' ≤ 1 → CZ25CoordFiberCap s τ C h η' hη') :
     frs_list_decoding_capacity_cz25 domain k s ω hs_pos η hη_pos hη_lt_s := by
   intro _ _
   have hm_ne : (m : ℝ) ≠ 0 := by exact_mod_cast (ne_of_gt hm)
