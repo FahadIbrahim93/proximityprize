@@ -92,7 +92,14 @@ variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 /-- `StrictCoeffPolysResidual` restricted to the large-good-set sector
 `k + 1 < (RS_goodCoeffsCurve u δ).card`.  By `strictCoeffPolysResidual_iff_large` this carries
 the *entire* content of the residual: the complementary sector is discharged unconditionally by
-Lagrange interpolation. -/
+Lagrange interpolation.
+
+**REFUTED — this Prop is FALSE as stated** (axiom-clean, in-tree):
+`StrictCanonicalCoeffPolysRefutation.not_strictCoeffPolysLargeResidual`
+(`CanonicalCoeffExtractionRefutation.lean`). The counterexample good-coefficient set has
+`k + 1 = 2 < |S| = 2⁶⁴`, so the failure of `StrictCoeffPolysResidual` already lives in this
+sector; the reduction below transfers the refutation. Retained ONLY as a documented-false
+assumption surface for explicitly-conditional adapters; do not try to discharge it. -/
 def StrictCoeffPolysLargeResidual {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} : Prop :=
   ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
     Pr_{

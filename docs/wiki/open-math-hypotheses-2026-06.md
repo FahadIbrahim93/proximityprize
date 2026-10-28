@@ -174,6 +174,26 @@ Per-hypothesis discipline: constraints → new direction → why nobody has done
   strict-interior object (`StrictCanonicalCoeffPolysResidual` / the `RS_goodCoeffsCurve`
   counting) — whether THAT bad set is power-sum-expressible over smooth domains is the
   corrected open question.
+- **CORRECTED 2026-10-22**: that retarget is dead as stated too.
+  `StrictCanonicalCoeffPolysResidual` is now refuted in-tree, axiom-clean
+  (`ProximityGap.StrictCanonicalCoeffPolysRefutation.not_strictCanonicalCoeffPolysResidual`
+  in `BCIKS20/Curves/CanonicalCoeffExtractionRefutation.lean`): its uniqueness clause is false,
+  since a constant curve makes the good-coefficient set the whole field and one word can sit at
+  the same radius from two distinct codewords. The same witness refutes the broad
+  `StrictCoeffPolysResidual` and its large-good-set sector `StrictCoeffPolysLargeResidual`
+  (`not_strictCoeffPolysResidual`, `not_strictCoeffPolysLargeResidual`): an adversarial decoder
+  is decoded everywhere while its `coeff 1` layer is a two-point indicator, which no degree
+  `< k + 1` polynomial interpolates. The same witness also kills the exceptional-set repair
+  `StrictCoeffPolysExcResidual b` at every budget `2b + 2 < |F|`
+  (`not_strictCoeffPolysExcResidual_of_two_mul_add_two_lt_card`, plus the concrete `b = 1`
+  instance `not_strictCoeffPolysExcResidual_one`): a block decoder's `coeff 1` is the indicator
+  of a `(b + 1)`-point parameter block, which cannot be matched off fewer than half the field's
+  worth of exceptions. So "allow `O(n)` exceptional parameters" is NOT an adequate repair; the
+  §5 strict-interior target must be re-stated (existence-only extraction, a fixed canonical
+  decoder, or uniqueness below the unique-decoding radius), not taken as given. The geometric
+  root of the chain falls too: `CurveCommonAgreementResidual` is refuted at the same witness by
+  `not_curveCommonAgreementResidual`, since it implies the broad form via
+  `strictCoeffPolysResidual_of_commonAgreement`. Census: `docs/wiki/residual-census.md`.
 - **Proof plan**: shape-confirmation; then the window dictionary (`O111` is at modulus n with
   arbitrary Z-weights — the boundary weights are the coefficient extractions); then O123.
 

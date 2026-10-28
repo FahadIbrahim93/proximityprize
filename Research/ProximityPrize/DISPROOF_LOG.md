@@ -54174,6 +54174,189 @@ justify domain restrictions that exclude these proper-subfield families.
 The recorded definition and conditional consumers are preserved unchanged.
 
 Reproduce with `python3 scripts/probes/probe_r389_subfield_wick_budget.py`.
+### [164-strict-canonical-coeff-polys-refuted] The canonical-family extraction residual is false: a constant curve has two decoded families at the same radius
+
+2026-10-22, gitzlx (Slop contribution). Kernel-checked finite-field counterexample.
+
+`ProximityGap.StrictCanonicalCoeffPolysResidual` (`ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean`)
+adds a uniqueness clause to the strict Johnson extraction surface: after the §5 side
+supplies one decoded family `P₀` with coefficient-polynomial witnesses, every other
+decoded family `P` on `RS_goodCoeffsCurve u δ` must agree with `P₀` there. That clause
+is false, and it is the only false content — the existence of `P₀` is not what fails.
+
+Witness: `k = 1`, `deg = 2`, `δ = 3/7`, field `GaloisField 2 64` (`Fintype.card = 2^64`),
+domain the first seven elements of a fixed enumeration. Let `e` be the weight-three word
+that keeps the nonzero entries of `X - C(domain 0)` at coordinates `{1,2,3}` and zeroes the
+rest. The constant curve `u 0 = e`, `u 1 = 0` makes every line word equal `e`, so the
+good-coefficient set is all of the field and the probability is `1`. Meanwhile `e` sits at
+relative distance exactly `3/7` from both `0` and `eval (X - C(domain 0))`, so both constant
+families `P z = X - C(domain 0)` and `P z = 0` meet the decoded hypothesis at every good
+coefficient. Uniqueness forces `X - C(domain 0) = 0`, contradicting `natDegree = 1`.
+The hypothesis side is satisfied: `rate = 2/7`, `(1-ρ)/2 < 3/7`, `3/7 < 1 - √ρ`, and
+`errorBound (3/7) 2 = 4/((2·min(1-√ρ-3/7, √ρ/20))^7 · 2^64) < 1`, so a probability of one
+strictly exceeds `k · errorBound`.
+
+Formal payload `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CanonicalCoeffExtractionRefutation.lean`:
+`not_strictCanonicalCoeffPolysResidual` is the refutation, with supporting lemmas for the
+distance computations (`relDist_e_zero`, `relDist_e_wLin`), the good set
+(`goodCoeffsCurve_eq_univ`), the rate and Johnson/sqrt-rate side conditions, and the
+numerical bound `errorBound_lt_one`. The residual is now classified `refuted` by
+`scripts/residual_census.py`.
+
+Scope: this refutes the residual as stated, and therefore every consumer that assumes it
+unconditionally — in particular `strictCoeffPolysResidual_of_strictCanonicalCoeffPolysResidual`
+is vacuous. It says nothing about the strict Johnson existence statement as a mathematical
+question at production parameters `n = 2^32`, nor about the δ* conjecture, which remains open.
+(The broad `StrictCoeffPolysResidual` surface is refuted by the same witness; see the next
+entry.)
+
+Reproduce with
+```
+scripts/pg-iterate.sh ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CanonicalCoeffExtractionRefutation.lean
+scripts/lake-locked.sh build ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.CanonicalCoeffExtractionRefutation
+```
+The printed declarations `not_strictCanonicalCoeffPolysResidual` and `errorBound_lt_one` use
+only `propext`, `Classical.choice`, and `Quot.sound`.
+
+### [164-strict-coeff-polys-broad-refuted] The broad and large-sector strict extraction residuals are false: an adversarial decoder has non-interpolable coefficients
+
+2026-10-22, gitzlx (Slop contribution). Kernel-checked, same instance as the previous entry.
+
+`ProximityGap.StrictCoeffPolysResidual` quantifies over *every* family `P` decoded on the
+good-coefficient set, asking for coefficient polynomials `B j` of degree `< k + 1` with
+`(P z).coeff j = (B j).eval z` there. `ProximityGap.StrictCoeffPolysLargeResidual` is its
+`k + 1 < |S|` sector, which by `strictCoeffPolysResidual_iff_large` carries the whole content of
+the surface. Both statements are false, and the curve from the previous entry refutes them.
+
+Witness: `k = 1`, `deg = 2`, `δ = 3/7`, `GaloisField 2 64`, the seven-point domain and the
+constant curve `u 0 = e`, `u 1 = 0` (so `S = univ` and the probability is `1`). Replace the
+constant families by the adversarial decoder `stepFamily z = X - C(domain 0)` on
+`{domain 1, domain 2}` and `stepFamily z = 0` elsewhere. Every member is decoded (degree `< 2`,
+distance `3/7`), but `(stepFamily z).coeff 1` is `1` on `{domain 1, domain 2}` and `0` at
+`domain 3` and `domain 4`. A witness `B 1` of degree `< 2` would vanish at the two distinct
+points `domain 3`, `domain 4`, hence be zero by
+`Polynomial.eq_zero_of_natDegree_lt_card_of_eval_eq_zero'`, contradicting its value `1` at
+`domain 1`. Since `|S| = 2^64 > k + 1 = 2`, the same family refutes the large sector, and
+`strictCoeffPolysResidual_of_large` transfers the failure to the broad form.
+
+Formal payload, same file: `not_strictCoeffPolysResidual` and
+`not_strictCoeffPolysLargeResidual`, on top of the shared `prob_gt_k_errorBound`,
+`stepFamily_decoded`, and the coefficient lemmas `stepFamily_coeff_one_of_mem` /
+`stepFamily_coeff_one_of_notMem`.
+
+Scope: this refutes the broad and large-sector statements, so every unconditional consumer is
+vacuous, including `correlatedAgreement_affine_curves_of_largeResidual`. It does not refute the
+BCIKS20 list-decoding theorem (which fixes a decoder), the δ* conjecture, or the unique-decoding
+regime; a repaired surface must select the decoded family canonically. Census note: a vacuous
+`k := 0` provider (`ArkLib.KeystoneStrictResidual.strictCoeffPolysResidual_zero`, whose `0 < 0`
+hypothesis is unsatisfiable) exists, but `scripts/residual_census.py` lets a proved negation
+outrank any provider, so `StrictCoeffPolysResidual` is classified `refuted`.
+
+Reproduce with the same two commands as the previous entry and observe `#print axioms` for
+`not_strictCoeffPolysResidual` and `not_strictCoeffPolysLargeResidual`: only `propext`,
+`Classical.choice`, and `Quot.sound`.
+
+### [164-strict-coeff-polys-exceptional-refuted] The exceptional-set repair is false below half the field: a block decoder's indicator is not interpolable off a small exceptional set
+
+2026-10-22, gitzlx (Slop contribution). Kernel-checked finite-field counterexample, same witness
+field and curve as the two previous entries.
+
+`ProximityGap.StrictCoeffPolysExcResidual b`
+(`ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysExceptional.lean`) is the
+proposed honest repair of the refuted broad extraction residual: same hypotheses, same demand
+for coefficient polynomials `B j` of degree `< k + 1`, but the identity
+`(P z).coeff j = (B j).eval z` is only required at good parameters outside an exceptional set `E`
+with `E.card ≤ b`. The repair is false for **every budget `b` with `2b + 2 < |F|`**, which is the
+whole regime in which the repaired §6 consumer chain runs (its proximity error is
+`ε = errorBound + b/|F|`, so a budget anywhere near `|F|/2` makes the statement useless).
+
+Witness (`blockFamily`): keep `k = 1`, `deg = 2`, `δ = 3/7`, `GaloisField 2 64`, the seven-point
+domain, and the constant curve `u 0 = e`, `u 1 = 0` of the previous entries (good-coefficient set
+all of `F`, probability `1`). Pick any parameter block `S` with `|S| = b + 1` (exists since
+`b + 1 ≤ |F|` follows from `2b + 2 < |F|`) and set `P z = X - C(domain 0)` for `z ∈ S`,
+`P z = 0` otherwise. Every member is decoded at every parameter, and
+`(P z).coeff 1` is the indicator function of `S`. A witness `B 1` of degree `< 2` matching it off
+`E` cannot exist:
+
+* if `B 1 = 0`, then every `z ∈ S` with `z ∉ E` would have to satisfy `1 = 0`, so `S ⊆ E` and
+  `b + 1 = |S| ≤ |E| ≤ b`;
+* otherwise `B 1 ≠ 0` has degree `≤ 1`, so its vanishing set `Z` has at most one point
+  (`Finset.card_le_one` plus
+  `Polynomial.eq_zero_of_natDegree_lt_card_of_eval_eq_zero'`), yet every
+  `z ∈ (univ \ S) \ E` lies in `Z`; with
+  `Finset.le_card_sdiff` and `Finset.card_sdiff` this gives
+  `|F| - (b + 1) - |E| ≤ 1`, hence `|F| ≤ 2b + 2`, contradicting `2b + 2 < |F|`.
+
+Formal payload, same file as the previous entries:
+`not_strictCoeffPolysExcResidual_of_two_mul_add_two_lt_card` is the general refutation (budget
+hypothesis `2b + 2 < Fintype.card GF64`), and `not_strictCoeffPolysExcResidual_one` is the
+concrete budget-`1` instance. Both reuse `blockFamily_decoded` and the indicator lemmas
+`blockFamily_coeff_one_of_mem` / `blockFamily_coeff_one_of_notMem`; `Finset.exists_subset_card_eq`
+supplies the parameter block.
+
+Scope: the exceptional-set residual is documented-false at every sub-half-field budget, so the
+keystones `correlatedAgreement_affine_curves_of_strict_coeff_polys_exc` and
+`correlatedAgreement_affine_curves_strict_of_strict_coeff_polys_exc` are conditional reductions
+from a refuted hypothesis: they do not deliver Theorem 1.5 at any meaningful proximity error.
+Budget regimes `b ≥ (|F| - 2)/2` are **not** refuted here, and no satisfiability claim is made
+there. The refutation says nothing about the BCIKS20 list-decoding theorem, about extraction
+statements that fix the decoded family canonically, about the unique-decoding regime, or about
+the `δ*` conjecture, all of which remain as before.
+
+Reproduce with
+
+```
+scripts/pg-iterate.sh ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CanonicalCoeffExtractionRefutation.lean
+scripts/lake-locked.sh build ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.CanonicalCoeffExtractionRefutation
+```
+
+The printed declarations `not_strictCoeffPolysExcResidual_of_two_mul_add_two_lt_card` and
+`not_strictCoeffPolysExcResidual_one` use only `propext`, `Classical.choice`, and `Quot.sound`.
+`scripts/residual_census.py` now classifies `StrictCoeffPolysExcResidual` as `refuted` (there is
+no competing provider for it).
+
+### [164-curve-common-agreement-refuted] The geometric §5 common-agreement residual is false at the same witness
+
+The transparent geometric form of the §5 extraction, `CurveCommonAgreementResidual`
+(`ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CoeffExtractionResidual.lean`), says that a
+family `P` decoded on the good-coefficient set `S` admits `k + 1` sample parameters whose decodings
+share a `≥ deg`-size common agreement set with `P z` at every good `z`. No new construction is
+needed: the file itself proves the reduction
+`strictCoeffPolysResidual_of_commonAgreement` (the algebraic broad form follows from the geometric
+one by bivariate Lagrange interpolation), and the previous entry refutes the broad form at the
+adversarial curve. The refutation is therefore the one-line corollary
+`not_curveCommonAgreementResidual` in
+`ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CanonicalCoeffExtractionRefutation.lean`:
+
+```
+theorem not_curveCommonAgreementResidual :
+    ¬ CurveCommonAgreementResidual (k := 1) (deg := 2) (domain := domain7)
+      (δ := (3 / 7 : ℝ≥0)) :=
+  fun h => not_strictCoeffPolysResidual
+    (strictCoeffPolysResidual_of_commonAgreement (k := 1) (deg := 2)
+      (domain := domain7) (δ := (3 / 7 : ℝ≥0)) h)
+```
+
+Witness: `k = 1`, `deg = 2`, `δ = 3/7`, `GaloisField 2 64`, the seven-point domain, the constant
+curve `u 0 = e`, `u 1 = 0`, and the block-decoder family — the same data as the earlier entries.
+
+Scope: this closes the geometric root of the §5 strict chain, so the §5 keystones
+`strictCoeffPolysResidual_of_commonAgreement`, `strictCoeffPolysResidual_of_large`, and
+`correlatedAgreement_affine_curves_of_strictCanonicalCoeffPolysResidual` cannot be used to claim
+the extraction: their hypotheses are false at this witness. It says nothing about the BCIKS20
+list-decoding theorem, about statements that fix the decoded family canonically, about the
+unique-decoding regime, or about the `δ*` conjecture, all of which remain as before.
+
+Reproduce with
+
+```
+scripts/pg-iterate.sh ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/CanonicalCoeffExtractionRefutation.lean
+scripts/lake-locked.sh build ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.CanonicalCoeffExtractionRefutation
+```
+
+`#print axioms not_curveCommonAgreementResidual` reports only `propext`, `Classical.choice`, and
+`Quot.sound`. `scripts/residual_census.py` now classifies `CurveCommonAgreementResidual` as
+`refuted` (none of its `curveCommonAgreementResidual_of_*` adapters is a concrete provider).
 ## [164-antipodal-subgroup-obstructions] 2026-10-13
 
 Hardyzyt. Exact arithmetic certificates; no new Lean theorem.

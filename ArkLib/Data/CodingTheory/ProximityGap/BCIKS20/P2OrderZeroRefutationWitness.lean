@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2OrderZeroRefutation
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MatchProof
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MatchRoot
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.WPowerInjective
 
@@ -143,6 +144,12 @@ theorem full_match_false :
   exact orderZero_match_false
     (RestrictedFaaDiBrunoMatch.at myH (0 : ℚ) myR myHyp hmatch 0)
 
+/-- The census-tracked alias `RestrictedFaaDiBrunoMatchResidual` is false on the same witness.
+Stating the refutation against the alias name keeps the residual census ledger honest. -/
+theorem restrictedFaaDiBrunoMatchResidual_false :
+    ¬ RestrictedFaaDiBrunoMatchResidual myH (0 : ℚ) myR myHyp :=
+  full_match_false
+
 /-- The all-order `RestrictedFaaDiBrunoMatchAt` family is false on the concrete witness. -/
 theorem forall_matchAt_false :
     ¬ (∀ t : ℕ, RestrictedFaaDiBrunoMatchAt myH (0 : ℚ) myR myHyp t) := by
@@ -198,6 +205,7 @@ end BCIKS20.HenselNumerator.Witness
 
 #print axioms BCIKS20.HenselNumerator.Witness.orderZero_match_false
 #print axioms BCIKS20.HenselNumerator.Witness.full_match_false
+#print axioms BCIKS20.HenselNumerator.Witness.restrictedFaaDiBrunoMatchResidual_false
 #print axioms BCIKS20.HenselNumerator.Witness.forall_matchAt_false
 #print axioms BCIKS20.HenselNumerator.Witness.partition_match_false
 #print axioms BCIKS20.HenselNumerator.Witness.forall_partitionMatchAt_false
