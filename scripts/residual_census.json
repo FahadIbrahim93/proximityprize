@@ -1921,13 +1921,13 @@
    "name": "BoundaryCardLatticeThresholdResidual",
    "fq_name": "ArkLib.BoundaryLatticeThresholdLeaf.BoundaryCardLatticeThresholdResidual",
    "file": "ArkLib/Data/CodingTheory/ProximityGap/BoundaryLatticeThresholdLeaf.lean",
-   "line": 196,
+   "line": 201,
    "providers": [
     {
      "name": "ArkLib.BoundaryLatticeThresholdLeaf.boundaryCardLatticeThresholdResidual_of_extraction",
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/ProximityGap/BoundaryLatticeThresholdLeaf.lean",
-     "line": 206,
+     "line": 211,
      "conditional_on_residuals": [],
      "extra_explicit_binders": [
       "hExt"
@@ -1941,7 +1941,7 @@
      "name": "ArkLib.BoundaryLatticeThresholdLeaf.boundaryCardLatticeThresholdResidual_of_canonical",
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/ProximityGap/BoundaryLatticeThresholdLeaf.lean",
-     "line": 266,
+     "line": 273,
      "conditional_on_residuals": [],
      "extra_explicit_binders": [
       "hCanon"
@@ -1966,7 +1966,18 @@
      "specialised_arguments": []
     }
    ],
-   "status": "open"
+   "refutations": [
+    {
+     "name": "ArkLib.BoundaryLatticeThresholdRefutation.not_boundaryCardLatticeThresholdResidual",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/ProximityGap/BoundaryLatticeThresholdRefutation.lean",
+     "line": 254,
+     "conditional_on_residuals": [],
+     "extra_explicit_binders": [],
+     "ambiguous_name_match": false
+    }
+   ],
+   "status": "refuted"
   },
   {
    "name": "SubJohnsonSupplyResidual",
